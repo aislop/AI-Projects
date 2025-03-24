@@ -66,35 +66,35 @@
 
     // All 29 Yamanote line stations, referencing ./announcements and ./Sounds
     const stations = [
-      { name: "Tokyo",          mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/tokyo-announcement.mp3",       mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Tokyo.mp3" },
-      { name: "Kanda",          mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/kanda-announcement.mp3",       mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Kanda.mp3" },
-      { name: "Akihabara",      mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/akihabara-announcement.mp3",   mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/sounds/Akihabara.mp3" },
-      { name: "Okachimachi",    mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/okachimachi-announcement.mp3", mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Okachimachi.mp3" },
-      { name: "Ueno",           mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/ueno-announcement.mp3",        mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Ueno.mp3" },
-      { name: "Uguisudani",     mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/uguisudani-announcement.mp3",  mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Uguisudani.mp3" },
-      { name: "Nippori",        mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/nippori-announcement.mp3",     mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Nippori.mp3" },
-      { name: "Nishi-Nippori",  mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/nishi-Nippori-announcement.mp3", mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Nishi-Nippori.mp3" },
-      { name: "Tabata",         mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/tabata-announcement.mp3",      mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Tabata.mp3" },
-      { name: "Komagome",       mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/komagome-announcement.mp3",    mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Komagome.mp3" },
-      { name: "Sugamo",         mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/sugamo-announcement.mp3",      mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Sugamo.mp3" },
-      { name: "Otsuka",         mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/otsuka-announcement.mp3",      mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Otsuka.mp3" },
-      { name: "Ikebukuro",      mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/ikebukuro-announcement.mp3",   mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Ikebukuro.mp3" },
-      { name: "Mejiro",         mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/mejiro-announcement.mp3",      mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Mejiro.mp3" },
-      { name: "Takadanobaba",   mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/takadanobaba-announcement.mp3", mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Takadanobaba.mp3" },
-      { name: "Shin-Okubo",     mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/shin-Okubo-announcement.mp3",  mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Shin-Okubo.mp3" },
-      { name: "Shinjuku",       mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/shinjuku-announcement.mp3",    mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Shinjuku.mp3" },
-      { name: "Yoyogi",         mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/yoyogi-announcement.mp3",      mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Yoyogi.mp3" },
-      { name: "Harajuku",       mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/harajuku-announcement.mp3",    mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Harajuku.mp3" },
-      { name: "Shibuya",        mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/shibuya-announcement.mp3",     mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Shibuya.mp3" },
-      { name: "Ebisu",          mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/ebisu-announcement.mp3",       mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Ebisu.mp3" },
-      { name: "Meguro",         mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/meguro-announcement.mp3",      mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Meguro.mp3" },
-      { name: "Gotanda",        mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/gotanda-announcement.mp3",     mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Gotanda.mp3" },
-      { name: "Osaki",          mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/osaki-announcement.mp3",       mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Osaki.mp3" },
-      { name: "Shinagawa",      mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/shinagawa-announcement.mp3",   mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Shinagawa.mp3" },
-      { name: "Tamachi",        mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/tamachi-announcement.mp3",     mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Tamachi.mp3" },
-      { name: "Hamamatsucho",   mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/hamamatsucho-announcement.mp3", mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Hamamatsucho.mp3" },
-      { name: "Shimbashi",      mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/shimbashi-announcement.mp3",   mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Shimbashi.mp3" },
-      { name: "Yurakucho",      mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/yurakucho-announcement.mp3",   mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/Yurakucho.mp3" }
+      { name: "Tokyo",          mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/tokyo-announcement.mp3",       mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/tokyo.mp3" },
+      { name: "Kanda",          mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/kanda-announcement.mp3",       mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/kanda.mp3" },
+      { name: "Akihabara",      mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/akihabara-announcement.mp3",   mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/akihabara.mp3" },
+      { name: "Okachimachi",    mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/okachimachi-announcement.mp3", mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/okachimachi.mp3" },
+      { name: "Ueno",           mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/ueno-announcement.mp3",        mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/ueno.mp3" },
+      { name: "Uguisudani",     mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/uguisudani-announcement.mp3",  mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/uguisudani.mp3" },
+      { name: "Nippori",        mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/nippori-announcement.mp3",     mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/nippori.mp3" },
+      { name: "Nishi-Nippori",  mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/nishi-Nippori-announcement.mp3", mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/nishi-Nippori.mp3" },
+      { name: "Tabata",         mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/tabata-announcement.mp3",      mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/tabata.mp3" },
+      { name: "Komagome",       mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/komagome-announcement.mp3",    mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/komagome.mp3" },
+      { name: "Sugamo",         mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/sugamo-announcement.mp3",      mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/sugamo.mp3" },
+      { name: "Otsuka",         mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/otsuka-announcement.mp3",      mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/otsuka.mp3" },
+      { name: "Ikebukuro",      mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/ikebukuro-announcement.mp3",   mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/ikebukuro.mp3" },
+      { name: "Mejiro",         mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/mejiro-announcement.mp3",      mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/mejiro.mp3" },
+      { name: "Takadanobaba",   mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/takadanobaba-announcement.mp3", mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/takadanobaba.mp3" },
+      { name: "Shin-Okubo",     mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/shin-Okubo-announcement.mp3",  mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/shin-Okubo.mp3" },
+      { name: "Shinjuku",       mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/shinjuku-announcement.mp3",    mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/shinjuku.mp3" },
+      { name: "Yoyogi",         mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/yoyogi-announcement.mp3",      mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/yoyogi.mp3" },
+      { name: "Harajuku",       mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/harajuku-announcement.mp3",    mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/harajuku.mp3" },
+      { name: "Shibuya",        mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/shibuya-announcement.mp3",     mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/shibuya.mp3" },
+      { name: "Ebisu",          mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/ebisu-announcement.mp3",       mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/ebisu.mp3" },
+      { name: "Meguro",         mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/meguro-announcement.mp3",      mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/meguro.mp3" },
+      { name: "Gotanda",        mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/gotanda-announcement.mp3",     mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/gotanda.mp3" },
+      { name: "Osaki",          mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/osaki-announcement.mp3",       mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/osaki.mp3" },
+      { name: "Shinagawa",      mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/shinagawa-announcement.mp3",   mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/shinagawa.mp3" },
+      { name: "Tamachi",        mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/tamachi-announcement.mp3",     mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/tamachi.mp3" },
+      { name: "Hamamatsucho",   mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/hamamatsucho-announcement.mp3", mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/hamamatsucho.mp3" },
+      { name: "Shimbashi",      mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/shimbashi-announcement.mp3",   mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/shimbashi.mp3" },
+      { name: "Yurakucho",      mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/yurakucho-announcement.mp3",   mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/yurakucho.mp3" }
     ];
 
     let currentStationIndex = -1;
@@ -242,59 +242,4 @@
     function playStationAudio(station) {
       currentAudioType = "station";
       currentStationLabel.textContent = station.name;
-      audioElement.src = station.mp3Station + cacheBust;
-      audioElement.volume = stationMuted ? 0 : stationVolume;
-      audioElement.play().then(() => {
-        updateActiveStation(currentStationIndex, "station");
-        audioElement.onended = () => {
-          nextStation();
-        };
-      }).catch(err => {
-        console.error("Station playback failed:", err);
-      });
-    }
-
-    function nextStation() {
-      let nextIndex = currentStationIndex + playDirection;
-      if (nextIndex >= stations.length) nextIndex = 0;
-      if (nextIndex < 0) nextIndex = stations.length - 1;
-      playStation(nextIndex);
-    }
-
-    playPauseBtn.addEventListener("click", () => {
-      if (audioElement.paused) {
-        audioElement.play();
-      } else {
-        audioElement.pause();
-      }
-    });
-
-    // Volume slider events
-    document.getElementById("announcementVolumeSlider").addEventListener("input", e => {
-      announcementVolume = parseFloat(e.target.value);
-      if (currentAudioType === "announcement" && !announcementMuted) {
-        audioElement.volume = announcementVolume;
-      }
-    });
-    document.getElementById("stationVolumeSlider").addEventListener("input", e => {
-      stationVolume = parseFloat(e.target.value);
-      if (currentAudioType === "station" && !stationMuted) {
-        audioElement.volume = stationVolume;
-      }
-    });
-
-    // Mute toggles
-    document.getElementById("announcementVolumeIcon").addEventListener("click", () => {
-      announcementMuted = !announcementMuted;
-      const icon = document.getElementById("announcementVolumeIcon");
-      icon.textContent = announcementMuted ? "🔇" : "🔊";
-      if (currentAudioType === "announcement") {
-        audioElement.volume = announcementMuted ? 0 : announcementVolume;
-      }
-    });
-    document.getElementById("stationVolumeIcon").addEventListener("click", () => {
-      stationMuted = !stationMuted;
-      const icon = document.getElementById("stationVolumeIcon");
-      icon.textContent = stationMuted ? "🔇" : "🔊";
-      if (currentAudioType === "station") {
-        audioElement.volume
+      audio
