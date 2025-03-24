@@ -1,0 +1,48 @@
+/* Reset some default browser styles and set a base font */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+/* Center content vertically and horizontally in the viewport */
+body {
+  background: #fdfdfd;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+}
+
+/* Main title styling */
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+/* Single button styling */
+.ai-button {
+  background: #ffd33d;
+  color: #333;
+  font-size: 1.2rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.15);
+  cursor: pointer;
+  transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+}
+
+.ai-button:hover {
+  box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
+  transform: translate(-1px, -1px);
+}
+
+.ai-button:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 5px rgba(0,0,0,0.15);
+}
