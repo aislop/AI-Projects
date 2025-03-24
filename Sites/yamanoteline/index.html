@@ -68,7 +68,7 @@
     const stations = [
       { name: "Tokyo",          mp3Announcement: "Sites/yamanoteline/announcements/tokyo-announcement.mp3",       mp3Station: "Sites/yamanoteline/Sounds/Tokyo.mp3" },
       { name: "Kanda",          mp3Announcement: "Sites/yamanoteline/announcements/kanda-announcement.mp3",       mp3Station: "Sites/yamanoteline/Sounds/Kanda.mp3" },
-      { name: "Akihabara",      mp3Announcement: "Sites/yamanoteline/announcements/akihabara-announcement.mp3",   mp3Station: "Sites/yamanoteline/sounds/Akihabara.mp3/sounds/Akihabara.mp3" },
+      { name: "Akihabara",      mp3Announcement: "Sites/yamanoteline/announcements/akihabara-announcement.mp3",   mp3Station: "Sites/yamanoteline/Sounds/Akihabara.mp3" },
       { name: "Okachimachi",    mp3Announcement: "Sites/yamanoteline/announcements/okachimachi-announcement.mp3", mp3Station: "Sites/yamanoteline/Sounds/Okachimachi.mp3" },
       { name: "Ueno",           mp3Announcement: "Sites/yamanoteline/announcements/ueno-announcement.mp3",        mp3Station: "Sites/yamanoteline/Sounds/Ueno.mp3" },
       { name: "Uguisudani",     mp3Announcement: "Sites/yamanoteline/announcements/uguisudani-announcement.mp3",  mp3Station: "Sites/yamanoteline/Sounds/Uguisudani.mp3" },
@@ -249,6 +249,8 @@
         audioElement.onended = () => {
           nextStation();
         };
+      }).catch(err => {
+        console.error("Station playback failed:", err);
       });
     }
 
@@ -295,28 +297,4 @@
       const icon = document.getElementById("stationVolumeIcon");
       icon.textContent = stationMuted ? "🔇" : "🔊";
       if (currentAudioType === "station") {
-        audioElement.volume = stationMuted ? 0 : stationVolume;
-      }
-    });
-
-    // Direction toggle
-    directionToggle.addEventListener("change", () => {
-      if (directionToggle.checked) {
-        playDirection = 1;
-        directionText.textContent = "Clockwise";
-      } else {
-        playDirection = -1;
-        directionText.textContent = "Counterclockwise";
-      }
-      updateArrowAnimation();
-    });
-
-    // On page load
-    window.onload = function() {
-      generateArrows();
-      updateArrowAnimation();
-      placeStations();
-    };
-  </script>
-</body>
-</html>
+        audioElement.volume
