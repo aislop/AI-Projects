@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <title>Yamanote Line - Stations on Circle with Dark Mode</title>
-  <!-- Basic CSP meta tag -->
+  <!-- Basic Content Security Policy -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Circle wrapper for arrows and station labels (debug background added) -->
+  <!-- Circle wrapper for arrows and station labels -->
   <div id="circleWrapper">
     <div id="arrowContainer"></div>
     <div id="stations"></div>
   </div>
 
-  <!-- Audio bar fixed at the bottom (single horizontal row) -->
+  <!-- Audio bar at the bottom (single horizontal row) -->
   <div id="audioPlayer">
     <div class="left-controls">
       <div class="volume-control">
@@ -61,10 +61,10 @@
   <audio id="audio" preload="auto"></audio>
 
   <script>
-    // Cache busting to force updated files
+    // Cache busting query param
     const cacheBust = "?v=1";
 
-    // Array of all 29 Yamanote line stations with relative paths
+    // All 29 Yamanote stations
     const stations = [
       { name: "Tokyo",          mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/tokyo-announcement.mp3",       mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/tokyo.mp3" },
       { name: "Kanda",          mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/kanda-announcement.mp3",       mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/kanda.mp3" },
@@ -95,14 +95,14 @@
       { name: "Hamamatsucho",   mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/hamamatsucho-announcement.mp3", mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/hamamatsucho.mp3" },
       { name: "Shimbashi",      mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/shimbashi-announcement.mp3",   mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/shimbashi.mp3" },
       { name: "Yurakucho",      mp3Announcement: "https://www.madewithonlyai.com/Sites/yamanoteline/announcements/yurakucho-announcement.mp3",   mp3Station: "https://www.madewithonlyai.com/Sites/yamanoteline/Sounds/yurakucho.mp3" }
- ];
+    ];
     
     let currentStationIndex = -1;
     let announcementVolume = 1, stationVolume = 1;
     let announcementMuted = false, stationMuted = false;
-    let currentAudioType = ""; // "announcement" or "station"
-    let playDirection = 1;     // +1 = clockwise, -1 = counterclockwise
-    
+    let currentAudioType = "";
+    let playDirection = 1; // +1 clockwise, -1 counterclockwise
+
     const audioElement = document.getElementById("audio");
     const currentStationLabel = document.getElementById("currentStation");
     const skipAnnouncementToggle = document.getElementById("skipAnnouncement");
@@ -111,7 +111,7 @@
     const darkModeToggle = document.getElementById("darkModeToggle");
     const darkModeText = document.getElementById("darkModeText");
     const playPauseBtn = document.getElementById("playPauseBtn");
-    
+
     // Dark mode toggle
     darkModeToggle.addEventListener("change", () => {
       if (darkModeToggle.checked) {
@@ -122,12 +122,12 @@
         darkModeText.textContent = "Light Mode";
       }
     });
-    
-    // Log audio errors for debugging
+
+    // Log audio errors
     audioElement.addEventListener("error", () => {
       console.error("Audio error:", audioElement.error);
     });
-    
+
     // Update active station button style
     function updateActiveStation(index, mode) {
       document.querySelectorAll(".station").forEach(el => {
@@ -142,14 +142,14 @@
         }
       }
     }
-    
+
     // Update play/pause button icon
     function updatePlayPauseIcon() {
       playPauseBtn.textContent = audioElement.paused ? "▶" : "⏸";
     }
     audioElement.addEventListener("play", updatePlayPauseIcon);
     audioElement.addEventListener("pause", updatePlayPauseIcon);
-    
+
     // Generate inner arrow circle
     function generateArrows() {
       const arrowContainer = document.getElementById("arrowContainer");
@@ -164,6 +164,7 @@
         const angle = (2 * Math.PI * i) / numArrows;
         const x = centerX + arrowRadius * Math.cos(angle);
         const y = centerY + arrowRadius * Math.sin(angle);
+
         const arrow = document.createElement("div");
         arrow.classList.add("arrow");
         arrow.textContent = "➤";
@@ -175,14 +176,14 @@
         arrowContainer.appendChild(arrow);
       }
     }
-    
+
     function updateArrowAnimation() {
       const arrowContainer = document.getElementById("arrowContainer");
       arrowContainer.style.animationName =
         (playDirection === 1) ? "spinClockwise" : "spinCounterClockwise";
       generateArrows();
     }
-    
+
     // Place stations on outer circle
     function placeStations() {
       const stationsContainer = document.getElementById("stations");
@@ -193,11 +194,12 @@
       const centerY = containerHeight / 2;
       const stationRadius = 380;
       const totalStations = stations.length;
+
       for (let i = 0; i < totalStations; i++) {
         const angle = (2 * Math.PI * i) / totalStations - Math.PI / 2;
         const x = centerX + stationRadius * Math.cos(angle);
         const y = centerY + stationRadius * Math.sin(angle);
-    
+
         const stationDiv = document.createElement("div");
         stationDiv.classList.add("station");
         stationDiv.textContent = stations[i].name;
@@ -210,14 +212,15 @@
         stationsContainer.appendChild(stationDiv);
       }
     }
-    
+
     // Playback logic
     function playStation(index) {
       currentStationIndex = index;
       const station = stations[index];
       audioElement.onended = null;
       updateActiveStation(index, "");
-    
+
+      // If skip announcements is OFF, play announcement first
       if (!skipAnnouncementToggle.checked) {
         currentAudioType = "announcement";
         currentStationLabel.textContent = station.name + " (announcement)";
@@ -233,10 +236,11 @@
           playStationAudio(station);
         });
       } else {
+        // Skip announcements
         playStationAudio(station);
       }
     }
-    
+
     function playStationAudio(station) {
       currentAudioType = "station";
       currentStationLabel.textContent = station.name;
@@ -251,14 +255,15 @@
         console.error("Station playback failed:", err);
       });
     }
-    
+
     function nextStation() {
       let nextIndex = currentStationIndex + playDirection;
       if (nextIndex >= stations.length) nextIndex = 0;
       if (nextIndex < 0) nextIndex = stations.length - 1;
       playStation(nextIndex);
     }
-    
+
+    // Play/pause button
     playPauseBtn.addEventListener("click", () => {
       if (audioElement.paused) {
         audioElement.play();
@@ -266,7 +271,8 @@
         audioElement.pause();
       }
     });
-    
+
+    // Volume sliders
     document.getElementById("announcementVolumeSlider").addEventListener("input", e => {
       announcementVolume = parseFloat(e.target.value);
       if (currentAudioType === "announcement" && !announcementMuted) {
@@ -279,7 +285,8 @@
         audioElement.volume = stationVolume;
       }
     });
-    
+
+    // Mute toggles
     document.getElementById("announcementVolumeIcon").addEventListener("click", () => {
       announcementMuted = !announcementMuted;
       const icon = document.getElementById("announcementVolumeIcon");
@@ -296,7 +303,8 @@
         audioElement.volume = stationMuted ? 0 : stationVolume;
       }
     });
-    
+
+    // Direction toggle
     directionToggle.addEventListener("change", () => {
       if (directionToggle.checked) {
         playDirection = 1;
@@ -307,7 +315,8 @@
       }
       updateArrowAnimation();
     });
-    
+
+    // On window load
     window.onload = function() {
       generateArrows();
       updateArrowAnimation();
@@ -316,5 +325,3 @@
   </script>
 </body>
 </html>
-      currentStationLabel.textContent = station.name;
-      audio
