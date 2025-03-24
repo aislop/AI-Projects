@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Yamanote Line - Stations on Circle with Dark Mode</title>
-  <!-- Content Security Policy; adjust if you later externalize scripts/styles -->
+  <!-- Basic Content Security Policy (adjust if needed) -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -61,48 +61,48 @@
   <audio id="audio" preload="auto"></audio>
 
   <script>
-    // Define cache busting query string so browsers fetch the latest files.
+    // Cache-busting query parameter
     const cacheBust = "?v=1";
 
-    // Array of stations (using two folders: announcements and Sounds)
+    // All 29 Yamanote line stations, referencing ./announcements and ./Sounds
     const stations = [
-      { name: "Tokyo", mp3Announcement: "./announcements/Tokyo-announcement.mp3", mp3Station: "./Sounds/Tokyo.mp3" },
-      { name: "Kanda", mp3Announcement: "./announcements/Kanda-announcement.mp3", mp3Station: "./Sounds/Kanda.mp3" },
-      { name: "Akihabara", mp3Announcement: "./announcements/Akihabara-announcement.mp3", mp3Station: "./Sounds/Akihabara.mp3" },
-      { name: "Okachimachi", mp3Announcement: "./announcements/Okachimachi-announcement.mp3", mp3Station: "./Sounds/Okachimachi.mp3" },
-      { name: "Ueno", mp3Announcement: "./announcements/Ueno-announcement.mp3", mp3Station: "./Sounds/Ueno.mp3" },
-      { name: "Uguisudani", mp3Announcement: "./announcements/Uguisudani-announcement.mp3", mp3Station: "./Sounds/Uguisudani.mp3" },
-      { name: "Nippori", mp3Announcement: "./announcements/Nippori-announcement.mp3", mp3Station: "./Sounds/Nippori.mp3" },
-      { name: "Nishi-Nippori", mp3Announcement: "./announcements/Nishi-Nippori-announcement.mp3", mp3Station: "./Sounds/Nishi-Nippori.mp3" },
-      { name: "Tabata", mp3Announcement: "./announcements/Tabata-announcement.mp3", mp3Station: "./Sounds/Tabata.mp3" },
-      { name: "Komagome", mp3Announcement: "./announcements/Komagome-announcement.mp3", mp3Station: "./Sounds/Komagome.mp3" },
-      { name: "Sugamo", mp3Announcement: "./announcements/Sugamo-announcement.mp3", mp3Station: "./Sounds/Sugamo.mp3" },
-      { name: "Otsuka", mp3Announcement: "./announcements/Otsuka-announcement.mp3", mp3Station: "./Sounds/Otsuka.mp3" },
-      { name: "Ikebukuro", mp3Announcement: "./announcements/Ikebukuro-announcement.mp3", mp3Station: "./Sounds/Ikebukuro.mp3" },
-      { name: "Mejiro", mp3Announcement: "./announcements/Mejiro-announcement.mp3", mp3Station: "./Sounds/Mejiro.mp3" },
-      { name: "Takadanobaba", mp3Announcement: "./announcements/Takadanobaba-announcement.mp3", mp3Station: "./Sounds/Takadanobaba.mp3" },
-      { name: "Shin-Okubo", mp3Announcement: "./announcements/Shin-Okubo-announcement.mp3", mp3Station: "./Sounds/Shin-Okubo.mp3" },
-      { name: "Shinjuku", mp3Announcement: "./announcements/Shinjuku-announcement.mp3", mp3Station: "./Sounds/Shinjuku.mp3" },
-      { name: "Yoyogi", mp3Announcement: "./announcements/Yoyogi-announcement.mp3", mp3Station: "./Sounds/Yoyogi.mp3" },
-      { name: "Harajuku", mp3Announcement: "./announcements/Harajuku-announcement.mp3", mp3Station: "./Sounds/Harajuku.mp3" },
-      { name: "Shibuya", mp3Announcement: "./announcements/Shibuya-announcement.mp3", mp3Station: "./Sounds/Shibuya.mp3" },
-      { name: "Ebisu", mp3Announcement: "./announcements/Ebisu-announcement.mp3", mp3Station: "./Sounds/Ebisu.mp3" },
-      { name: "Meguro", mp3Announcement: "./announcements/Meguro-announcement.mp3", mp3Station: "./Sounds/Meguro.mp3" },
-      { name: "Gotanda", mp3Announcement: "./announcements/Gotanda-announcement.mp3", mp3Station: "./Sounds/Gotanda.mp3" },
-      { name: "Osaki", mp3Announcement: "./announcements/Osaki-announcement.mp3", mp3Station: "./Sounds/Osaki.mp3" },
-      { name: "Shinagawa", mp3Announcement: "./announcements/Shinagawa-announcement.mp3", mp3Station: "./Sounds/Shinagawa.mp3" },
-      { name: "Tamachi", mp3Announcement: "./announcements/Tamachi-announcement.mp3", mp3Station: "./Sounds/Tamachi.mp3" },
-      { name: "Hamamatsucho", mp3Announcement: "./announcements/Hamamatsucho-announcement.mp3", mp3Station: "./Sounds/Hamamatsucho.mp3" },
-      { name: "Shimbashi", mp3Announcement: "./announcements/Shimbashi-announcement.mp3", mp3Station: "./Sounds/Shimbashi.mp3" },
-      { name: "Yurakucho", mp3Announcement: "./announcements/Yurakucho-announcement.mp3", mp3Station: "./Sounds/Yurakucho.mp3" }
+      { name: "Tokyo",          mp3Announcement: "./announcements/Tokyo-announcement.mp3",       mp3Station: "./Sounds/Tokyo.mp3" },
+      { name: "Kanda",          mp3Announcement: "./announcements/Kanda-announcement.mp3",       mp3Station: "./Sounds/Kanda.mp3" },
+      { name: "Akihabara",      mp3Announcement: "./announcements/Akihabara-announcement.mp3",   mp3Station: "./Sounds/Akihabara.mp3" },
+      { name: "Okachimachi",    mp3Announcement: "./announcements/Okachimachi-announcement.mp3", mp3Station: "./Sounds/Okachimachi.mp3" },
+      { name: "Ueno",           mp3Announcement: "./announcements/Ueno-announcement.mp3",        mp3Station: "./Sounds/Ueno.mp3" },
+      { name: "Uguisudani",     mp3Announcement: "./announcements/Uguisudani-announcement.mp3",  mp3Station: "./Sounds/Uguisudani.mp3" },
+      { name: "Nippori",        mp3Announcement: "./announcements/Nippori-announcement.mp3",     mp3Station: "./Sounds/Nippori.mp3" },
+      { name: "Nishi-Nippori",  mp3Announcement: "./announcements/Nishi-Nippori-announcement.mp3", mp3Station: "./Sounds/Nishi-Nippori.mp3" },
+      { name: "Tabata",         mp3Announcement: "./announcements/Tabata-announcement.mp3",      mp3Station: "./Sounds/Tabata.mp3" },
+      { name: "Komagome",       mp3Announcement: "./announcements/Komagome-announcement.mp3",    mp3Station: "./Sounds/Komagome.mp3" },
+      { name: "Sugamo",         mp3Announcement: "./announcements/Sugamo-announcement.mp3",      mp3Station: "./Sounds/Sugamo.mp3" },
+      { name: "Otsuka",         mp3Announcement: "./announcements/Otsuka-announcement.mp3",      mp3Station: "./Sounds/Otsuka.mp3" },
+      { name: "Ikebukuro",      mp3Announcement: "./announcements/Ikebukuro-announcement.mp3",   mp3Station: "./Sounds/Ikebukuro.mp3" },
+      { name: "Mejiro",         mp3Announcement: "./announcements/Mejiro-announcement.mp3",      mp3Station: "./Sounds/Mejiro.mp3" },
+      { name: "Takadanobaba",   mp3Announcement: "./announcements/Takadanobaba-announcement.mp3", mp3Station: "./Sounds/Takadanobaba.mp3" },
+      { name: "Shin-Okubo",     mp3Announcement: "./announcements/Shin-Okubo-announcement.mp3",  mp3Station: "./Sounds/Shin-Okubo.mp3" },
+      { name: "Shinjuku",       mp3Announcement: "./announcements/Shinjuku-announcement.mp3",    mp3Station: "./Sounds/Shinjuku.mp3" },
+      { name: "Yoyogi",         mp3Announcement: "./announcements/Yoyogi-announcement.mp3",      mp3Station: "./Sounds/Yoyogi.mp3" },
+      { name: "Harajuku",       mp3Announcement: "./announcements/Harajuku-announcement.mp3",    mp3Station: "./Sounds/Harajuku.mp3" },
+      { name: "Shibuya",        mp3Announcement: "./announcements/Shibuya-announcement.mp3",     mp3Station: "./Sounds/Shibuya.mp3" },
+      { name: "Ebisu",          mp3Announcement: "./announcements/Ebisu-announcement.mp3",       mp3Station: "./Sounds/Ebisu.mp3" },
+      { name: "Meguro",         mp3Announcement: "./announcements/Meguro-announcement.mp3",      mp3Station: "./Sounds/Meguro.mp3" },
+      { name: "Gotanda",        mp3Announcement: "./announcements/Gotanda-announcement.mp3",     mp3Station: "./Sounds/Gotanda.mp3" },
+      { name: "Osaki",          mp3Announcement: "./announcements/Osaki-announcement.mp3",       mp3Station: "./Sounds/Osaki.mp3" },
+      { name: "Shinagawa",      mp3Announcement: "./announcements/Shinagawa-announcement.mp3",   mp3Station: "./Sounds/Shinagawa.mp3" },
+      { name: "Tamachi",        mp3Announcement: "./announcements/Tamachi-announcement.mp3",     mp3Station: "./Sounds/Tamachi.mp3" },
+      { name: "Hamamatsucho",   mp3Announcement: "./announcements/Hamamatsucho-announcement.mp3", mp3Station: "./Sounds/Hamamatsucho.mp3" },
+      { name: "Shimbashi",      mp3Announcement: "./announcements/Shimbashi-announcement.mp3",   mp3Station: "./Sounds/Shimbashi.mp3" },
+      { name: "Yurakucho",      mp3Announcement: "./announcements/Yurakucho-announcement.mp3",   mp3Station: "./Sounds/Yurakucho.mp3" }
     ];
-    
+
     let currentStationIndex = -1;
     let announcementVolume = 1, stationVolume = 1;
     let announcementMuted = false, stationMuted = false;
-    let currentAudioType = "";
-    let playDirection = 1;
-    
+    let currentAudioType = ""; // "announcement" or "station"
+    let playDirection = 1;     // +1 = clockwise, -1 = counterclockwise
+
     const audioElement = document.getElementById("audio");
     const currentStationLabel = document.getElementById("currentStation");
     const skipAnnouncementToggle = document.getElementById("skipAnnouncement");
@@ -111,7 +111,7 @@
     const darkModeToggle = document.getElementById("darkModeToggle");
     const darkModeText = document.getElementById("darkModeText");
     const playPauseBtn = document.getElementById("playPauseBtn");
-    
+
     // Dark mode toggle
     darkModeToggle.addEventListener("change", () => {
       if (darkModeToggle.checked) {
@@ -122,12 +122,12 @@
         darkModeText.textContent = "Light Mode";
       }
     });
-    
-    // Log audio errors
+
+    // Log audio errors for debugging
     audioElement.addEventListener("error", () => {
       console.error("Audio error:", audioElement.error);
     });
-    
+
     // Update active station button style
     function updateActiveStation(index, mode) {
       document.querySelectorAll(".station").forEach(el => {
@@ -142,14 +142,14 @@
         }
       }
     }
-    
+
     // Update play/pause button icon
     function updatePlayPauseIcon() {
       playPauseBtn.textContent = audioElement.paused ? "▶" : "⏸";
     }
     audioElement.addEventListener("play", updatePlayPauseIcon);
     audioElement.addEventListener("pause", updatePlayPauseIcon);
-    
+
     // Generate inner arrow circle
     function generateArrows() {
       const arrowContainer = document.getElementById("arrowContainer");
@@ -170,19 +170,19 @@
         arrow.style.left = x + "px";
         arrow.style.top = y + "px";
         const angleDeg = (angle * 180) / Math.PI;
-        const rotationDeg = playDirection === 1 ? angleDeg + 90 : angleDeg - 90;
+        const rotationDeg = (playDirection === 1) ? angleDeg + 90 : angleDeg - 90;
         arrow.style.transform = `translate(-50%, -50%) rotate(${rotationDeg}deg)`;
         arrowContainer.appendChild(arrow);
       }
     }
-    
+
     function updateArrowAnimation() {
       const arrowContainer = document.getElementById("arrowContainer");
       arrowContainer.style.animationName =
-        playDirection === 1 ? "spinClockwise" : "spinCounterClockwise";
+        (playDirection === 1) ? "spinClockwise" : "spinCounterClockwise";
       generateArrows();
     }
-    
+
     // Place stations on outer circle
     function placeStations() {
       const stationsContainer = document.getElementById("stations");
@@ -197,6 +197,7 @@
         const angle = (2 * Math.PI * i) / totalStations - Math.PI / 2;
         const x = centerX + stationRadius * Math.cos(angle);
         const y = centerY + stationRadius * Math.sin(angle);
+
         const stationDiv = document.createElement("div");
         stationDiv.classList.add("station");
         stationDiv.textContent = stations[i].name;
@@ -209,17 +210,19 @@
         stationsContainer.appendChild(stationDiv);
       }
     }
-    
-    // Playback functions
+
+    // Playback logic
     function playStation(index) {
       currentStationIndex = index;
       const station = stations[index];
       audioElement.onended = null;
       updateActiveStation(index, "");
+
+      // If skip announcements is OFF, play announcement first
       if (!skipAnnouncementToggle.checked) {
         currentAudioType = "announcement";
         currentStationLabel.textContent = station.name + " (announcement)";
-        audioElement.src = `./announcements/${station.name}-announcement.mp3${cacheBust}`;
+        audioElement.src = station.mp3Announcement + cacheBust;
         audioElement.volume = announcementMuted ? 0 : announcementVolume;
         audioElement.play().then(() => {
           updateActiveStation(index, "announcement");
@@ -231,10 +234,11 @@
           playStationAudio(station);
         });
       } else {
+        // Skip announcements
         playStationAudio(station);
       }
     }
-    
+
     function playStationAudio(station) {
       currentAudioType = "station";
       currentStationLabel.textContent = station.name;
@@ -247,19 +251,23 @@
         };
       });
     }
-    
+
     function nextStation() {
       let nextIndex = currentStationIndex + playDirection;
       if (nextIndex >= stations.length) nextIndex = 0;
       if (nextIndex < 0) nextIndex = stations.length - 1;
       playStation(nextIndex);
     }
-    
+
     playPauseBtn.addEventListener("click", () => {
-      if (audioElement.paused) audioElement.play();
-      else audioElement.pause();
+      if (audioElement.paused) {
+        audioElement.play();
+      } else {
+        audioElement.pause();
+      }
     });
-    
+
+    // Volume slider events
     document.getElementById("announcementVolumeSlider").addEventListener("input", e => {
       announcementVolume = parseFloat(e.target.value);
       if (currentAudioType === "announcement" && !announcementMuted) {
@@ -272,7 +280,8 @@
         audioElement.volume = stationVolume;
       }
     });
-    
+
+    // Mute toggles
     document.getElementById("announcementVolumeIcon").addEventListener("click", () => {
       announcementMuted = !announcementMuted;
       const icon = document.getElementById("announcementVolumeIcon");
@@ -289,7 +298,8 @@
         audioElement.volume = stationMuted ? 0 : stationVolume;
       }
     });
-    
+
+    // Direction toggle
     directionToggle.addEventListener("change", () => {
       if (directionToggle.checked) {
         playDirection = 1;
@@ -300,7 +310,8 @@
       }
       updateArrowAnimation();
     });
-    
+
+    // On page load
     window.onload = function() {
       generateArrows();
       updateArrowAnimation();
