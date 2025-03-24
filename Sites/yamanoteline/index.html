@@ -213,7 +213,6 @@
       const station = stations[index];
       audioElement.onended = null;
       updateActiveStation(index, "");
-      const cacheBust = "?v=1";
       if (!skipAnnouncementToggle.checked) {
         currentAudioType = "announcement";
         currentStationLabel.textContent = station.name + " (announcement)";
@@ -236,7 +235,6 @@
     function playStationAudio(station) {
       currentAudioType = "station";
       currentStationLabel.textContent = station.name;
-      const cacheBust = "?v=1";
       audioElement.src = station.mp3Station + cacheBust;
       audioElement.volume = stationMuted ? 0 : stationVolume;
       audioElement.play().then(() => {
