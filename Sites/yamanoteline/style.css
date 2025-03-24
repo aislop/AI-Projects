@@ -43,23 +43,21 @@ body.dark-mode .control-button:hover {
   color: #fff;
 }
 
-/* Circle wrapper (700×700) for arrows and stations */
+/* Circle wrapper for arrows and stations */
 #circleWrapper {
   width: 700px;
   height: 700px;
   margin: 40px auto 0;
   position: relative;
   box-sizing: border-box;
-  background-color: #f0f0f0; /* For visibility; adjust as needed */
+  /* Remove background color to avoid gray box */
+  background-color: transparent;
 }
 
 /* Arrow container behind stations */
 #arrowContainer {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   overflow: hidden;
   animation-duration: 60s;
   animation-timing-function: linear;
@@ -69,11 +67,11 @@ body.dark-mode .control-button:hover {
 
 @keyframes spinClockwise {
   from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  to   { transform: rotate(360deg); }
 }
 @keyframes spinCounterClockwise {
   from { transform: rotate(0deg); }
-  to { transform: rotate(-360deg); }
+  to   { transform: rotate(-360deg); }
 }
 
 /* Arrow styling */
@@ -84,17 +82,14 @@ body.dark-mode .control-button:hover {
   opacity: 0.7;
 }
 
-/* Stations container */
+/* Stations container (same size as #circleWrapper) */
 #stations {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   z-index: 2;
 }
 
-/* Station items on outer circle */
+/* Station items placed on outer circle */
 .station {
   position: absolute;
   padding: 5px 10px;
@@ -123,7 +118,7 @@ body.dark-mode .control-button:hover {
   background-color: #7B9036;
 }
 
-/* Audio bar fixed at bottom (100px tall) */
+/* Audio bar pinned at bottom (100px tall) */
 #audioPlayer {
   position: fixed;
   bottom: 0;
@@ -141,7 +136,7 @@ body.dark-mode .control-button:hover {
   z-index: 10;
 }
 
-/* Left controls: volume sliders (horizontal layout) */
+/* Left controls: volume sliders horizontally */
 .left-controls {
   display: flex;
   flex-direction: row;
@@ -172,7 +167,7 @@ body.dark-mode .control-button:hover {
   width: 90px;
 }
 
-/* Center controls: station name and play/pause button (stacked vertically) */
+/* Center controls: station name + play/pause button (stacked) */
 .center-controls {
   display: flex;
   flex-direction: column;
@@ -195,7 +190,7 @@ body.dark-mode .control-button:hover {
   color: #7B9036;
 }
 
-/* Right controls: toggles (horizontal layout) */
+/* Right controls: toggles horizontally */
 .right-controls {
   display: flex;
   flex-direction: row;
@@ -229,10 +224,7 @@ body.dark-mode .control-button:hover {
 .slider {
   position: absolute;
   cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background-color: #ccc;
   transition: 0.4s;
   border-radius: 22px;
