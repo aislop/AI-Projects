@@ -47,6 +47,7 @@
     const directionText = document.getElementById("directionText");
     const darkModeToggle = document.getElementById("darkModeToggle");
     const darkModeText = document.getElementById("darkModeText");
+    const layoutToggle = document.getElementById("layoutToggle");
     const playPauseBtn = document.getElementById("playPauseBtn");
 
     // Dark mode toggle
@@ -57,6 +58,36 @@
       } else {
         document.body.classList.remove("dark-mode");
         darkModeText.textContent = "Light Mode";
+      }
+    });
+
+    // Layout toggle button
+    layoutToggle.addEventListener("click", () => {
+      if (document.body.classList.contains("modern-layout")) {
+        document.body.classList.remove("modern-layout");
+        layoutToggle.textContent = "Switch Layout";
+        localStorage.setItem("layout", "classic");
+        // Reposition stations for circle layout
+        placeStations();
+        generateArrows();
+        updateArrowAnimation();
+      } else {
+        document.body.classList.add("modern-layout");
+        layoutToggle.textContent = "Classic Layout";
+        localStorage.setItem("layout", "modern");
+        // Clear arrows when in modern layout
+        document.getElementById("arrowContainer").innerHTML = "";
+        // Rebuild station list without positioning
+        const stationsContainer = document.getElementById("stations");
+        stationsContainer.innerHTML = "";
+        stations.forEach((st, i) => {
+          const div = document.createElement("div");
+          div.classList.add("station");
+          div.textContent = st.name;
+          div.dataset.index = i;
+          div.addEventListener("click", () => playStation(i));
+          stationsContainer.appendChild(div);
+        });
       }
     });
 
@@ -255,7 +286,25 @@
 
     // On window load
     window.onload = function() {
-      generateArrows();
-      updateArrowAnimation();
-      placeStations();
+      const savedLayout = localStorage.getItem("layout");
+      if (savedLayout === "modern") {
+        document.body.classList.add("modern-layout");
+        layoutToggle.textContent = "Classic Layout";
+        // Build grid layout
+        document.getElementById("arrowContainer").innerHTML = "";
+        const stationsContainer = document.getElementById("stations");
+        stations.forEach((st, i) => {
+          const div = document.createElement("div");
+          div.classList.add("station");
+          div.textContent = st.name;
+          div.dataset.index = i;
+          div.addEventListener("click", () => playStation(i));
+          stationsContainer.appendChild(div);
+        });
+      } else {
+        layoutToggle.textContent = "Switch Layout";
+        generateArrows();
+        updateArrowAnimation();
+        placeStations();
+      }
     };
