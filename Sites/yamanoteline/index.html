@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <input id="stationSearch" type="text" placeholder="Search stations...">
   <!-- Circle wrapper for arrows and station labels -->
   <div id="circleWrapper">
     <div id="arrowContainer"></div>
@@ -92,6 +93,7 @@
       { name: "Osaki",          mp3Announcement: "https://madewithonlyai.com/Sites/yamanoteline/announcements/osaki-announcement.mp3",       mp3Station: "https://madewithonlyai.com/Sites/yamanoteline/sounds/Osaki.mp3" },
       { name: "Shinagawa",      mp3Announcement: "https://madewithonlyai.com/Sites/yamanoteline/announcements/shinagawa-announcement.mp3",   mp3Station: "https://madewithonlyai.com/Sites/yamanoteline/sounds/Shinagawa.mp3" },
       { name: "Tamachi",        mp3Announcement: "https://madewithonlyai.com/Sites/yamanoteline/announcements/tamachi-announcement.mp3",     mp3Station: "https://madewithonlyai.com/Sites/yamanoteline/sounds/Tamachi.mp3" },
+      { name: "Takanawa Gateway", mp3Announcement: "https://madewithonlyai.com/Sites/yamanoteline/announcements/takanawagateway-announcement.mp3", mp3Station: "https://madewithonlyai.com/Sites/yamanoteline/sounds/TakanawaGateway.mp3" },
       { name: "Hamamatsucho",   mp3Announcement: "https://madewithonlyai.com/Sites/yamanoteline/announcements/hamamatsucho-announcement.mp3", mp3Station: "https://madewithonlyai.com/Sites/yamanoteline/sounds/Hamamatsucho.mp3" },
       { name: "Shimbashi",      mp3Announcement: "https://madewithonlyai.com/Sites/yamanoteline/announcements/shimbashi-announcement.mp3",   mp3Station: "https://madewithonlyai.com/Sites/yamanoteline/sounds/Shimbashi.mp3" },
       { name: "Yurakucho",      mp3Announcement: "https://madewithonlyai.com/Sites/yamanoteline/announcements/yurakucho-announcement.mp3",   mp3Station: "https://madewithonlyai.com/Sites/yamanoteline/sounds/Yurakucho.mp3" }
@@ -111,6 +113,7 @@
     const darkModeToggle = document.getElementById("darkModeToggle");
     const darkModeText = document.getElementById("darkModeText");
     const playPauseBtn = document.getElementById("playPauseBtn");
+    const stationSearch = document.getElementById("stationSearch");
 
     // Dark mode toggle
     darkModeToggle.addEventListener("change", () => {
@@ -119,7 +122,32 @@
         darkModeText.textContent = "Dark Mode";
       } else {
         document.body.classList.remove("dark-mode");
-        darkModeText.textContent = "Light Mode";
+      darkModeText.textContent = "Light Mode";
+    }
+  });
+
+    // Station search filtering
+    stationSearch.addEventListener("input", () => {
+      const query = stationSearch.value.toLowerCase();
+      document.querySelectorAll(".station").forEach(el => {
+        if (query && el.textContent.toLowerCase().includes(query)) {
+          el.classList.add("search-match");
+        } else {
+          el.classList.remove("search-match");
+        }
+      });
+    });
+
+    stationSearch.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        const query = stationSearch.value.toLowerCase();
+        const match = Array.from(document.querySelectorAll(".station")).find(el =>
+          el.textContent.toLowerCase().includes(query)
+        );
+        if (match) {
+          playStation(parseInt(match.dataset.index));
+        }
       }
     });
 
