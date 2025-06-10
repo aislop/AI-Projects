@@ -91,6 +91,7 @@
       { name: "Gotanda",        mp3Announcement: "https://madewithonlyai.com/Sites/yamanoteline/announcements/gotanda-announcement.mp3",     mp3Station: "https://madewithonlyai.com/Sites/yamanoteline/sounds/Gotanda.mp3" },
       { name: "Osaki",          mp3Announcement: "https://madewithonlyai.com/Sites/yamanoteline/announcements/osaki-announcement.mp3",       mp3Station: "https://madewithonlyai.com/Sites/yamanoteline/sounds/Osaki.mp3" },
       { name: "Shinagawa",      mp3Announcement: "https://madewithonlyai.com/Sites/yamanoteline/announcements/shinagawa-announcement.mp3",   mp3Station: "https://madewithonlyai.com/Sites/yamanoteline/sounds/Shinagawa.mp3" },
+      { name: "Takanawa Gateway", mp3Announcement: "https://madewithonlyai.com/Sites/yamanoteline/announcements/takanawagateway-announcement.mp3", mp3Station: "https://madewithonlyai.com/Sites/yamanoteline/sounds/TakanawaGateway.mp3" },
       { name: "Tamachi",        mp3Announcement: "https://madewithonlyai.com/Sites/yamanoteline/announcements/tamachi-announcement.mp3",     mp3Station: "https://madewithonlyai.com/Sites/yamanoteline/sounds/Tamachi.mp3" },
       { name: "Hamamatsucho",   mp3Announcement: "https://madewithonlyai.com/Sites/yamanoteline/announcements/hamamatsucho-announcement.mp3", mp3Station: "https://madewithonlyai.com/Sites/yamanoteline/sounds/Hamamatsucho.mp3" },
       { name: "Shimbashi",      mp3Announcement: "https://madewithonlyai.com/Sites/yamanoteline/announcements/shimbashi-announcement.mp3",   mp3Station: "https://madewithonlyai.com/Sites/yamanoteline/sounds/Shimbashi.mp3" },
@@ -158,7 +159,8 @@
       const containerHeight = arrowContainer.offsetHeight;
       const centerX = containerWidth / 2;
       const centerY = containerHeight / 2;
-      const arrowRadius = 300;
+      const minDim = Math.min(containerWidth, containerHeight);
+      const arrowRadius = minDim * 0.43;
       const numArrows = 50;
       for (let i = 0; i < numArrows; i++) {
         const angle = (2 * Math.PI * i) / numArrows;
@@ -192,7 +194,7 @@
       const containerHeight = stationsContainer.offsetHeight;
       const centerX = containerWidth / 2;
       const centerY = containerHeight / 2;
-      const stationRadius = 380;
+      const stationRadius = minDim * 0.54;
       const totalStations = stations.length;
 
       for (let i = 0; i < totalStations; i++) {
@@ -317,11 +319,16 @@
     });
 
     // On window load
-    window.onload = function() {
-      generateArrows();
-      updateArrowAnimation();
-      placeStations();
-    };
+      window.onload = function() {
+        generateArrows();
+        updateArrowAnimation();
+        placeStations();
+      };
+      window.addEventListener("resize", () => {
+        generateArrows();
+        updateArrowAnimation();
+        placeStations();
+      });
   </script>
 </body>
 </html>
