@@ -4,14 +4,14 @@ from urllib.parse import urlparse
 
 
 def test_station_files_exist():
-    index_path = os.path.join('Sites', 'yamanoteline', 'index.html')
-    with open(index_path, encoding='utf-8') as f:
+    js_path = os.path.join('Sites', 'yamanoteline', 'main.js')
+    with open(js_path, encoding='utf-8') as f:
         content = f.read()
 
     mp3_announcements = re.findall(r"mp3Announcement:\s*\"([^\"]+)\"", content)
     mp3_stations = re.findall(r"mp3Station:\s*\"([^\"]+)\"", content)
 
-    assert len(mp3_announcements) == len(mp3_stations) == 30
+    assert len(mp3_announcements) == len(mp3_stations) == 29
 
     all_paths = mp3_announcements + mp3_stations
     for url in all_paths:
