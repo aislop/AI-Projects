@@ -11,7 +11,7 @@ def test_station_files_exist():
     mp3_announcements = re.findall(r"mp3Announcement:\s*\"([^\"]+)\"", content)
     mp3_stations = re.findall(r"mp3Station:\s*\"([^\"]+)\"", content)
 
-    assert len(mp3_announcements) == len(mp3_stations) == 29
+    assert len(mp3_announcements) == len(mp3_stations) == 30
 
     all_paths = mp3_announcements + mp3_stations
     for url in all_paths:
