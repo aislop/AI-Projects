@@ -948,6 +948,8 @@ let directionTravel = 0;
 let directionProgress = 0;
 let directionTicker = null;
 let lastDirection = 1;
+let directionAnnouncementDuration = 0;
+let directionJingleDuration = 0;
 
 if (appEl) {
   appEl.dataset.direction = 'forward';
@@ -1202,13 +1204,88 @@ function setDirectionProgress(progress) {
   applyDirectionProgress();
 }
 
+function resetDirectionTimeline() {
+  directionAnnouncementDuration = 0;
+  directionJingleDuration = 0;
+  setDirectionProgress(0);
+}
+
+function getSafeDuration(value) {
+  return Number.isFinite(value) && value > 0 ? value : 0;
+}
+
+function getAnnouncementDuration() {
+  if (!announcementsEnabled) {
+    return 0;
+  }
+  if (!announcementAudio) {
+    return 0;
+  }
+  return directionAnnouncementDuration || getSafeDuration(announcementAudio.duration);
+}
+
+function getJingleDuration() {
+  if (!jingleAudio) {
+    return 0;
+  }
+  return directionJingleDuration || getSafeDuration(jingleAudio.duration);
+}
+
+function setAnnouncementDuration(duration) {
+  directionAnnouncementDuration = getSafeDuration(duration);
+  syncDirectionProgress();
+}
+
+function setJingleDuration(duration) {
+  directionJingleDuration = getSafeDuration(duration);
+  syncDirectionProgress();
+}
+
+function getAnnouncementElapsed() {
+  if (!announcementsEnabled || !announcementAudio) {
+    return 0;
+  }
+  if (announcementAudio.ended) {
+    return getAnnouncementDuration();
+  }
+  const current = announcementAudio.currentTime;
+  if (!Number.isFinite(current) || current < 0) {
+    return 0;
+  }
+  const max = getAnnouncementDuration();
+  return max > 0 ? Math.min(current, max) : 0;
+}
+
+function getJingleElapsed() {
+  if (!jingleAudio) {
+    return 0;
+  }
+  if (jingleAudio.ended) {
+    return getJingleDuration();
+  }
+  if (!isJingleActive() && !isJinglePaused()) {
+    return 0;
+  }
+  const current = jingleAudio.currentTime;
+  const max = getJingleDuration();
+  if (!Number.isFinite(current) || current < 0 || max <= 0) {
+    return 0;
+  }
+  return Math.min(current, max);
+}
+
+function getDirectionTotalDuration() {
+  const total = getAnnouncementDuration() + getJingleDuration();
+  return total > 0 ? total : 0;
+}
+
 function syncDirectionProgress() {
-  if (!announcementAudio) return;
-  const duration = announcementAudio.duration;
-  if (!Number.isFinite(duration) || duration <= 0) {
+  const total = getDirectionTotalDuration();
+  if (!total) {
     return;
   }
-  const progress = announcementAudio.currentTime / duration;
+  const elapsed = getAnnouncementElapsed() + getJingleElapsed();
+  const progress = elapsed / total;
   if (!Number.isFinite(progress)) {
     return;
   }
@@ -1216,13 +1293,15 @@ function syncDirectionProgress() {
 }
 
 function startDirectionTicker() {
-  if (directionTicker || !announcementAudio) {
+  if (directionTicker) {
     return;
   }
   syncDirectionProgress();
   const tick = () => {
     directionTicker = null;
-    if (!announcementAudio || announcementAudio.paused) {
+    const announcementActive = announcementsEnabled && announcementAudio && !announcementAudio.paused && !announcementAudio.ended;
+    const jingleActive = isJingleActive();
+    if (!announcementActive && !jingleActive) {
       return;
     }
     syncDirectionProgress();
@@ -1306,6 +1385,7 @@ function setAnnouncementsEnabled(enabled, options = {}) {
   const wasAnnouncementActive = !announcementAudio.paused && !announcementAudio.ended;
   const wasJinglePlaying = isJingleActive() || isJinglePaused();
   announcementsEnabled = enabled;
+  prepareJingleForStation(stations[currentStationIndex]);
   if (announcementsToggle) {
     announcementsToggle.setAttribute('aria-pressed', String(enabled));
     announcementsToggle.textContent = enabled ? 'Announcements On' : 'Announcements Off';
@@ -1322,17 +1402,19 @@ function setAnnouncementsEnabled(enabled, options = {}) {
     if (shouldResume) {
       startPlayback();
     } else {
-      stopJinglePlayback();
+      stopJinglePlayback(false);
       updateTrackLabel('Ready');
     }
+    syncDirectionProgress();
     return;
   }
   if (shouldResume) {
     startPlayback();
   } else {
     announcementAudio.pause();
-    stopJinglePlayback();
+    stopJinglePlayback(false);
   }
+  syncDirectionProgress();
 }
 
 function applyVolume() {
@@ -1375,7 +1457,11 @@ function stopJinglePlayback(clearSrc = true) {
   }
   if (clearSrc) {
     jingleAudio.removeAttribute('src');
+    delete jingleAudio.dataset.preparedSrc;
     jingleAudio.load();
+    setJingleDuration(0);
+  } else {
+    syncDirectionProgress();
   }
   jingleEngaged = false;
 }
@@ -1388,12 +1474,33 @@ function isJinglePaused() {
   return Boolean(jingleAudio && jingleEngaged && jingleAudio.paused && !jingleAudio.ended && jingleAudio.currentTime > 0);
 }
 
+function prepareJingleForStation(station) {
+  if (!jingleAudio || !station?.mp3Station) {
+    setJingleDuration(0);
+    return;
+  }
+  if (isJingleActive()) {
+    return;
+  }
+  const src = getJingleSrc(station);
+  if (jingleAudio.dataset.preparedSrc === src) {
+    return;
+  }
+  jingleAudio.dataset.preparedSrc = src;
+  jingleAudio.src = src;
+  try {
+    jingleAudio.load();
+  } catch (error) {
+    /* ignore preload issues */
+  }
+}
+
 function playStationJingle() {
   if (!jingleAudio) return false;
   const station = stations[currentStationIndex];
   if (!station?.mp3Station) return false;
+  prepareJingleForStation(station);
   jingleEngaged = true;
-  jingleAudio.src = getJingleSrc(station);
   applyVolume();
   jingleAudio
     .play()
@@ -1441,7 +1548,7 @@ function goToStation(index, options = {}) {
   stopRideTimer();
   stopJinglePlayback();
   stopDirectionTicker();
-  setDirectionProgress(0);
+  resetDirectionTimeline();
   const station = stations[currentStationIndex];
 
   setBackground(station.background);
@@ -1451,6 +1558,7 @@ function goToStation(index, options = {}) {
   updateTransferLines(station);
   updatePreviews(currentStationIndex);
   updateTrackLabel('Ready');
+  prepareJingleForStation(station);
   requestAnimationFrame(() => {
     calculateDirectionTravel();
   });
@@ -1468,7 +1576,7 @@ function goToStation(index, options = {}) {
 
 function startPlayback() {
   if (!announcementsEnabled) {
-    stopJinglePlayback();
+    stopJinglePlayback(false);
     if (!playStationJingle()) {
       finalizeTrack();
     }
@@ -1479,7 +1587,8 @@ function startPlayback() {
 
 function playAnnouncement() {
   const station = stations[currentStationIndex];
-  stopJinglePlayback();
+  stopJinglePlayback(false);
+  prepareJingleForStation(station);
   announcementAudio.src = getAnnouncementSrc(station);
   applyVolume();
   announcementAudio
@@ -1521,10 +1630,21 @@ function togglePlayPause() {
   }
 }
 
+function handleAnnouncementMetadata() {
+  if (!announcementAudio) return;
+  setAnnouncementDuration(announcementAudio.duration);
+}
+
+function handleJingleMetadata() {
+  if (!jingleAudio) return;
+  setJingleDuration(jingleAudio.duration);
+}
+
 function handleAudioEnd() {
   stopDirectionTicker();
-  setDirectionProgress(1);
+  syncDirectionProgress();
   if (!playStationJingle()) {
+    setDirectionProgress(1);
     finalizeTrack();
   }
 }
@@ -1533,6 +1653,7 @@ function handleAudioPlay() {
   updatePlayButtons(true);
   updateTrackLabel('Announcement');
   startDirectionTicker();
+  syncDirectionProgress();
 }
 
 function handleAudioPause() {
@@ -1548,22 +1669,30 @@ function handleJinglePlay() {
   jingleEngaged = true;
   updatePlayButtons(true);
   updateTrackLabel('Station Jingle');
+  startDirectionTicker();
+  syncDirectionProgress();
 }
 
 function handleJinglePause() {
   if (!jingleEngaged || !jingleAudio || jingleAudio.ended) return;
   updatePlayButtons(false);
   updateTrackLabel('Jingle Paused');
+  stopDirectionTicker();
+  syncDirectionProgress();
 }
 
 function handleJingleEnd() {
+  stopDirectionTicker();
+  setDirectionProgress(1);
   stopJinglePlayback();
   finalizeTrack();
 }
 
 function handleJingleError() {
   console.error('Station jingle error', jingleAudio?.error);
+  stopDirectionTicker();
   stopJinglePlayback();
+  setDirectionProgress(1);
   finalizeTrack();
 }
 
@@ -1802,7 +1931,8 @@ function bindEvents() {
   announcementAudio.addEventListener('pause', handleAudioPause);
   announcementAudio.addEventListener('play', handleAudioPlay);
   announcementAudio.addEventListener('timeupdate', syncDirectionProgress);
-  announcementAudio.addEventListener('loadedmetadata', syncDirectionProgress);
+  announcementAudio.addEventListener('loadedmetadata', handleAnnouncementMetadata);
+  announcementAudio.addEventListener('durationchange', handleAnnouncementMetadata);
   announcementAudio.addEventListener('seeking', syncDirectionProgress);
   announcementAudio.addEventListener('seeked', syncDirectionProgress);
   searchInput.addEventListener('keydown', (event) => {
@@ -1834,6 +1964,11 @@ function bindEvents() {
     jingleAudio.addEventListener('pause', handleJinglePause);
     jingleAudio.addEventListener('play', handleJinglePlay);
     jingleAudio.addEventListener('error', handleJingleError);
+    jingleAudio.addEventListener('timeupdate', syncDirectionProgress);
+    jingleAudio.addEventListener('loadedmetadata', handleJingleMetadata);
+    jingleAudio.addEventListener('durationchange', handleJingleMetadata);
+    jingleAudio.addEventListener('seeking', syncDirectionProgress);
+    jingleAudio.addEventListener('seeked', syncDirectionProgress);
   }
   window.addEventListener('resize', () => {
     requestAnimationFrame(calculateDirectionTravel);
