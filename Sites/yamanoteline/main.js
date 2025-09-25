@@ -1,12 +1,23 @@
 const CACHE_BUST = '?v=202403';
 
-const STATIONS = [
+function resolveMediaPath(path) {
+  if (path.startsWith('Sites/')) {
+    return path.replace(/^Sites\/yamanoteline\//, '');
+  }
+  return path;
+}
+
+function getAnnouncementSrc(station) {
+  return `${resolveMediaPath(station.mp3Announcement)}${CACHE_BUST}`;
+}
+
+const stations = [
   {
     id: 'tokyo',
     name: 'Tokyo',
     japaneseName: '東京',
     about:
-      "Tokyo Station anchors Japan's capital with its red-brick Marunouchi facade and bustling underground concourses. Marunouchi and Nihonbashi surround the hub with flagship stores, refined dining, and the Imperial Palace gardens just a short stroll away.",
+      'Tokyo Station anchors Japan\'s capital with its red-brick Marunouchi facade and bustling underground concourses. Marunouchi and Nihonbashi surround the hub with flagship stores, refined dining, and the Imperial Palace gardens just a short stroll away.',
     background:
       'https://images.unsplash.com/photo-1549692520-acc6669e2f0c?auto=format&fit=crop&w=1600&q=80',
     transfers: [
@@ -23,7 +34,7 @@ const STATIONS = [
     name: 'Kanda',
     japaneseName: '神田',
     about:
-      "Kanda blends old-world wholesalers with a growing tech crowd, filling the side streets with retro coffee shops and lively izakaya. Students from nearby universities keep the district energetic well into the night.",
+      'Kanda blends old-world wholesalers with a growing tech crowd, filling the side streets with retro coffee shops and lively izakaya. Students from nearby universities keep the district energetic well into the night.',
     background:
       'https://images.unsplash.com/photo-1512455102795-3d1d229e2b6f?auto=format&fit=crop&w=1600&q=80',
     transfers: [
@@ -54,7 +65,7 @@ const STATIONS = [
     name: 'Okachimachi',
     japaneseName: '御徒町',
     about:
-      "Okachimachi connects the open-air stalls of Ameya-Yokocho with polished jewelry boutiques under the tracks. The neighborhood's mix of street eats and craft workshops makes it a favorite for treasure hunters.",
+      'Okachimachi connects the open-air stalls of Ameya-Yokocho with polished jewelry boutiques under the tracks. The neighborhood\'s mix of street eats and craft workshops makes it a favorite for treasure hunters.',
     background:
       'https://images.unsplash.com/photo-1542051841857-5f90071e7989?auto=format&fit=crop&w=1600&q=80',
     transfers: [
@@ -68,7 +79,7 @@ const STATIONS = [
     name: 'Ueno',
     japaneseName: '上野',
     about:
-      "Ueno is Tokyo's cultural commons, where national museums line the edges of Ueno Park and street food fills Ameyoko market. Springtime hanami crowds gather beneath the park's famous cherry blossoms.",
+      'Ueno is Tokyo\'s cultural commons, where national museums line the edges of Ueno Park and street food fills Ameyoko market. Springtime hanami crowds gather beneath the park\'s famous cherry blossoms.',
     background:
       'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1600&q=80',
     transfers: [
@@ -86,7 +97,7 @@ const STATIONS = [
     name: 'Uguisudani',
     japaneseName: '鶯谷',
     about:
-      "Named for the warbling nightingales once heard here, Uguisudani now offers quiet residential lanes beside small museums and Showa-era cafés. The gentle hillside views contrast with the bustle of nearby Ueno.",
+      'Named for the warbling nightingales once heard here, Uguisudani now offers quiet residential lanes beside small museums and Showa-era cafés. The gentle hillside views contrast with the bustle of nearby Ueno.',
     background:
       'https://images.unsplash.com/photo-1542038791-0d9df90f6a5a?auto=format&fit=crop&w=1600&q=80',
     transfers: [
@@ -100,7 +111,7 @@ const STATIONS = [
     name: 'Nippori',
     japaneseName: '日暮里',
     about:
-      "Nippori bridges tradition and creativity, with Yanaka's old temples on one side and the fabric district's rainbow bolts on the other. Travelers connect here to reach Narita via the Keisei Skyliner.",
+      'Nippori bridges tradition and creativity, with Yanaka\'s old temples on one side and the fabric district\'s rainbow bolts on the other. Travelers connect here to reach Narita via the Keisei Skyliner.',
     background:
       'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=1600&q=80',
     transfers: [
@@ -116,7 +127,7 @@ const STATIONS = [
     name: 'Nishi-Nippori',
     japaneseName: '西日暮里',
     about:
-      "Residential towers and neighborhood ramen counters define Nishi-Nippori. It is a convenient interchange linking the Chiyoda Line and the Nippori-Toneri Liner to Tokyo's northeastern suburbs.",
+      'Residential towers and neighborhood ramen counters define Nishi-Nippori. It is a convenient interchange linking the Chiyoda Line and the Nippori-Toneri Liner to Tokyo\'s northeastern suburbs.',
     background:
       'https://images.unsplash.com/photo-1517638851339-4aa32003c11a?auto=format&fit=crop&w=1600&q=80',
     transfers: [
@@ -131,7 +142,7 @@ const STATIONS = [
     name: 'Tabata',
     japaneseName: '田端',
     about:
-      "Tabata sits atop a ridge with long-established residential streets and views over the Sumida River rail yards. It is a practical stop for commuters heading toward Saitama and northern Tokyo.",
+      'Tabata sits atop a ridge with long-established residential streets and views over the Sumida River rail yards. It is a practical stop for commuters heading toward Saitama and northern Tokyo.',
     background:
       'https://images.unsplash.com/photo-1566977744263-0bb0048e9b25?auto=format&fit=crop&w=1600&q=80',
     transfers: [
@@ -173,7 +184,7 @@ const STATIONS = [
     name: 'Otsuka',
     japaneseName: '大塚',
     about:
-      "Otsuka mixes vintage tram charm with a wave of new cafés and craft beer bars. The Tokyo Sakura Tram still trundles past the station, connecting quiet residential pockets in northern Tokyo.",
+      'Otsuka mixes vintage tram charm with a wave of new cafés and craft beer bars. The Tokyo Sakura Tram still trundles past the station, connecting quiet residential pockets in northern Tokyo.',
     background:
       'https://images.unsplash.com/photo-1518378188025-22bd89516ee2?auto=format&fit=crop&w=1600&q=80',
     transfers: [
@@ -232,7 +243,7 @@ const STATIONS = [
     name: 'Shin-Okubo',
     japaneseName: '新大久保',
     about:
-      "Tokyo's Koreatown thrives in Shin-Okubo with neon-lit restaurants, K-pop boutiques, and dessert cafés. The multicultural streets stay lively late into the evening.",
+      'Tokyo\'s Koreatown thrives in Shin-Okubo with neon-lit restaurants, K-pop boutiques, and dessert cafés. The multicultural streets stay lively late into the evening.',
     background:
       'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1600&q=80',
     transfers: [],
@@ -244,7 +255,7 @@ const STATIONS = [
     name: 'Shinjuku',
     japaneseName: '新宿',
     about:
-      "Shinjuku Station is the world's busiest, funneling travelers to skyscraper canyons, Kabukicho nightlife, and the calm greenery of Shinjuku Gyoen. Observation decks offer sweeping views over Tokyo.",
+      'Shinjuku Station is the world\'s busiest, funneling travelers to skyscraper canyons, Kabukicho nightlife, and the calm greenery of Shinjuku Gyoen. Observation decks offer sweeping views over Tokyo.',
     background:
       'https://images.unsplash.com/photo-1478432780021-b8d273730d8c?auto=format&fit=crop&w=1600&q=80',
     transfers: [
@@ -276,7 +287,7 @@ const STATIONS = [
     name: 'Harajuku',
     japaneseName: '原宿',
     about:
-      "Harajuku is a playground for street fashion, from Takeshita Street's pop culture boutiques to Omotesando's flagship architecture. The leafy Meiji Shrine grounds offer a quiet counterpoint nearby.",
+      'Harajuku is a playground for street fashion, from Takeshita Street\'s pop culture boutiques to Omotesando\'s flagship architecture. The leafy Meiji Shrine grounds offer a quiet counterpoint nearby.',
     background:
       'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1600&q=80',
     transfers: [
@@ -325,7 +336,7 @@ const STATIONS = [
     name: 'Meguro',
     japaneseName: '目黒',
     about:
-      "Meguro's tree-lined avenues lead to specialty coffee shops, design studios, and the serene Meguro River. Spring cherry blossoms transform the riverside into a soft pink tunnel.",
+      'Meguro\'s tree-lined avenues lead to specialty coffee shops, design studios, and the serene Meguro River. Spring cherry blossoms transform the riverside into a soft pink tunnel.',
     background:
       'https://images.unsplash.com/photo-1526481280695-3d1d229e2b6f?auto=format&fit=crop&w=1600&q=80',
     transfers: [
@@ -356,7 +367,7 @@ const STATIONS = [
     name: 'Osaki',
     japaneseName: '大崎',
     about:
-      "Redeveloped Osaki is home to tech offices, open plazas, and elevated walkways that connect Shinagawa's business zone. Art installations dot the corporate campuses.",
+      'Redeveloped Osaki is home to tech offices, open plazas, and elevated walkways that connect Shinagawa\'s business zone. Art installations dot the corporate campuses.',
     background:
       'https://images.unsplash.com/photo-1526481280695-3d1d229e2b6f?auto=format&fit=crop&w=1600&q=80',
     transfers: [
@@ -371,7 +382,7 @@ const STATIONS = [
     name: 'Shinagawa',
     japaneseName: '品川',
     about:
-      "Shinagawa links Tokyo to the south with Shinkansen platforms, waterfront hotels, and the historic Tokaido road. High-rise offices and aquarium attractions make it a major gateway.",
+      'Shinagawa links Tokyo to the south with Shinkansen platforms, waterfront hotels, and the historic Tokaido road. High-rise offices and aquarium attractions make it a major gateway.',
     background:
       'https://images.unsplash.com/photo-1478432780021-b8d273730d8c?auto=format&fit=crop&w=1600&q=80',
     transfers: [
@@ -416,7 +427,7 @@ const STATIONS = [
     name: 'Hamamatsucho',
     japaneseName: '浜松町',
     about:
-      "Hamamatsucho connects to Haneda Airport via the Tokyo Monorail and sits beside the iconic Tokyo Tower. Zojoji Temple and waterfront gardens offer moments of calm in the business district.",
+      'Hamamatsucho connects to Haneda Airport via the Tokyo Monorail and sits beside the iconic Tokyo Tower. Zojoji Temple and waterfront gardens offer moments of calm in the business district.',
     background:
       'https://images.unsplash.com/photo-1512455102795-3d1d229e2b6f?auto=format&fit=crop&w=1600&q=80',
     transfers: [
@@ -431,7 +442,7 @@ const STATIONS = [
     name: 'Shimbashi',
     japaneseName: '新橋',
     about:
-      "Salarymen gather in Shimbashi's lantern-lit alleys after work, while corporate media towers rise above. The station is the historic birthplace of Japan's first railway terminal.",
+      'Salarymen gather in Shimbashi\'s lantern-lit alleys after work, while corporate media towers rise above. The station is the historic birthplace of Japan\'s first railway terminal.',
     background:
       'https://images.unsplash.com/photo-1554797589-7241bb691973?auto=format&fit=crop&w=1600&q=80',
     transfers: [
@@ -448,7 +459,7 @@ const STATIONS = [
     name: 'Yurakucho',
     japaneseName: '有楽町',
     about:
-      'Yurakucho combines upscale Ginza shopping with Showa-era yakitori alleys tucked under the viaducts. The Tokyo International Forum's glass canopy hosts design fairs and concerts year-round.',
+      'Yurakucho combines upscale Ginza shopping with Showa-era yakitori alleys tucked under the viaducts. The Tokyo International Forum\'s glass canopy hosts design fairs and concerts year-round.',
     background:
       'https://images.unsplash.com/photo-1526481280695-3d1d229e2b6f?auto=format&fit=crop&w=1600&q=80',
     transfers: [
@@ -460,565 +471,478 @@ const STATIONS = [
   }
 ];
 
-const elements = {
-  viewport: document.getElementById('stationViewport'),
-  background: document.getElementById('stationBackground'),
-  nameJp: document.getElementById('stationNameJp'),
-  nameEn: document.getElementById('stationNameEn'),
-  about: document.getElementById('stationAbout'),
-  transferList: document.getElementById('transferLines'),
-  prevPreview: document.getElementById('prevStationPreview'),
-  nextPreview: document.getElementById('nextStationPreview'),
-  playPause: document.getElementById('playPause'),
-  skip: document.getElementById('skipStation'),
-  volume: document.getElementById('volumeSlider'),
-  mute: document.getElementById('muteButton'),
-  trackLabel: document.getElementById('currentTrackLabel'),
-  rideMode: document.getElementById('rideModeButton'),
-  ambientToggle: document.getElementById('ambientToggle'),
-  mapToggle: document.getElementById('mapToggle'),
-  mobileMap: document.getElementById('mobileMap'),
-  mobilePlay: document.getElementById('mobilePlay'),
-  mobileSkip: document.getElementById('mobileSkip'),
-  mapOverlay: document.getElementById('mapOverlay'),
-  closeMap: document.getElementById('closeMap'),
-  loopMap: document.getElementById('loopMap'),
-  searchInput: document.getElementById('stationSearch'),
-  jumpButton: document.getElementById('jumpButton'),
-  datalist: document.getElementById('stationList'),
-  announcementAudio: document.getElementById('announcementAudio'),
-  ambientAudio: document.getElementById('ambientAudio')
-};
+const viewport = document.getElementById('stationViewport');
+const backgroundEl = document.getElementById('stationBackground');
+const nameJpEl = document.getElementById('stationNameJp');
+const nameEnEl = document.getElementById('stationNameEn');
+const aboutEl = document.getElementById('stationAbout');
+const transferListEl = document.getElementById('transferLines');
+const prevPreviewEl = document.getElementById('prevStationPreview');
+const nextPreviewEl = document.getElementById('nextStationPreview');
+const playPauseBtn = document.getElementById('playPause');
+const skipBtn = document.getElementById('skipStation');
+const volumeSlider = document.getElementById('volumeSlider');
+const muteButton = document.getElementById('muteButton');
+const trackLabel = document.getElementById('currentTrackLabel');
+const rideModeButton = document.getElementById('rideModeButton');
+const ambientToggle = document.getElementById('ambientToggle');
+const mapToggle = document.getElementById('mapToggle');
+const mobileMap = document.getElementById('mobileMap');
+const mobilePlay = document.getElementById('mobilePlay');
+const mobileSkip = document.getElementById('mobileSkip');
+const mapOverlay = document.getElementById('mapOverlay');
+const closeMap = document.getElementById('closeMap');
+const loopMap = document.getElementById('loopMap');
+const searchInput = document.getElementById('stationSearch');
+const searchGoButton = document.getElementById('jumpButton');
+const datalist = document.getElementById('stationList');
 
-const MEDIA_PREFIX = 'Sites/yamanoteline/';
+const announcementAudio = document.getElementById('announcementAudio');
+const ambientAudio = document.getElementById('ambientAudio');
 
-const STORAGE_KEYS = {
-  volume: 'yamanote-volume',
-  rideMode: 'yamanote-ride-mode',
-  ambient: 'yamanote-ambient',
-  muted: 'yamanote-muted'
-};
+let currentStationIndex = 0;
+let scrollLock = false;
+let isMuted = false;
+let rideMode = false;
+let ambientOn = false;
+let rideTimeout = null;
+let mapRotation = 0;
 
-const state = {
-  index: 0,
-  rideMode: true,
-  playing: false,
-  muted: false,
-  ambient: false,
-  scrollLock: false,
-  touchStartY: null
-};
-
-let endedNaturally = false;
-
-function toLocalPath(path) {
-  return path.startsWith(MEDIA_PREFIX) ? path.slice(MEDIA_PREFIX.length) : path;
-}
+const volumeKey = 'yamanote-volume';
+const rideModeKey = 'yamanote-ride-mode';
+const ambientKey = 'yamanote-ambient';
 
 function clampIndex(index) {
-  const total = STATIONS.length;
-  return ((index % total) + total) % total;
+  const total = stations.length;
+  return (index % total + total) % total;
 }
 
-function updateBackground(url) {
-  elements.background.style.backgroundImage = url ? `url(${url})` : 'none';
+function setBackground(url) {
+  backgroundEl.classList.remove('is-active');
+  requestAnimationFrame(() => {
+    backgroundEl.style.backgroundImage = `url(${url})`;
+    requestAnimationFrame(() => backgroundEl.classList.add('is-active'));
+  });
 }
 
-function buildPreviewMarkup(station, label, arrow) {
-  return `
-    <div class="station-preview__inner">
-      <span class="station-preview__direction">${arrow} ${label}</span>
-      <span class="station-preview__jp" lang="ja">${station.japaneseName}</span>
-      <span class="station-preview__en">${station.name}</span>
-    </div>
-  `;
+function createTransferChip(transfer) {
+  const chip = document.createElement('button');
+  chip.type = 'button';
+  chip.className = 'transfer-chip';
+  chip.dataset.tooltip = `${transfer.operator}`;
+
+  const icon = document.createElement('span');
+  icon.className = 'transfer-chip__icon';
+  icon.textContent = transfer.code;
+  icon.style.background = transfer.color;
+  chip.appendChild(icon);
+
+  const label = document.createElement('span');
+  label.className = 'transfer-chip__name';
+  label.textContent = transfer.name;
+  chip.appendChild(label);
+
+  chip.addEventListener('focus', () => chip.classList.add('is-focused'));
+  chip.addEventListener('blur', () => chip.classList.remove('is-focused'));
+
+  return chip;
 }
 
-function updatePreviews() {
-  const previous = STATIONS[clampIndex(state.index - 1)];
-  const next = STATIONS[clampIndex(state.index + 1)];
-
-  elements.prevPreview.innerHTML = buildPreviewMarkup(previous, 'Previous', '▲');
-  elements.nextPreview.innerHTML = buildPreviewMarkup(next, 'Next', '▼');
-  elements.prevPreview.setAttribute('aria-hidden', 'false');
-  elements.nextPreview.setAttribute('aria-hidden', 'false');
-}
-
-function clearChildren(node) {
-  while (node.firstChild) {
-    node.removeChild(node.firstChild);
-  }
-}
-
-function renderTransfers(station) {
-  clearChildren(elements.transferList);
-
+function updateTransferLines(station) {
+  transferListEl.innerHTML = '';
   if (!station.transfers.length) {
-    const empty = document.createElement('p');
-    empty.className = 'transfer-lines__empty';
-    empty.textContent = 'No direct transfers';
-    elements.transferList.appendChild(empty);
+    const none = document.createElement('p');
+    none.className = 'transfer-lines__empty';
+    none.textContent = 'No direct transfers';
+    transferListEl.appendChild(none);
     return;
   }
 
   station.transfers.forEach((transfer) => {
-    const chip = document.createElement('span');
-    chip.className = 'transfer-chip';
-    chip.title = transfer.operator;
-
-    const badge = document.createElement('span');
-    badge.className = 'transfer-chip__icon';
-    badge.textContent = transfer.code;
-    badge.style.background = transfer.color;
-    chip.appendChild(badge);
-
-    const label = document.createElement('span');
-    label.className = 'transfer-chip__name';
-    label.textContent = transfer.name;
-    chip.appendChild(label);
-
-    elements.transferList.appendChild(chip);
+    const chip = createTransferChip(transfer);
+    transferListEl.appendChild(chip);
   });
 }
 
-function updateTrackLabel(status) {
-  const station = STATIONS[state.index];
-  elements.trackLabel.textContent = `${status} • ${station.name}`;
+function updatePreviews(index) {
+  const prevIndex = clampIndex(index - 1);
+  const nextIndex = clampIndex(index + 1);
+  prevPreviewEl.textContent = stations[prevIndex].name;
+  nextPreviewEl.textContent = stations[nextIndex].name;
 }
 
-function syncPlayButtons() {
-  const symbol = state.playing ? '⏸' : '▶';
-  elements.playPause.textContent = symbol;
-  elements.playPause.setAttribute('aria-pressed', String(state.playing));
-  if (elements.mobilePlay) {
-    elements.mobilePlay.textContent = symbol;
-    elements.mobilePlay.setAttribute('aria-pressed', String(state.playing));
+function updateTrackLabel(mode = 'Stopped') {
+  const station = stations[currentStationIndex];
+  trackLabel.textContent = `${mode} • ${station.name}`;
+}
+
+function updatePlayButtons(isPlaying) {
+  const symbol = isPlaying ? '⏸' : '▶';
+  playPauseBtn.textContent = symbol;
+  playPauseBtn.setAttribute('aria-pressed', String(isPlaying));
+  mobilePlay.textContent = symbol;
+  mobilePlay.setAttribute('aria-pressed', String(isPlaying));
+}
+
+function stopRideTimer() {
+  if (rideTimeout) {
+    clearTimeout(rideTimeout);
+    rideTimeout = null;
   }
 }
 
-function syncMuteButton() {
-  elements.mute.textContent = state.muted ? 'Unmute' : 'Mute';
-  elements.mute.setAttribute('aria-pressed', String(state.muted));
+function scheduleRideAdvance() {
+  stopRideTimer();
+  if (!rideMode) return;
+  rideTimeout = setTimeout(() => {
+    goToStation(currentStationIndex + 1, { playAudio: true });
+  }, 5000);
 }
 
-function syncRideModeButton() {
-  elements.rideMode.textContent = state.rideMode ? 'Ride Mode On' : 'Ride Mode Off';
-  elements.rideMode.setAttribute('aria-pressed', String(state.rideMode));
-}
-
-function syncAmbientButton() {
-  elements.ambientToggle.textContent = state.ambient ? 'Ambient On' : 'Ambient Off';
-  elements.ambientToggle.setAttribute('aria-pressed', String(state.ambient));
-}
-
-function syncMapButtons(isOpen) {
-  elements.mapToggle.setAttribute('aria-expanded', String(isOpen));
-  if (elements.mobileMap) {
-    elements.mobileMap.setAttribute('aria-expanded', String(isOpen));
-  }
-  elements.mapOverlay.setAttribute('aria-hidden', String(!isOpen));
-}
-
-function highlightMapNode() {
-  const nodes = elements.loopMap.querySelectorAll('.map-node');
-  nodes.forEach((node, index) => {
-    node.classList.toggle('is-active', index === state.index);
-  });
-}
-
-function prepareAnnouncementSource() {
-  const station = STATIONS[state.index];
-  const src = `${toLocalPath(station.mp3Announcement)}${CACHE_BUST}`;
-  if (elements.announcementAudio.dataset.src !== src) {
-    elements.announcementAudio.dataset.src = src;
-    elements.announcementAudio.src = src;
-  }
-}
-
-function goToStation(index, { play = false } = {}) {
-  state.index = clampIndex(index);
-  const station = STATIONS[state.index];
-
-  elements.announcementAudio.pause();
-  prepareAnnouncementSource();
-
-  updateBackground(station.background);
-  elements.background.setAttribute('aria-label', `${station.name} station background`);
-  elements.nameJp.textContent = station.japaneseName;
-  elements.nameEn.textContent = station.name;
-  elements.about.textContent = station.about;
-  renderTransfers(station);
-  updatePreviews();
-  highlightMapNode();
-  updateTrackLabel(play ? 'Loading' : 'Ready');
-
-  if (play) {
-    playCurrent();
+function setRideMode(enabled) {
+  rideMode = enabled;
+  rideModeButton.setAttribute('aria-pressed', String(enabled));
+  rideModeButton.textContent = enabled ? 'Ride Mode On' : 'Ride Mode';
+  localStorage.setItem(rideModeKey, enabled ? '1' : '0');
+  if (enabled) {
+    if (announcementAudio.paused) {
+      playAnnouncement();
+    }
   } else {
-    state.playing = false;
-    syncPlayButtons();
+    stopRideTimer();
   }
 }
 
-function playCurrent() {
-  prepareAnnouncementSource();
-  const playPromise = elements.announcementAudio.play();
-  if (playPromise && typeof playPromise.then === 'function') {
-    playPromise
-      .then(() => {
-        state.playing = true;
-        updateTrackLabel('Playing');
-        syncPlayButtons();
-      })
-      .catch(() => {
-        state.playing = false;
-        updateTrackLabel('Ready');
-        syncPlayButtons();
-      });
+function setAmbient(enabled) {
+  ambientOn = enabled;
+  ambientToggle.setAttribute('aria-pressed', String(enabled));
+  ambientToggle.textContent = enabled ? 'Ambient On' : 'Ambient Off';
+  localStorage.setItem(ambientKey, enabled ? '1' : '0');
+  if (enabled) {
+    applyVolume();
+    ambientAudio.play().catch(() => {});
   } else {
-    state.playing = true;
-    updateTrackLabel('Playing');
-    syncPlayButtons();
+    ambientAudio.pause();
   }
 }
 
-function pauseCurrent(updateLabel = true) {
-  elements.announcementAudio.pause();
-  state.playing = false;
-  if (updateLabel) {
+function setMute(enabled) {
+  isMuted = enabled;
+  muteButton.setAttribute('aria-pressed', String(enabled));
+  muteButton.textContent = enabled ? 'Unmute' : 'Mute';
+  applyVolume();
+}
+
+function applyVolume() {
+  const volume = parseFloat(volumeSlider.value);
+  announcementAudio.volume = isMuted ? 0 : volume;
+  ambientAudio.volume = ambientOn ? Math.min(0.5, volume * 0.5) : 0;
+}
+
+function setVolume(value) {
+  volumeSlider.value = value;
+  localStorage.setItem(volumeKey, value);
+  applyVolume();
+}
+
+function goToStation(index, options = {}) {
+  const { playAudio = false } = options;
+  currentStationIndex = clampIndex(index);
+  stopRideTimer();
+  const station = stations[currentStationIndex];
+
+  setBackground(station.background);
+  nameJpEl.textContent = station.japaneseName;
+  nameEnEl.textContent = station.name;
+  aboutEl.textContent = station.about;
+  updateTransferLines(station);
+  updatePreviews(currentStationIndex);
+  updateTrackLabel('Ready');
+  rotateMapToIndex(currentStationIndex);
+
+  announcementAudio.src = getAnnouncementSrc(station);
+
+  if (playAudio) {
+    playAnnouncement();
+  } else {
+    updatePlayButtons(false);
+    announcementAudio.pause();
+  }
+}
+
+function playAnnouncement() {
+  const station = stations[currentStationIndex];
+  announcementAudio.src = getAnnouncementSrc(station);
+  applyVolume();
+  announcementAudio
+    .play()
+    .then(() => {
+      updatePlayButtons(true);
+      updateTrackLabel('Announcement');
+    })
+    .catch((error) => {
+      console.error('Unable to play audio', error);
+      updatePlayButtons(false);
+      updateTrackLabel('Audio unavailable');
+    });
+}
+
+function togglePlayPause() {
+  if (announcementAudio.paused) {
+    playAnnouncement();
+  } else {
+    announcementAudio.pause();
+  }
+}
+
+function handleAudioEnd() {
+  updatePlayButtons(false);
+  updateTrackLabel('Finished');
+  if (rideMode) {
+    scheduleRideAdvance();
+  }
+}
+
+function handleAudioPlay() {
+  updatePlayButtons(true);
+  updateTrackLabel('Announcement');
+}
+
+function handleAudioPause() {
+  updatePlayButtons(false);
+  if (!announcementAudio.ended) {
     updateTrackLabel('Paused');
   }
-  syncPlayButtons();
 }
 
-function changeStation(delta, { auto = false } = {}) {
-  const shouldPlay = auto ? state.rideMode : state.playing;
-  goToStation(state.index + delta, { play: shouldPlay });
+function openMap() {
+  mapOverlay.classList.add('is-visible');
+  mapOverlay.setAttribute('aria-hidden', 'false');
+  mapToggle.setAttribute('aria-expanded', 'true');
+  mobileMap.setAttribute('aria-expanded', 'true');
 }
 
-function handlePlayToggle() {
-  if (state.playing) {
-    pauseCurrent();
-  } else {
-    playCurrent();
-  }
-}
-
-function toggleRideMode() {
-  state.rideMode = !state.rideMode;
-  localStorage.setItem(STORAGE_KEYS.rideMode, String(state.rideMode));
-  syncRideModeButton();
-}
-
-function toggleAmbient() {
-  state.ambient = !state.ambient;
-  localStorage.setItem(STORAGE_KEYS.ambient, String(state.ambient));
-  if (state.ambient) {
-    elements.ambientAudio.volume = 0.25;
-    elements.ambientAudio
-      .play()
-      .catch(() => {
-        state.ambient = false;
-        localStorage.setItem(STORAGE_KEYS.ambient, 'false');
-      })
-      .finally(() => {
-        syncAmbientButton();
-      });
-  } else {
-    elements.ambientAudio.pause();
-    syncAmbientButton();
-  }
-}
-
-function toggleMap(force) {
-  const isOpen = typeof force === 'boolean'
-    ? force
-    : !elements.mapOverlay.classList.contains('map-overlay--active');
-
-  elements.mapOverlay.classList.toggle('map-overlay--active', isOpen);
-  syncMapButtons(isOpen);
-
-  if (isOpen) {
-    highlightMapNode();
-    const activeNode = elements.loopMap.querySelector(`.map-node[data-index="${state.index}"]`);
-    activeNode?.focus({ preventScroll: true });
-  } else {
-    elements.mapToggle.focus({ preventScroll: true });
-  }
-}
-
-function buildSearchOptions() {
-  clearChildren(elements.datalist);
-  STATIONS.forEach((station) => {
-    const optionEn = document.createElement('option');
-    optionEn.value = station.name;
-    optionEn.label = station.japaneseName;
-    elements.datalist.appendChild(optionEn);
-
-    const optionJp = document.createElement('option');
-    optionJp.value = station.japaneseName;
-    optionJp.label = station.name;
-    elements.datalist.appendChild(optionJp);
-  });
+function closeMapOverlay() {
+  mapOverlay.classList.remove('is-visible');
+  mapOverlay.setAttribute('aria-hidden', 'true');
+  mapToggle.setAttribute('aria-expanded', 'false');
+  mobileMap.setAttribute('aria-expanded', 'false');
 }
 
 function buildMap() {
-  const svgNS = 'http://www.w3.org/2000/svg';
-  elements.loopMap.innerHTML = '';
+  loopMap.innerHTML = '';
+  const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  group.classList.add('loop-group');
+  loopMap.appendChild(group);
 
-  const path = document.createElementNS(svgNS, 'circle');
-  path.setAttribute('cx', '300');
-  path.setAttribute('cy', '300');
-  path.setAttribute('r', '220');
-  path.classList.add('loop-path');
-  elements.loopMap.appendChild(path);
-
-  const radius = 220;
-  const labelRadius = radius + 32;
   const center = 300;
+  const radius = 220;
 
-  STATIONS.forEach((station, index) => {
-    const angle = (2 * Math.PI * index) / STATIONS.length - Math.PI / 2;
+  stations.forEach((station, index) => {
+    const angle = (index / stations.length) * Math.PI * 2 - Math.PI / 2;
     const x = center + radius * Math.cos(angle);
     const y = center + radius * Math.sin(angle);
-    const lx = center + labelRadius * Math.cos(angle);
-    const ly = center + labelRadius * Math.sin(angle);
 
-    const node = document.createElementNS(svgNS, 'g');
-    node.classList.add('map-node');
+    const node = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    node.classList.add('loop-node');
     node.dataset.index = String(index);
-    node.setAttribute('role', 'button');
-    node.setAttribute('tabindex', '0');
-    node.setAttribute('aria-label', `Jump to ${station.name}`);
+    node.dataset.angle = String((angle * 180) / Math.PI);
 
-    const dot = document.createElementNS(svgNS, 'circle');
-    dot.setAttribute('cx', x.toFixed(2));
-    dot.setAttribute('cy', y.toFixed(2));
-    dot.setAttribute('r', '10');
-    node.appendChild(dot);
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', x.toFixed(2));
+    circle.setAttribute('cy', y.toFixed(2));
+    circle.setAttribute('r', '10');
+    node.appendChild(circle);
 
-    const label = document.createElementNS(svgNS, 'text');
-    label.setAttribute('x', lx.toFixed(2));
-    label.setAttribute('y', ly.toFixed(2));
-    label.setAttribute('text-anchor', 'middle');
-    label.setAttribute('dominant-baseline', 'middle');
-    label.textContent = station.name;
-    node.appendChild(label);
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', (x + 16 * Math.cos(angle)).toFixed(2));
+    text.setAttribute('y', (y + 16 * Math.sin(angle)).toFixed(2));
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('alignment-baseline', 'middle');
+    text.textContent = station.name;
+    node.appendChild(text);
 
     node.addEventListener('click', () => {
-      toggleMap(false);
-      goToStation(index, { play: state.playing });
+      rotateMapToIndex(index);
+      setTimeout(() => {
+        goToStation(index, { playAudio: false });
+        closeMapOverlay();
+      }, 600);
     });
 
-    node.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        toggleMap(false);
-        goToStation(index, { play: state.playing });
-      }
-    });
-
-    elements.loopMap.appendChild(node);
+    group.appendChild(node);
   });
+}
 
+function rotateMapToIndex(index) {
+  const group = loopMap.querySelector('.loop-group');
+  const node = loopMap.querySelector(`.loop-node[data-index="${index}"]`);
+  if (!group || !node) return;
+  const angle = parseFloat(node.dataset.angle || '0');
+  mapRotation = 90 - angle;
+  group.style.transform = `rotate(${mapRotation}deg)`;
   highlightMapNode();
 }
 
-function findStationIndex(query) {
-  if (!query) {
-    return -1;
+function highlightMapNode() {
+  const nodes = loopMap.querySelectorAll('.loop-node');
+  nodes.forEach((node) => node.classList.remove('active'));
+  const active = loopMap.querySelector(`.loop-node[data-index="${currentStationIndex}"]`);
+  if (active) {
+    active.classList.add('active');
   }
-
-  const normalized = query.trim().toLowerCase();
-  return STATIONS.findIndex((station) => {
-    return (
-      station.name.toLowerCase() === normalized ||
-      station.japaneseName === query.trim() ||
-      station.name.toLowerCase().includes(normalized) ||
-      station.japaneseName.includes(query.trim())
-    );
-  });
 }
 
-function handleSearchJump() {
-  const query = elements.searchInput.value;
-  const targetIndex = findStationIndex(query);
-  if (targetIndex >= 0) {
-    goToStation(targetIndex, { play: state.playing });
-  }
+function navigate(delta) {
+  if (scrollLock) return;
+  scrollLock = true;
+  goToStation(currentStationIndex + delta, { playAudio: rideMode });
+  setTimeout(() => {
+    scrollLock = false;
+  }, 650);
 }
 
 function handleWheel(event) {
-  if (state.scrollLock) {
-    return;
-  }
-
-  if (Math.abs(event.deltaY) > 40) {
-    state.scrollLock = true;
-    changeStation(event.deltaY > 0 ? 1 : -1);
-    setTimeout(() => {
-      state.scrollLock = false;
-    }, 650);
-  }
+  if (mapOverlay.classList.contains('is-visible')) return;
+  if (Math.abs(event.deltaY) < 30) return;
+  navigate(event.deltaY > 0 ? 1 : -1);
 }
 
+let touchStartY = null;
+
 function handleTouchStart(event) {
-  state.touchStartY = event.touches[0]?.clientY ?? null;
+  touchStartY = event.touches[0]?.clientY ?? null;
 }
 
 function handleTouchEnd(event) {
-  if (state.touchStartY === null) {
-    return;
+  if (touchStartY === null) return;
+  const endY = event.changedTouches[0]?.clientY ?? touchStartY;
+  const diff = touchStartY - endY;
+  if (Math.abs(diff) > 40) {
+    navigate(diff > 0 ? 1 : -1);
   }
-  const delta = state.touchStartY - (event.changedTouches[0]?.clientY ?? state.touchStartY);
-  state.touchStartY = null;
-  if (Math.abs(delta) > 45) {
-    changeStation(delta > 0 ? 1 : -1);
-  }
+  touchStartY = null;
 }
 
-function handleKeyNavigation(event) {
+function handleKeydown(event) {
+  if (mapOverlay.classList.contains('is-visible')) return;
   switch (event.key) {
     case 'ArrowRight':
     case 'ArrowDown':
-      event.preventDefault();
-      changeStation(1);
+      navigate(1);
       break;
     case 'ArrowLeft':
     case 'ArrowUp':
-      event.preventDefault();
-      changeStation(-1);
+      navigate(-1);
       break;
-    case ' ': {
-      if (event.target === elements.viewport) {
-        event.preventDefault();
-        handlePlayToggle();
+    case ' ': // space
+      event.preventDefault();
+      togglePlayPause();
+      break;
+    case 'Enter':
+      if (document.activeElement === searchInput) {
+        jumpToSearch();
       }
       break;
-    }
     default:
       break;
   }
 }
 
-function loadSettings() {
-  const storedVolume = localStorage.getItem(STORAGE_KEYS.volume);
-  const volume = storedVolume !== null ? Math.min(1, Math.max(0, Number(storedVolume))) : 0.7;
-  elements.volume.value = String(volume);
-  elements.announcementAudio.volume = volume;
-
-  const storedMute = localStorage.getItem(STORAGE_KEYS.muted);
-  if (storedMute !== null) {
-    state.muted = storedMute === 'true';
-    elements.announcementAudio.muted = state.muted;
+function jumpToSearch() {
+  const query = searchInput.value.trim();
+  if (!query) return;
+  const normalized = query.toLowerCase();
+  const foundIndex = stations.findIndex((station) => {
+    return (
+      station.name.toLowerCase() === normalized ||
+      station.japaneseName === query ||
+      station.name.toLowerCase().includes(normalized) ||
+      station.japaneseName.includes(query)
+    );
+  });
+  if (foundIndex >= 0) {
+    goToStation(foundIndex, { playAudio: rideMode });
+    closeMapOverlay();
   }
-  syncMuteButton();
-
-  const storedRideMode = localStorage.getItem(STORAGE_KEYS.rideMode);
-  state.rideMode = storedRideMode === null ? true : storedRideMode === 'true';
-  syncRideModeButton();
-
-  const storedAmbient = localStorage.getItem(STORAGE_KEYS.ambient);
-  state.ambient = storedAmbient === 'true';
-  if (state.ambient) {
-    elements.ambientAudio.volume = 0.25;
-    elements.ambientAudio.play().catch(() => {
-      state.ambient = false;
-      localStorage.setItem(STORAGE_KEYS.ambient, 'false');
-    });
-  } else {
-    elements.ambientAudio.pause();
-  }
-  syncAmbientButton();
 }
 
-function initAudioEvents() {
-  elements.announcementAudio.addEventListener('play', () => {
-    state.playing = true;
-    updateTrackLabel('Playing');
-    syncPlayButtons();
-  });
+function populateSearchOptions() {
+  datalist.innerHTML = '';
+  stations.forEach((station) => {
+    const optionEn = document.createElement('option');
+    optionEn.value = station.name;
+    datalist.appendChild(optionEn);
 
-  elements.announcementAudio.addEventListener('pause', () => {
-    if (endedNaturally) {
-      endedNaturally = false;
-      return;
-    }
-    state.playing = false;
-    updateTrackLabel('Paused');
-    syncPlayButtons();
-  });
-
-  elements.announcementAudio.addEventListener('ended', () => {
-    endedNaturally = true;
-    state.playing = false;
-    updateTrackLabel('Complete');
-    syncPlayButtons();
-    if (state.rideMode) {
-      changeStation(1, { auto: true });
-    }
+    const optionJp = document.createElement('option');
+    optionJp.value = station.japaneseName;
+    datalist.appendChild(optionJp);
   });
 }
 
-function initEventListeners() {
-  elements.playPause.addEventListener('click', handlePlayToggle);
-  elements.skip.addEventListener('click', () => changeStation(1));
-  elements.volume.addEventListener('input', (event) => {
-    const value = Number(event.target.value);
-    elements.announcementAudio.volume = value;
-    localStorage.setItem(STORAGE_KEYS.volume, String(value));
-    if (value > 0 && state.muted) {
-      state.muted = false;
-      elements.announcementAudio.muted = false;
-      localStorage.setItem(STORAGE_KEYS.muted, 'false');
-      syncMuteButton();
+function hydrateSettings() {
+  const storedVolume = localStorage.getItem(volumeKey);
+  setVolume(storedVolume ?? '0.8');
+
+  const storedRide = localStorage.getItem(rideModeKey) === '1';
+  setRideMode(storedRide);
+
+  const storedAmbient = localStorage.getItem(ambientKey) === '1';
+  setAmbient(storedAmbient);
+}
+
+function bindEvents() {
+  playPauseBtn.addEventListener('click', togglePlayPause);
+  skipBtn.addEventListener('click', () => navigate(1));
+  mobilePlay.addEventListener('click', togglePlayPause);
+  mobileSkip.addEventListener('click', () => navigate(1));
+  volumeSlider.addEventListener('input', (event) => setVolume(event.target.value));
+  muteButton.addEventListener('click', () => setMute(!isMuted));
+  rideModeButton.addEventListener('click', () => setRideMode(!rideMode));
+  ambientToggle.addEventListener('click', () => setAmbient(!ambientOn));
+  mapToggle.addEventListener('click', () => {
+    if (mapOverlay.classList.contains('is-visible')) {
+      closeMapOverlay();
+    } else {
+      openMap();
     }
   });
-  elements.mute.addEventListener('click', () => {
-    state.muted = !state.muted;
-    elements.announcementAudio.muted = state.muted;
-    localStorage.setItem(STORAGE_KEYS.muted, String(state.muted));
-    syncMuteButton();
+  mobileMap.addEventListener('click', () => {
+    if (mapOverlay.classList.contains('is-visible')) {
+      closeMapOverlay();
+    } else {
+      openMap();
+    }
   });
-
-  elements.rideMode.addEventListener('click', toggleRideMode);
-  elements.ambientToggle.addEventListener('click', toggleAmbient);
-
-  elements.mapToggle.addEventListener('click', () => toggleMap());
-  elements.closeMap.addEventListener('click', () => toggleMap(false));
-  if (elements.mobileMap) {
-    elements.mobileMap.addEventListener('click', () => toggleMap());
-  }
-  if (elements.mobilePlay) {
-    elements.mobilePlay.addEventListener('click', handlePlayToggle);
-  }
-  if (elements.mobileSkip) {
-    elements.mobileSkip.addEventListener('click', () => changeStation(1));
-  }
-
-  elements.searchInput.addEventListener('keydown', (event) => {
+  closeMap.addEventListener('click', closeMapOverlay);
+  mapOverlay.addEventListener('click', (event) => {
+    if (event.target === mapOverlay) {
+      closeMapOverlay();
+    }
+  });
+  viewport.addEventListener('wheel', handleWheel, { passive: true });
+  viewport.addEventListener('touchstart', handleTouchStart, { passive: true });
+  viewport.addEventListener('touchend', handleTouchEnd, { passive: true });
+  document.addEventListener('keydown', handleKeydown);
+  announcementAudio.addEventListener('ended', handleAudioEnd);
+  announcementAudio.addEventListener('pause', handleAudioPause);
+  announcementAudio.addEventListener('play', handleAudioPlay);
+  searchInput.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
       event.preventDefault();
-      handleSearchJump();
+      jumpToSearch();
     }
   });
-  elements.jumpButton.addEventListener('click', handleSearchJump);
-
-  elements.viewport.addEventListener('wheel', handleWheel, { passive: true });
-  elements.viewport.addEventListener('touchstart', handleTouchStart, { passive: true });
-  elements.viewport.addEventListener('touchend', handleTouchEnd, { passive: true });
-  elements.viewport.addEventListener('keydown', handleKeyNavigation);
+  searchGoButton.addEventListener('click', jumpToSearch);
 }
 
 function init() {
-  loadSettings();
-  syncPlayButtons();
-  buildSearchOptions();
+  populateSearchOptions();
   buildMap();
-  initAudioEvents();
-  initEventListeners();
-  goToStation(state.index);
-  updateTrackLabel('Ready');
+  hydrateSettings();
+  goToStation(0, { playAudio: false });
+  rotateMapToIndex(0);
+  bindEvents();
 }
 
 init();
