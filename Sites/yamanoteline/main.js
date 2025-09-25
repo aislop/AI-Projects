@@ -487,9 +487,7 @@ const nextPreviewEl = document.getElementById('nextStationPreview');
 const prevBtn = document.getElementById('prevStation');
 const playPauseBtn = document.getElementById('playPause');
 const skipBtn = document.getElementById('skipStation');
-const volumeSlider = document.getElementById('volumeSlider');
-const volumeToggle = document.getElementById('volumeToggle');
-const audioVolumeContainer = document.querySelector('.audio-pill__volume');
+const jingleOnlyToggle = document.getElementById('jingleOnlyToggle');
 const trackLabel = document.getElementById('currentTrackLabel');
 const rideModeButton = document.getElementById('rideModeButton');
 const ambientToggle = document.getElementById('ambientToggle');
@@ -503,6 +501,8 @@ const mapScrim = mapOverlay.querySelector('[data-close="true"]');
 const searchInput = document.getElementById('stationSearch');
 const searchGoButton = document.getElementById('jumpButton');
 const datalist = document.getElementById('stationList');
+const directionPrevName = document.getElementById('directionPrevName');
+const directionNextName = document.getElementById('directionNextName');
 
 const announcementAudio = document.getElementById('announcementAudio');
 const jingleAudio = document.getElementById('jingleAudio');
@@ -516,11 +516,14 @@ let darkMode = false;
 let jingleEngaged = false;
 let rideTimeout = null;
 let motionTimeoutHandle = null;
+let masterVolume = 0.8;
+let announcementsEnabled = true;
 
 const volumeKey = 'yamanote-volume';
 const rideModeKey = 'yamanote-ride-mode';
 const ambientKey = 'yamanote-ambient';
 const darkModeKey = 'yamanote-dark-mode';
+const announcementsKey = 'yamanote-announcements';
 
 function clampIndex(index) {
   const total = stations.length;
@@ -579,6 +582,12 @@ function updatePreviews(index) {
   const nextIndex = clampIndex(index + 1);
   prevPreviewEl.textContent = stations[prevIndex].name;
   nextPreviewEl.textContent = stations[nextIndex].name;
+  if (directionPrevName) {
+    directionPrevName.textContent = stations[prevIndex].name;
+  }
+  if (directionNextName) {
+    directionNextName.textContent = stations[nextIndex].name;
+  }
 }
 
 function updateTrackLabel(mode = 'Stopped') {
@@ -614,7 +623,7 @@ function setRideMode(enabled) {
   localStorage.setItem(rideModeKey, enabled ? '1' : '0');
   if (enabled) {
     if (!isJingleActive() && !isJinglePaused() && announcementAudio.paused) {
-      playAnnouncement();
+      startPlayback();
     }
   } else {
     stopRideTimer();
@@ -644,19 +653,43 @@ function setDarkMode(enabled) {
   localStorage.setItem(darkModeKey, enabled ? '1' : '0');
 }
 
+function setAnnouncementsEnabled(enabled, options = {}) {
+  const { autoPlay = true } = options;
+  const wasAnnouncementActive = !announcementAudio.paused && !announcementAudio.ended;
+  const wasJinglePlaying = isJingleActive() || isJinglePaused();
+  announcementsEnabled = enabled;
+  if (jingleOnlyToggle) {
+    const jinglesOnly = !enabled;
+    jingleOnlyToggle.setAttribute('aria-pressed', String(jinglesOnly));
+    jingleOnlyToggle.textContent = jinglesOnly ? '🎵 Jingles Only' : '🔈 Announcements';
+  }
+  localStorage.setItem(announcementsKey, enabled ? '1' : '0');
+  const shouldResume = autoPlay && (rideMode || wasAnnouncementActive || wasJinglePlaying);
+  if (!enabled) {
+    announcementAudio.pause();
+    if (shouldResume) {
+      startPlayback();
+    } else {
+      stopJinglePlayback();
+      updateTrackLabel('Ready');
+    }
+    return;
+  }
+  if (shouldResume) {
+    startPlayback();
+  } else {
+    announcementAudio.pause();
+    stopJinglePlayback();
+  }
+}
+
 function applyVolume() {
-  const volume = parseFloat(volumeSlider.value);
+  const volume = masterVolume;
   announcementAudio.volume = volume;
   if (jingleAudio) {
     jingleAudio.volume = volume;
   }
   ambientAudio.volume = ambientOn ? Math.min(0.5, volume * 0.5) : 0;
-}
-
-function setVolume(value) {
-  volumeSlider.value = value;
-  localStorage.setItem(volumeKey, value);
-  applyVolume();
 }
 
 function stopJinglePlayback(clearSrc = true) {
@@ -744,11 +777,22 @@ function goToStation(index, options = {}) {
   announcementAudio.src = getAnnouncementSrc(station);
 
   if (playAudio) {
-    playAnnouncement();
+    startPlayback();
   } else {
     updatePlayButtons(false);
     announcementAudio.pause();
   }
+}
+
+function startPlayback() {
+  if (!announcementsEnabled) {
+    stopJinglePlayback();
+    if (!playStationJingle()) {
+      finalizeTrack();
+    }
+    return;
+  }
+  playAnnouncement();
 }
 
 function playAnnouncement() {
@@ -782,6 +826,10 @@ function togglePlayPause() {
         stopJinglePlayback();
         finalizeTrack();
       });
+    return;
+  }
+  if (!announcementsEnabled) {
+    startPlayback();
     return;
   }
   if (announcementAudio.paused) {
@@ -1005,7 +1053,18 @@ function populateSearchOptions() {
 
 function hydrateSettings() {
   const storedVolume = localStorage.getItem(volumeKey);
-  setVolume(storedVolume ?? '0.8');
+  if (storedVolume !== null) {
+    const parsedVolume = parseFloat(storedVolume);
+    if (!Number.isNaN(parsedVolume)) {
+      masterVolume = parsedVolume;
+    }
+  } else {
+    masterVolume = 0.8;
+  }
+  applyVolume();
+
+  const storedAnnouncements = localStorage.getItem(announcementsKey);
+  setAnnouncementsEnabled(storedAnnouncements !== '0', { autoPlay: false });
 
   const storedDark = localStorage.getItem(darkModeKey);
   if (storedDark === null) {
@@ -1028,19 +1087,9 @@ function bindEvents() {
   playPauseBtn.addEventListener('click', togglePlayPause);
   prevBtn?.addEventListener('click', () => navigate(-1));
   skipBtn.addEventListener('click', () => navigate(1));
-  volumeSlider.addEventListener('input', (event) => setVolume(event.target.value));
-  volumeSlider.addEventListener('change', () => {
-    if (!audioVolumeContainer) return;
-    audioVolumeContainer.dataset.open = 'false';
-    volumeToggle?.setAttribute('aria-expanded', 'false');
-  });
-  volumeSlider.addEventListener('blur', () => {
-    if (!audioVolumeContainer) return;
-    audioVolumeContainer.dataset.open = 'false';
-    volumeToggle?.setAttribute('aria-expanded', 'false');
-  });
   rideModeButton.addEventListener('click', () => setRideMode(!rideMode));
   ambientToggle.addEventListener('click', () => setAmbient(!ambientOn));
+  jingleOnlyToggle?.addEventListener('click', () => setAnnouncementsEnabled(!announcementsEnabled));
   mapToggle.addEventListener('click', () => {
     if (mapOverlay.classList.contains('is-visible')) {
       closeMapOverlay();
@@ -1072,13 +1121,6 @@ function bindEvents() {
   });
   searchGoButton.addEventListener('click', jumpToSearch);
   darkModeToggle?.addEventListener('click', () => setDarkMode(!darkMode));
-  if (volumeToggle && audioVolumeContainer) {
-    volumeToggle.addEventListener('click', () => {
-      const open = audioVolumeContainer.dataset.open === 'true';
-      audioVolumeContainer.dataset.open = open ? 'false' : 'true';
-      volumeToggle.setAttribute('aria-expanded', open ? 'false' : 'true');
-    });
-  }
   if (jingleAudio) {
     jingleAudio.addEventListener('ended', handleJingleEnd);
     jingleAudio.addEventListener('pause', handleJinglePause);

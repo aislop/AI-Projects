@@ -53,18 +53,29 @@
         </section>
       </section>
 
+      <div class="station-direction" aria-hidden="true">
+        <div class="station-direction__item station-direction__item--prev">
+          <span class="station-direction__arrow" aria-hidden="true">←</span>
+          <div class="station-direction__text">
+            <span class="station-direction__label">From</span>
+            <span id="directionPrevName" class="station-direction__name"></span>
+          </div>
+        </div>
+        <div class="station-direction__item station-direction__item--next">
+          <span class="station-direction__arrow" aria-hidden="true">→</span>
+          <div class="station-direction__text">
+            <span class="station-direction__label">Toward</span>
+            <span id="directionNextName" class="station-direction__name"></span>
+          </div>
+        </div>
+      </div>
+
       <div class="audio-pill" role="region" aria-label="Station announcements">
         <div class="audio-pill__controls">
           <button id="prevStation" class="pill-button" aria-label="Skip to previous station">⏮</button>
           <button id="playPause" class="pill-button" aria-pressed="false" aria-label="Play or pause announcement">▶</button>
           <button id="skipStation" class="pill-button" aria-label="Skip to next station">⏭</button>
-          <div class="audio-pill__volume" data-open="false">
-            <button id="volumeToggle" class="pill-button pill-button--ghost" aria-expanded="false" aria-controls="volumeSlider" aria-label="Adjust volume">🔊</button>
-            <div class="audio-pill__slider">
-              <label class="sr-only" for="volumeSlider">Volume</label>
-              <input id="volumeSlider" type="range" min="0" max="1" step="0.01">
-            </div>
-          </div>
+          <button id="jingleOnlyToggle" class="pill-button pill-button--wide" aria-pressed="false" aria-label="Toggle jingles only playback">🔈 Announcements</button>
           <button id="audioMapButton" class="pill-button pill-button--map" aria-expanded="false" aria-label="Open line map">
             <span class="pill-button__icon" aria-hidden="true">
               <svg viewBox="0 0 32 32" focusable="false" role="presentation">
