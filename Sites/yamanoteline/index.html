@@ -9,20 +9,23 @@
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@500;700&display=swap"
+    rel="stylesheet">
 </head>
 <body>
   <div id="app" class="app">
     <header class="top-bar">
-      <button id="mapToggle" class="ghost-button" aria-expanded="false">Map</button>
-      <div class="search-wrapper">
-        <label class="sr-only" for="stationSearch">Search stations</label>
-        <input id="stationSearch" list="stationList" type="search" placeholder="Search stations…" autocomplete="off">
-        <datalist id="stationList"></datalist>
-        <button id="jumpButton" class="ghost-button">Go</button>
+      <div class="top-bar__group">
+        <button id="mapToggle" class="ghost-button" aria-expanded="false">Map</button>
+        <div class="search-wrapper">
+          <label class="sr-only" for="stationSearch">Search stations</label>
+          <input id="stationSearch" list="stationList" type="search" placeholder="Search stations…" autocomplete="off">
+          <datalist id="stationList"></datalist>
+          <button id="jumpButton" class="ghost-button">Go</button>
+        </div>
       </div>
       <div class="top-actions">
-
         <button id="rideModeButton" class="ghost-button" aria-pressed="false">Ride Mode</button>
         <button id="ambientToggle" class="ghost-button" aria-pressed="false">Ambient Off</button>
       </div>
@@ -49,33 +52,42 @@
         </section>
       </section>
 
-      <div class="audio-panel" role="region" aria-label="Station announcements">
-        <div class="audio-panel__primary">
-          <button id="playPause" class="control-button" aria-pressed="false">▶</button>
-          <button id="skipStation" class="control-button" aria-label="Skip to next station">⏭</button>
-          <div class="volume-control">
-            <label for="volumeSlider">Volume</label>
-            <input id="volumeSlider" type="range" min="0" max="1" step="0.01">
+      <div class="audio-pill" role="region" aria-label="Station announcements">
+        <div class="audio-pill__controls">
+          <button id="playPause" class="pill-button" aria-pressed="false" aria-label="Play or pause announcement">▶</button>
+          <button id="skipStation" class="pill-button" aria-label="Skip to next station">⏭</button>
+          <div class="audio-pill__volume" data-open="false">
+            <button id="volumeToggle" class="pill-button pill-button--ghost" aria-expanded="false" aria-controls="volumeSlider" aria-label="Adjust volume">🔊</button>
+            <div class="audio-pill__slider">
+              <label class="sr-only" for="volumeSlider">Volume</label>
+              <input id="volumeSlider" type="range" min="0" max="1" step="0.01">
+            </div>
           </div>
+          <button id="audioMapButton" class="pill-button pill-button--map" aria-expanded="false" aria-label="Open line map">
+            <span class="pill-button__icon" aria-hidden="true">
+              <svg viewBox="0 0 32 32" focusable="false" role="presentation">
+                <circle cx="16" cy="16" r="14" stroke-width="2"></circle>
+                <circle cx="16" cy="16" r="4" stroke-width="2"></circle>
+              </svg>
+            </span>
+            <span class="pill-button__label">Map</span>
+          </button>
         </div>
-        <div class="audio-panel__secondary">
+        <div class="audio-pill__meta">
           <span id="currentTrackLabel" class="track-label"></span>
           <button id="muteButton" class="ghost-button" aria-pressed="false">Mute</button>
         </div>
       </div>
-
-      <nav class="mobile-dock" aria-label="Mobile controls">
-        <button id="mobilePlay" class="dock-button" aria-pressed="false">▶</button>
-        <button id="mobileSkip" class="dock-button" aria-label="Skip to next">⏭</button>
-        <button id="mobileMap" class="dock-button" aria-expanded="false">Map</button>
-      </nav>
     </main>
 
     <aside id="mapOverlay" class="map-overlay" aria-hidden="true">
-      <div class="map-overlay__inner">
-        <button id="closeMap" class="ghost-button map-overlay__close" aria-label="Close map">×</button>
-        <h2>Yamanote Loop</h2>
-        <svg id="loopMap" viewBox="0 0 600 600" role="img" aria-label="Interactive map of the Yamanote Line"></svg>
+      <div class="map-overlay__scrim" data-close="true"></div>
+      <div class="map-overlay__panel" role="dialog" aria-labelledby="mapHeading">
+        <header class="map-overlay__header">
+          <h2 id="mapHeading">Yamanote Loop</h2>
+          <button id="closeMap" class="ghost-button map-overlay__close" aria-label="Close map">×</button>
+        </header>
+        <div class="map-overlay__line" id="mapLine" role="list"></div>
       </div>
     </aside>
   </div>

@@ -471,6 +471,7 @@ const stations = [
   }
 ];
 
+const appEl = document.getElementById('app');
 const viewport = document.getElementById('stationViewport');
 const backgroundEl = document.getElementById('stationBackground');
 const nameJpEl = document.getElementById('stationNameJp');
@@ -482,17 +483,18 @@ const nextPreviewEl = document.getElementById('nextStationPreview');
 const playPauseBtn = document.getElementById('playPause');
 const skipBtn = document.getElementById('skipStation');
 const volumeSlider = document.getElementById('volumeSlider');
+const volumeToggle = document.getElementById('volumeToggle');
+const audioVolumeContainer = document.querySelector('.audio-pill__volume');
 const muteButton = document.getElementById('muteButton');
 const trackLabel = document.getElementById('currentTrackLabel');
 const rideModeButton = document.getElementById('rideModeButton');
 const ambientToggle = document.getElementById('ambientToggle');
 const mapToggle = document.getElementById('mapToggle');
-const mobileMap = document.getElementById('mobileMap');
-const mobilePlay = document.getElementById('mobilePlay');
-const mobileSkip = document.getElementById('mobileSkip');
+const audioMapButton = document.getElementById('audioMapButton');
 const mapOverlay = document.getElementById('mapOverlay');
 const closeMap = document.getElementById('closeMap');
-const loopMap = document.getElementById('loopMap');
+const mapLine = document.getElementById('mapLine');
+const mapScrim = mapOverlay.querySelector('[data-close="true"]');
 const searchInput = document.getElementById('stationSearch');
 const searchGoButton = document.getElementById('jumpButton');
 const datalist = document.getElementById('stationList');
@@ -506,7 +508,7 @@ let isMuted = false;
 let rideMode = false;
 let ambientOn = false;
 let rideTimeout = null;
-let mapRotation = 0;
+let motionTimeoutHandle = null;
 
 const volumeKey = 'yamanote-volume';
 const rideModeKey = 'yamanote-ride-mode';
@@ -529,7 +531,7 @@ function createTransferChip(transfer) {
   const chip = document.createElement('button');
   chip.type = 'button';
   chip.className = 'transfer-chip';
-  chip.dataset.tooltip = `${transfer.operator}`;
+  chip.dataset.tooltip = `${transfer.name} • ${transfer.operator}`;
 
   const icon = document.createElement('span');
   icon.className = 'transfer-chip__icon';
@@ -580,8 +582,6 @@ function updatePlayButtons(isPlaying) {
   const symbol = isPlaying ? '⏸' : '▶';
   playPauseBtn.textContent = symbol;
   playPauseBtn.setAttribute('aria-pressed', String(isPlaying));
-  mobilePlay.textContent = symbol;
-  mobilePlay.setAttribute('aria-pressed', String(isPlaying));
 }
 
 function stopRideTimer() {
@@ -645,9 +645,29 @@ function setVolume(value) {
   applyVolume();
 }
 
+function triggerMotion(direction) {
+  if (direction === 0) {
+    return;
+  }
+  if (motionTimeoutHandle) {
+    clearTimeout(motionTimeoutHandle);
+    motionTimeoutHandle = null;
+  }
+  delete appEl.dataset.motion;
+  requestAnimationFrame(() => {
+    appEl.dataset.motion = direction > 0 ? 'forward' : 'backward';
+    motionTimeoutHandle = setTimeout(() => {
+      delete appEl.dataset.motion;
+    }, 700);
+  });
+}
+
 function goToStation(index, options = {}) {
   const { playAudio = false } = options;
+  const previousIndex = currentStationIndex;
   currentStationIndex = clampIndex(index);
+  const direction = Math.sign(index - previousIndex);
+  triggerMotion(direction);
   stopRideTimer();
   const station = stations[currentStationIndex];
 
@@ -658,7 +678,7 @@ function goToStation(index, options = {}) {
   updateTransferLines(station);
   updatePreviews(currentStationIndex);
   updateTrackLabel('Ready');
-  rotateMapToIndex(currentStationIndex);
+  centerMapOnIndex(currentStationIndex);
 
   announcementAudio.src = getAnnouncementSrc(station);
 
@@ -719,78 +739,76 @@ function openMap() {
   mapOverlay.classList.add('is-visible');
   mapOverlay.setAttribute('aria-hidden', 'false');
   mapToggle.setAttribute('aria-expanded', 'true');
-  mobileMap.setAttribute('aria-expanded', 'true');
+  audioMapButton.setAttribute('aria-expanded', 'true');
+  centerMapOnIndex(currentStationIndex);
 }
 
 function closeMapOverlay() {
   mapOverlay.classList.remove('is-visible');
   mapOverlay.setAttribute('aria-hidden', 'true');
   mapToggle.setAttribute('aria-expanded', 'false');
-  mobileMap.setAttribute('aria-expanded', 'false');
+  audioMapButton.setAttribute('aria-expanded', 'false');
 }
 
 function buildMap() {
-  loopMap.innerHTML = '';
-  const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-  group.classList.add('loop-group');
-  loopMap.appendChild(group);
-
-  const center = 300;
-  const radius = 220;
-
+  mapLine.innerHTML = '';
   stations.forEach((station, index) => {
-    const angle = (index / stations.length) * Math.PI * 2 - Math.PI / 2;
-    const x = center + radius * Math.cos(angle);
-    const y = center + radius * Math.sin(angle);
-
-    const node = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    node.classList.add('loop-node');
+    const node = document.createElement('button');
+    node.type = 'button';
+    node.className = 'map-node';
     node.dataset.index = String(index);
-    node.dataset.angle = String((angle * 180) / Math.PI);
+    node.setAttribute('role', 'listitem');
+    node.setAttribute('aria-label', `${station.name} ${station.japaneseName}`);
 
-    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('cx', x.toFixed(2));
-    circle.setAttribute('cy', y.toFixed(2));
-    circle.setAttribute('r', '10');
-    node.appendChild(circle);
+    const label = document.createElement('span');
+    label.className = 'map-node__label';
 
-    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    text.setAttribute('x', (x + 16 * Math.cos(angle)).toFixed(2));
-    text.setAttribute('y', (y + 16 * Math.sin(angle)).toFixed(2));
-    text.setAttribute('text-anchor', 'middle');
-    text.setAttribute('alignment-baseline', 'middle');
-    text.textContent = station.name;
-    node.appendChild(text);
+    const nameEn = document.createElement('span');
+    nameEn.textContent = station.name;
+    label.appendChild(nameEn);
+
+    const nameJp = document.createElement('span');
+    nameJp.textContent = station.japaneseName;
+    nameJp.lang = 'ja';
+    label.appendChild(nameJp);
+
+    node.appendChild(label);
 
     node.addEventListener('click', () => {
-      rotateMapToIndex(index);
+      centerMapOnIndex(index);
       setTimeout(() => {
-        goToStation(index, { playAudio: false });
+        goToStation(index, { playAudio: rideMode });
         closeMapOverlay();
-      }, 600);
+      }, 450);
     });
 
-    group.appendChild(node);
+    mapLine.appendChild(node);
   });
 }
 
-function rotateMapToIndex(index) {
-  const group = loopMap.querySelector('.loop-group');
-  const node = loopMap.querySelector(`.loop-node[data-index="${index}"]`);
-  if (!group || !node) return;
-  const angle = parseFloat(node.dataset.angle || '0');
-  mapRotation = 90 - angle;
-  group.style.transform = `rotate(${mapRotation}deg)`;
-  highlightMapNode();
+function highlightMapNode() {
+  const nodes = mapLine.querySelectorAll('.map-node');
+  nodes.forEach((node) => node.classList.remove('is-active'));
+  const active = mapLine.querySelector(`.map-node[data-index="${currentStationIndex}"]`);
+  if (active) {
+    active.classList.add('is-active');
+  }
 }
 
-function highlightMapNode() {
-  const nodes = loopMap.querySelectorAll('.loop-node');
-  nodes.forEach((node) => node.classList.remove('active'));
-  const active = loopMap.querySelector(`.loop-node[data-index="${currentStationIndex}"]`);
-  if (active) {
-    active.classList.add('active');
+function centerMapOnIndex(index) {
+  const node = mapLine.querySelector(`.map-node[data-index="${index}"]`);
+  if (!node) return;
+  const container = mapLine.parentElement;
+  if (!container) return;
+  const containerHeight = container.clientHeight;
+  if (!containerHeight) {
+    highlightMapNode();
+    return;
   }
+  const offsetTop = node.offsetTop + node.offsetHeight / 2;
+  const offset = containerHeight / 2 - offsetTop;
+  mapLine.style.transform = `translateY(${offset}px)`;
+  highlightMapNode();
 }
 
 function navigate(delta) {
@@ -825,7 +843,12 @@ function handleTouchEnd(event) {
 }
 
 function handleKeydown(event) {
-  if (mapOverlay.classList.contains('is-visible')) return;
+  if (mapOverlay.classList.contains('is-visible')) {
+    if (event.key === 'Escape') {
+      closeMapOverlay();
+    }
+    return;
+  }
   switch (event.key) {
     case 'ArrowRight':
     case 'ArrowDown':
@@ -884,8 +907,9 @@ function hydrateSettings() {
   const storedVolume = localStorage.getItem(volumeKey);
   setVolume(storedVolume ?? '0.8');
 
-  const storedRide = localStorage.getItem(rideModeKey) === '1';
-  setRideMode(storedRide);
+  const storedRideValue = localStorage.getItem(rideModeKey);
+  const rideDefault = storedRideValue === null ? true : storedRideValue === '1';
+  setRideMode(rideDefault);
 
   const storedAmbient = localStorage.getItem(ambientKey) === '1';
   setAmbient(storedAmbient);
@@ -894,9 +918,17 @@ function hydrateSettings() {
 function bindEvents() {
   playPauseBtn.addEventListener('click', togglePlayPause);
   skipBtn.addEventListener('click', () => navigate(1));
-  mobilePlay.addEventListener('click', togglePlayPause);
-  mobileSkip.addEventListener('click', () => navigate(1));
   volumeSlider.addEventListener('input', (event) => setVolume(event.target.value));
+  volumeSlider.addEventListener('change', () => {
+    if (!audioVolumeContainer) return;
+    audioVolumeContainer.dataset.open = 'false';
+    volumeToggle?.setAttribute('aria-expanded', 'false');
+  });
+  volumeSlider.addEventListener('blur', () => {
+    if (!audioVolumeContainer) return;
+    audioVolumeContainer.dataset.open = 'false';
+    volumeToggle?.setAttribute('aria-expanded', 'false');
+  });
   muteButton.addEventListener('click', () => setMute(!isMuted));
   rideModeButton.addEventListener('click', () => setRideMode(!rideMode));
   ambientToggle.addEventListener('click', () => setAmbient(!ambientOn));
@@ -907,7 +939,7 @@ function bindEvents() {
       openMap();
     }
   });
-  mobileMap.addEventListener('click', () => {
+  audioMapButton?.addEventListener('click', () => {
     if (mapOverlay.classList.contains('is-visible')) {
       closeMapOverlay();
     } else {
@@ -915,11 +947,7 @@ function bindEvents() {
     }
   });
   closeMap.addEventListener('click', closeMapOverlay);
-  mapOverlay.addEventListener('click', (event) => {
-    if (event.target === mapOverlay) {
-      closeMapOverlay();
-    }
-  });
+  mapScrim?.addEventListener('click', closeMapOverlay);
   viewport.addEventListener('wheel', handleWheel, { passive: true });
   viewport.addEventListener('touchstart', handleTouchStart, { passive: true });
   viewport.addEventListener('touchend', handleTouchEnd, { passive: true });
@@ -934,14 +962,21 @@ function bindEvents() {
     }
   });
   searchGoButton.addEventListener('click', jumpToSearch);
+  if (volumeToggle && audioVolumeContainer) {
+    volumeToggle.addEventListener('click', () => {
+      const open = audioVolumeContainer.dataset.open === 'true';
+      audioVolumeContainer.dataset.open = open ? 'false' : 'true';
+      volumeToggle.setAttribute('aria-expanded', open ? 'false' : 'true');
+    });
+  }
 }
 
 function init() {
   populateSearchOptions();
   buildMap();
-  hydrateSettings();
   goToStation(0, { playAudio: false });
-  rotateMapToIndex(0);
+  hydrateSettings();
+  centerMapOnIndex(0);
   bindEvents();
 }
 
