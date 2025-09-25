@@ -410,6 +410,56 @@ const lineCatalog = {
   }
 };
 
+const lineLogos = {
+  'jr-chuo-rapid': 'https://upload.wikimedia.org/wikipedia/commons/7/79/JR_JC_line_symbol.svg',
+  'jr-keihin-tohoku': 'https://upload.wikimedia.org/wikipedia/commons/1/16/JR_JK_line_symbol.svg',
+  'jr-tokaido': 'https://upload.wikimedia.org/wikipedia/commons/9/92/JR_JT_line_symbol.svg',
+  'jr-utsunomiya': 'https://upload.wikimedia.org/wikipedia/commons/f/fc/JR_JU_line_symbol.svg',
+  'jr-takasaki': 'https://upload.wikimedia.org/wikipedia/commons/f/fc/JR_JU_line_symbol.svg',
+  'jr-joban-rapid': 'https://upload.wikimedia.org/wikipedia/commons/7/7c/JR_JJ_line_symbol.svg',
+  'jr-keiyo': 'https://upload.wikimedia.org/wikipedia/commons/c/c3/JR_JE_line_symbol.svg',
+  'jr-yokosuka-sobu': 'https://upload.wikimedia.org/wikipedia/commons/1/1b/JR_JO_line_symbol.svg',
+  'jr-chuo-sobu': 'https://upload.wikimedia.org/wikipedia/commons/0/03/JR_JB_line_symbol.svg',
+  'jr-saikyo': 'https://upload.wikimedia.org/wikipedia/commons/1/1c/JR_JA_line_symbol.svg',
+  'jr-shonan-shinjuku': 'https://upload.wikimedia.org/wikipedia/commons/0/04/JR_JS_line_symbol.svg',
+  'tokyo-metro-marunouchi': 'https://upload.wikimedia.org/wikipedia/commons/c/ca/Logo_of_Tokyo_Metro_Marunouchi_Line.svg',
+  'tokyo-metro-ginza': 'https://upload.wikimedia.org/wikipedia/commons/7/73/Logo_of_Tokyo_Metro_Ginza_Line.svg',
+  'tokyo-metro-hibiya': 'https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo_of_Tokyo_Metro_Hibiya_Line.svg',
+  'tokyo-metro-tozai': 'https://upload.wikimedia.org/wikipedia/commons/d/db/Logo_of_Tokyo_Metro_T%C5%8Dzai_Line.svg',
+  'tokyo-metro-yurakucho': 'https://upload.wikimedia.org/wikipedia/commons/d/dd/Logo_of_Tokyo_Metro_Y%C5%ABrakuch%C5%8D_Line.svg',
+  'tokyo-metro-chiyoda': 'https://upload.wikimedia.org/wikipedia/commons/2/24/Logo_of_Tokyo_Metro_Chiyoda_Line.svg',
+  'tokyo-metro-namboku': 'https://upload.wikimedia.org/wikipedia/commons/a/a0/Logo_of_Tokyo_Metro_Namboku_Line.svg',
+  'tokyo-metro-fukutoshin': 'https://upload.wikimedia.org/wikipedia/commons/a/a3/Logo_of_Tokyo_Metro_Fukutoshin_Line.svg',
+  'tokyo-metro-hanzomon': 'https://upload.wikimedia.org/wikipedia/commons/d/d1/Logo_of_Tokyo_Metro_Hanz%C5%8Dmon_Line.svg',
+  'toei-asakusa': 'https://upload.wikimedia.org/wikipedia/commons/3/3c/Toei_Asakusa_line_symbol.svg',
+  'toei-mita': 'https://upload.wikimedia.org/wikipedia/commons/c/c1/Toei_Mita_line_symbol.svg',
+  'toei-oedo': 'https://upload.wikimedia.org/wikipedia/commons/0/08/Toei_Oedo_line_symbol.svg',
+  'toei-shinjuku': 'https://upload.wikimedia.org/wikipedia/commons/a/aa/Toei_Shinjuku_line_symbol.svg',
+  'keio-line': 'https://upload.wikimedia.org/wikipedia/commons/6/6f/Number_prefix_Keio-line.svg',
+  'keio-inokashira': 'https://upload.wikimedia.org/wikipedia/commons/a/ad/Number_prefix_Keio-Inokashira-line.svg',
+  'odakyu-odawara': 'https://upload.wikimedia.org/wikipedia/commons/4/4d/Odakyu_odawara.svg',
+  'tobu-tojo': 'https://upload.wikimedia.org/wikipedia/commons/7/76/Tobu_Tojo_Line_%28TJ%29_symbol.svg',
+  'tokyu-den-en-toshi': 'https://upload.wikimedia.org/wikipedia/commons/8/80/Tokyu_DT_line_symbol.svg',
+  'tokyu-toyoko': 'https://upload.wikimedia.org/wikipedia/commons/b/b0/Tokyu_TY_line_symbol.svg',
+  'tokyu-ikegami': 'https://upload.wikimedia.org/wikipedia/commons/1/17/Tokyu_IK_line_symbol.svg',
+  'tokyu-meguro': 'https://upload.wikimedia.org/wikipedia/commons/f/f0/Tokyu_MG_line_symbol.svg',
+  'tokyo-sakura-tram': 'https://upload.wikimedia.org/wikipedia/commons/6/66/Tokyo_Sakura_Tram_symbol.svg',
+  'nippori-toneri': 'https://upload.wikimedia.org/wikipedia/commons/9/9e/Nippori-Toneri_Liner_symbol.svg',
+  'tsukuba-express': 'https://upload.wikimedia.org/wikipedia/commons/2/2f/Tsukuba_Express_symbol.svg',
+  'keisei-main': 'https://upload.wikimedia.org/wikipedia/commons/b/bc/Number_prefix_Keisei.svg',
+  'keisei-skyliner': 'https://upload.wikimedia.org/wikipedia/commons/4/40/Number_prefix_SkyAccess.svg',
+  'tokyo-monorail': 'https://upload.wikimedia.org/wikipedia/commons/0/07/Tokyo_Monorail_Line_symbol.svg',
+  'yurikamome': 'https://upload.wikimedia.org/wikipedia/commons/1/1e/Yurikamome_line_symbol.svg',
+  'rinkai-line': 'https://upload.wikimedia.org/wikipedia/commons/e/e8/Rinkai_Line_symbol.svg',
+  'keikyu-main': 'https://upload.wikimedia.org/wikipedia/commons/e/e1/Number_prefix_Keiky%C5%AB.svg'
+};
+
+Object.entries(lineLogos).forEach(([id, logoUrl]) => {
+  if (lineCatalog[id]) {
+    lineCatalog[id].logo = logoUrl;
+  }
+});
+
 const stations = [
   {
     id: 'tokyo',
@@ -916,6 +966,17 @@ function setBackground(url) {
 }
 
 function renderLineIcon(line) {
+  if (line.logo) {
+    const img = document.createElement('img');
+    img.src = line.logo;
+    img.alt = '';
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.className = 'transfer-chip__logo';
+    img.setAttribute('aria-hidden', 'true');
+    return img;
+  }
+
   const svgNS = 'http://www.w3.org/2000/svg';
   if (line.iconType === 'shinkansen') {
     const svg = document.createElementNS(svgNS, 'svg');
@@ -1252,7 +1313,8 @@ function updateVolumeSliderUI() {
   volumeSlider.value = String(sliderValue);
   volumeSlider.setAttribute('aria-valuenow', String(sliderValue));
   volumeSlider.setAttribute('aria-valuetext', `${sliderValue}%`);
-  volumeSlider.style.setProperty('--volume-fill', `${sliderValue}%`);
+  const clamped = Math.max(0, Math.min(1, masterVolume));
+  volumeSlider.style.setProperty('--volume-fill', clamped.toString());
 }
 
 function setMasterVolume(volume, options = {}) {
@@ -1700,12 +1762,22 @@ function bindEvents() {
   });
   searchGoButton.addEventListener('click', jumpToSearch);
   darkModeToggle?.addEventListener('click', () => setDarkMode(!darkMode));
-  volumeSlider?.addEventListener('input', (event) => {
-    const value = Number.parseInt(event.target.value, 10);
-    if (!Number.isNaN(value)) {
-      setMasterVolume(value / 100);
-    }
-  });
+  if (volumeSlider) {
+    volumeSlider.setAttribute('aria-valuemin', '0');
+    volumeSlider.setAttribute('aria-valuemax', '100');
+    const handleVolumeInput = (event) => {
+      const target = event.currentTarget;
+      if (!(target instanceof HTMLInputElement)) {
+        return;
+      }
+      const value = Number.parseFloat(target.value);
+      if (!Number.isNaN(value)) {
+        setMasterVolume(value / 100);
+      }
+    };
+    volumeSlider.addEventListener('input', handleVolumeInput);
+    volumeSlider.addEventListener('change', handleVolumeInput);
+  }
   if (jingleAudio) {
     jingleAudio.addEventListener('ended', handleJingleEnd);
     jingleAudio.addEventListener('pause', handleJinglePause);

@@ -230,12 +230,12 @@ input:focus-visible,
   width: clamp(120px, 12vw, 160px);
   height: 0.35rem;
   border-radius: 999px;
-  --volume-fill: 80%;
+  --volume-fill: 0.8;
   background: linear-gradient(
       90deg,
       rgba(47, 158, 68, 0.85) 0%,
-      rgba(47, 158, 68, 0.85) var(--volume-fill),
-      rgba(47, 158, 68, 0.25) var(--volume-fill),
+      rgba(47, 158, 68, 0.85) calc(var(--volume-fill) * 100%),
+      rgba(47, 158, 68, 0.25) calc(var(--volume-fill) * 100%),
       rgba(47, 158, 68, 0.25) 100%
     );
   outline: none;
@@ -379,113 +379,106 @@ body.theme-dark .station-background {
 .station-direction__rail {
   position: relative;
   display: grid;
-  gap: 1.35rem;
+  grid-template-columns: minmax(0, 1fr) minmax(1.4rem, 1.8rem);
+  column-gap: 1.25rem;
+  row-gap: 1.35rem;
+  align-items: center;
 }
 
 .station-direction__item {
+  grid-column: 1;
   display: flex;
   justify-content: flex-end;
   align-items: center;
 }
 
+.station-direction__indicator {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  min-width: 1.4rem;
+  min-height: calc(var(--direction-travel, 0px) + 3rem);
+  pointer-events: none;
+}
+
+.station-direction__line {
+  position: relative;
+  width: 0.28rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(47, 158, 68, 0.35), rgba(47, 158, 68, 0.15));
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+.station-direction__line::before {
+  content: '';
+  position: absolute;
+  inset: -120% 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.9) 35%,
+    rgba(47, 158, 68, 0.9) 55%,
+    rgba(255, 255, 255, 0.85) 75%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 100% 200%;
+  animation: directionFlow 1.4s linear infinite;
+}
+
+.station-direction__line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.45), transparent 70%);
+  mix-blend-mode: screen;
+  opacity: 0.65;
+}
+
 .station-direction__shuttle {
   position: absolute;
   top: 0;
-  right: calc(100% + 0.65rem);
-  width: 2.35rem;
-  height: 2.35rem;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  transform: translateY(0);
-}
-
-.direction-indicator {
-  position: relative;
-  width: 2.35rem;
-  height: 2.35rem;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(47, 158, 68, 0.4), rgba(47, 158, 68, 0.75));
-  box-shadow: 0 12px 24px rgba(31, 59, 55, 0.22);
-  overflow: hidden;
-}
-
-.direction-indicator::after {
-  content: '';
-  position: absolute;
-  inset: 50% auto auto 50%;
-  width: 65%;
-  height: 0.18rem;
-  border-radius: 999px;
-  transform: translate(-50%, -50%);
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.2));
-  background-size: 200% 100%;
-  animation: indicatorTrack 1.4s linear infinite;
-  opacity: 0.85;
-}
-
-.direction-indicator::before {
-  content: '';
-  position: absolute;
-  top: 50%;
   left: 50%;
-  width: 0.75rem;
-  height: 0.75rem;
-  border-top: 0.18rem solid #fff;
-  border-right: 0.18rem solid #fff;
-  transform: translate(-70%, -50%) rotate(45deg);
-  border-radius: 0.2rem;
-  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.2));
-  animation: indicatorForward 1.4s ease-in-out infinite;
+  width: 1.4rem;
+  height: 1.4rem;
+  transform: translate(-50%, 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.direction-indicator--reverse {
-  transform: scaleX(-1);
+.station-direction__shuttle::before {
+  content: '';
+  width: 0.7rem;
+  height: 0.95rem;
+  background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.65) 100%);
+  clip-path: polygon(50% 100%, 0 44%, 30% 44%, 30% 0, 70% 0, 70% 44%, 100% 44%);
+  filter: drop-shadow(0 4px 6px rgba(31, 59, 55, 0.3));
+  transition: transform var(--transition-fast);
 }
 
-.direction-indicator--reverse::before {
-  animation-name: indicatorReverse;
+@keyframes directionFlow {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(100%);
+  }
 }
 
-.direction-indicator--reverse::after {
+.app[data-motion='forward'] .station-direction__shuttle::before {
+  transform: rotate(0deg);
+}
+
+.app[data-motion='backward'] .station-direction__line::before {
   animation-direction: reverse;
 }
 
-@keyframes indicatorTrack {
-  0% {
-    background-position: 0 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-@keyframes indicatorForward {
-  0% {
-    transform: translate(-110%, -50%) rotate(45deg);
-    opacity: 0;
-  }
-  45% {
-    opacity: 1;
-  }
-  100% {
-    transform: translate(10%, -50%) rotate(45deg);
-    opacity: 0;
-  }
-}
-
-@keyframes indicatorReverse {
-  0% {
-    transform: translate(-10%, -50%) rotate(45deg);
-    opacity: 0;
-  }
-  45% {
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-130%, -50%) rotate(45deg);
-    opacity: 0;
-  }
+.app[data-motion='backward'] .station-direction__shuttle::before {
+  transform: rotate(180deg);
 }
 
 .station-direction__text {
@@ -607,11 +600,16 @@ body.theme-dark .station-background {
 .transfer-chip__icon {
   width: 3.1rem;
   height: 3.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.transfer-chip__icon svg {
+.transfer-chip__icon svg,
+.transfer-chip__icon img {
   width: 100%;
   height: 100%;
+  object-fit: contain;
 }
 
 .transfer-chip__tooltip {
