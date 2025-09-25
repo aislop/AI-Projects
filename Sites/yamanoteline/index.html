@@ -26,6 +26,19 @@
         </div>
       </div>
       <div class="top-actions">
+        <div class="volume-control" role="group" aria-label="Master volume">
+          <span class="volume-control__icon" aria-hidden="true">🔊</span>
+          <label class="sr-only" for="volumeSlider">Announcement volume</label>
+          <input
+            id="volumeSlider"
+            class="volume-control__slider"
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value="80"
+          >
+        </div>
         <button id="rideModeButton" class="ghost-button" aria-pressed="true">Ride Mode On</button>
         <button id="ambientToggle" class="ghost-button" aria-pressed="false">Ambient Off</button>
         <button id="darkModeToggle" class="ghost-button" aria-pressed="false">🌙 Dark Mode</button>
@@ -55,18 +68,19 @@
       </section>
 
       <div class="station-direction" aria-hidden="true">
-        <div class="station-direction__item station-direction__item--prev">
-          <span class="direction-indicator direction-indicator--reverse" aria-hidden="true"></span>
-          <div class="station-direction__text">
-            <span class="station-direction__label">From</span>
-            <span id="directionPrevName" class="station-direction__name"></span>
+        <div class="station-direction__rail">
+          <span class="station-direction__shuttle direction-indicator" aria-hidden="true"></span>
+          <div class="station-direction__item station-direction__item--prev">
+            <div class="station-direction__text">
+              <span class="station-direction__label">From</span>
+              <span id="directionPrevName" class="station-direction__name"></span>
+            </div>
           </div>
-        </div>
-        <div class="station-direction__item station-direction__item--next">
-          <span class="direction-indicator direction-indicator--forward" aria-hidden="true"></span>
-          <div class="station-direction__text">
-            <span class="station-direction__label">Toward</span>
-            <span id="directionNextName" class="station-direction__name"></span>
+          <div class="station-direction__item station-direction__item--next">
+            <div class="station-direction__text">
+              <span class="station-direction__label">Toward</span>
+              <span id="directionNextName" class="station-direction__name"></span>
+            </div>
           </div>
         </div>
       </div>

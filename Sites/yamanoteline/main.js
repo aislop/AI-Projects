@@ -865,6 +865,20 @@ const searchGoButton = document.getElementById('jumpButton');
 const datalist = document.getElementById('stationList');
 const directionPrevName = document.getElementById('directionPrevName');
 const directionNextName = document.getElementById('directionNextName');
+const volumeSlider = document.getElementById('volumeSlider');
+const stationDirectionEl = document.querySelector('.station-direction');
+const directionRailEl = stationDirectionEl
+  ? stationDirectionEl.querySelector('.station-direction__rail')
+  : null;
+const directionPrevItem = stationDirectionEl
+  ? stationDirectionEl.querySelector('.station-direction__item--prev')
+  : null;
+const directionNextItem = stationDirectionEl
+  ? stationDirectionEl.querySelector('.station-direction__item--next')
+  : null;
+const directionShuttle = stationDirectionEl
+  ? stationDirectionEl.querySelector('.station-direction__shuttle')
+  : null;
 
 const announcementAudio = document.getElementById('announcementAudio');
 const jingleAudio = document.getElementById('jingleAudio');
@@ -880,6 +894,7 @@ let rideTimeout = null;
 let motionTimeoutHandle = null;
 let masterVolume = 0.8;
 let announcementsEnabled = true;
+let directionTravel = 0;
 
 const volumeKey = 'yamanote-volume';
 const rideModeKey = 'yamanote-ride-mode';
@@ -1073,6 +1088,59 @@ function updatePreviews(index) {
   }
 }
 
+function calculateDirectionTravel() {
+  if (!directionPrevItem || !directionNextItem) {
+    directionTravel = 0;
+    return;
+  }
+  const prevRect = directionPrevItem.getBoundingClientRect();
+  const nextRect = directionNextItem.getBoundingClientRect();
+  const distance = nextRect.top - prevRect.top;
+  if (Number.isFinite(distance) && distance !== 0) {
+    directionTravel = distance;
+    if (directionRailEl) {
+      directionRailEl.style.setProperty('--direction-travel', `${distance}px`);
+    }
+  } else {
+    directionTravel = 0;
+  }
+}
+
+function animateDirectionShuttle(direction) {
+  if (!directionShuttle || direction === 0) {
+    return;
+  }
+  if (!directionTravel) {
+    calculateDirectionTravel();
+  }
+  if (!directionTravel) {
+    return;
+  }
+  const travel = Math.abs(directionTravel);
+  const start = direction > 0 ? 0 : travel;
+  const end = direction > 0 ? travel : 0;
+  directionShuttle.getAnimations().forEach((animation) => animation.cancel());
+  directionShuttle.style.transform = `translateY(${start}px)`;
+  requestAnimationFrame(() => {
+    const animation = directionShuttle.animate(
+      [
+        { transform: `translateY(${start}px)` },
+        { transform: `translateY(${end}px)` }
+      ],
+      {
+        duration: 700,
+        easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+        fill: 'forwards'
+      }
+    );
+    const reset = () => {
+      directionShuttle.style.transform = 'translateY(0)';
+    };
+    animation.addEventListener('finish', reset, { once: true });
+    animation.addEventListener('cancel', reset, { once: true });
+  });
+}
+
 function updateTrackLabel(mode = 'Stopped') {
   const station = stations[currentStationIndex];
   trackLabel.textContent = `${mode} • ${station.name}`;
@@ -1178,6 +1246,26 @@ function applyVolume() {
   ambientAudio.volume = ambientOn ? Math.min(0.5, volume * 0.5) : 0;
 }
 
+function updateVolumeSliderUI() {
+  if (!volumeSlider) return;
+  const sliderValue = Math.round(masterVolume * 100);
+  volumeSlider.value = String(sliderValue);
+  volumeSlider.setAttribute('aria-valuenow', String(sliderValue));
+  volumeSlider.setAttribute('aria-valuetext', `${sliderValue}%`);
+  volumeSlider.style.setProperty('--volume-fill', `${sliderValue}%`);
+}
+
+function setMasterVolume(volume, options = {}) {
+  const { persist = true } = options;
+  const normalized = Math.max(0, Math.min(1, volume));
+  masterVolume = normalized;
+  applyVolume();
+  updateVolumeSliderUI();
+  if (persist) {
+    localStorage.setItem(volumeKey, normalized.toString());
+  }
+}
+
 function stopJinglePlayback(clearSrc = true) {
   if (!jingleAudio) return;
   jingleAudio.pause();
@@ -1258,6 +1346,10 @@ function goToStation(index, options = {}) {
   updateTransferLines(station);
   updatePreviews(currentStationIndex);
   updateTrackLabel('Ready');
+  requestAnimationFrame(() => {
+    calculateDirectionTravel();
+    animateDirectionShuttle(direction);
+  });
   centerMapOnIndex(currentStationIndex);
 
   announcementAudio.src = getAnnouncementSrc(station);
@@ -1542,12 +1634,13 @@ function hydrateSettings() {
   if (storedVolume !== null) {
     const parsedVolume = parseFloat(storedVolume);
     if (!Number.isNaN(parsedVolume)) {
-      masterVolume = parsedVolume;
+      setMasterVolume(parsedVolume, { persist: false });
+    } else {
+      setMasterVolume(0.8, { persist: false });
     }
   } else {
-    masterVolume = 0.8;
+    setMasterVolume(0.8, { persist: false });
   }
-  applyVolume();
 
   const storedAnnouncements = localStorage.getItem(announcementsKey);
   setAnnouncementsEnabled(storedAnnouncements !== '0', { autoPlay: false });
@@ -1607,12 +1700,21 @@ function bindEvents() {
   });
   searchGoButton.addEventListener('click', jumpToSearch);
   darkModeToggle?.addEventListener('click', () => setDarkMode(!darkMode));
+  volumeSlider?.addEventListener('input', (event) => {
+    const value = Number.parseInt(event.target.value, 10);
+    if (!Number.isNaN(value)) {
+      setMasterVolume(value / 100);
+    }
+  });
   if (jingleAudio) {
     jingleAudio.addEventListener('ended', handleJingleEnd);
     jingleAudio.addEventListener('pause', handleJinglePause);
     jingleAudio.addEventListener('play', handleJinglePlay);
     jingleAudio.addEventListener('error', handleJingleError);
   }
+  window.addEventListener('resize', () => {
+    requestAnimationFrame(calculateDirectionTravel);
+  });
 }
 
 function init() {
