@@ -485,7 +485,6 @@ const skipBtn = document.getElementById('skipStation');
 const volumeSlider = document.getElementById('volumeSlider');
 const volumeToggle = document.getElementById('volumeToggle');
 const audioVolumeContainer = document.querySelector('.audio-pill__volume');
-const muteButton = document.getElementById('muteButton');
 const trackLabel = document.getElementById('currentTrackLabel');
 const rideModeButton = document.getElementById('rideModeButton');
 const ambientToggle = document.getElementById('ambientToggle');
@@ -504,8 +503,7 @@ const ambientAudio = document.getElementById('ambientAudio');
 
 let currentStationIndex = 0;
 let scrollLock = false;
-let isMuted = false;
-let rideMode = false;
+let rideMode = true;
 let ambientOn = false;
 let rideTimeout = null;
 let motionTimeoutHandle = null;
@@ -626,16 +624,9 @@ function setAmbient(enabled) {
   }
 }
 
-function setMute(enabled) {
-  isMuted = enabled;
-  muteButton.setAttribute('aria-pressed', String(enabled));
-  muteButton.textContent = enabled ? 'Unmute' : 'Mute';
-  applyVolume();
-}
-
 function applyVolume() {
   const volume = parseFloat(volumeSlider.value);
-  announcementAudio.volume = isMuted ? 0 : volume;
+  announcementAudio.volume = volume;
   ambientAudio.volume = ambientOn ? Math.min(0.5, volume * 0.5) : 0;
 }
 
@@ -739,7 +730,7 @@ function openMap() {
   mapOverlay.classList.add('is-visible');
   mapOverlay.setAttribute('aria-hidden', 'false');
   mapToggle.setAttribute('aria-expanded', 'true');
-  audioMapButton.setAttribute('aria-expanded', 'true');
+  audioMapButton?.setAttribute('aria-expanded', 'true');
   centerMapOnIndex(currentStationIndex);
 }
 
@@ -747,7 +738,7 @@ function closeMapOverlay() {
   mapOverlay.classList.remove('is-visible');
   mapOverlay.setAttribute('aria-hidden', 'true');
   mapToggle.setAttribute('aria-expanded', 'false');
-  audioMapButton.setAttribute('aria-expanded', 'false');
+  audioMapButton?.setAttribute('aria-expanded', 'false');
 }
 
 function buildMap() {
@@ -806,8 +797,11 @@ function centerMapOnIndex(index) {
     return;
   }
   const offsetTop = node.offsetTop + node.offsetHeight / 2;
-  const offset = containerHeight / 2 - offsetTop;
-  mapLine.style.transform = `translateY(${offset}px)`;
+  const target = Math.max(offsetTop - containerHeight / 2, 0);
+  container.scrollTop = target;
+  if (mapOverlay.classList.contains('is-visible')) {
+    container.scrollTo({ top: target, behavior: 'smooth' });
+  }
   highlightMapNode();
 }
 
@@ -907,9 +901,7 @@ function hydrateSettings() {
   const storedVolume = localStorage.getItem(volumeKey);
   setVolume(storedVolume ?? '0.8');
 
-  const storedRideValue = localStorage.getItem(rideModeKey);
-  const rideDefault = storedRideValue === null ? true : storedRideValue === '1';
-  setRideMode(rideDefault);
+  setRideMode(true);
 
   const storedAmbient = localStorage.getItem(ambientKey) === '1';
   setAmbient(storedAmbient);
@@ -929,7 +921,6 @@ function bindEvents() {
     audioVolumeContainer.dataset.open = 'false';
     volumeToggle?.setAttribute('aria-expanded', 'false');
   });
-  muteButton.addEventListener('click', () => setMute(!isMuted));
   rideModeButton.addEventListener('click', () => setRideMode(!rideMode));
   ambientToggle.addEventListener('click', () => setAmbient(!ambientOn));
   mapToggle.addEventListener('click', () => {
