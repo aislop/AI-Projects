@@ -28,6 +28,7 @@
       <div class="top-actions">
         <button id="rideModeButton" class="ghost-button" aria-pressed="true">Ride Mode On</button>
         <button id="ambientToggle" class="ghost-button" aria-pressed="false">Ambient Off</button>
+        <button id="darkModeToggle" class="ghost-button" aria-pressed="false">🌙 Dark Mode</button>
       </div>
     </header>
 
@@ -54,6 +55,7 @@
 
       <div class="audio-pill" role="region" aria-label="Station announcements">
         <div class="audio-pill__controls">
+          <button id="prevStation" class="pill-button" aria-label="Skip to previous station">⏮</button>
           <button id="playPause" class="pill-button" aria-pressed="false" aria-label="Play or pause announcement">▶</button>
           <button id="skipStation" class="pill-button" aria-label="Skip to next station">⏭</button>
           <div class="audio-pill__volume" data-open="false">
@@ -92,6 +94,7 @@
   </div>
 
   <audio id="announcementAudio" preload="auto" crossorigin="anonymous"></audio>
+  <audio id="jingleAudio" preload="auto" crossorigin="anonymous"></audio>
   <audio id="ambientAudio" preload="auto" loop crossorigin="anonymous" src="https://cdn.pixabay.com/audio/2022/03/15/audio_54c178aeb5.mp3"></audio>
 
   <script src="main.js" type="module"></script>
