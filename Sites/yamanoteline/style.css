@@ -1,5 +1,6 @@
 :root {
   color-scheme: dark;
+
   --bg-dark: rgba(5, 15, 30, 0.75);
   --glass: rgba(15, 25, 45, 0.75);
   --accent: #3fc3ff;
@@ -9,11 +10,13 @@
   --info-bg: rgba(20, 35, 60, 0.65);
   --shadow-lg: 0 25px 60px rgba(0, 0, 0, 0.45);
   --transition-fast: 200ms ease;
+
 }
 
 * {
   box-sizing: border-box;
 }
+
 
 body {
   margin: 0;
