@@ -3,66 +3,86 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Yamanote Line - Stations on Circle with Dark Mode</title>
-  <!-- Basic Content Security Policy -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
+  <title>Yamanote Line Immersive Guide</title>
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; img-src 'self' data: https://images.unsplash.com https://media.timeout.com https://upload.wikimedia.org https://cdn.pixabay.com; media-src 'self' https://madewithonlyai.com https://cdn.pixabay.com; style-src 'self' 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self';">
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="layout-modern.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <!-- Circle wrapper for arrows and station labels -->
-  <div id="circleWrapper">
-    <div id="arrowContainer"></div>
-    <div id="stations"></div>
+  <div id="app" class="app">
+    <header class="top-bar">
+      <button id="mapToggle" class="ghost-button" aria-expanded="false">Map</button>
+      <div class="search-wrapper">
+        <label class="sr-only" for="stationSearch">Search stations</label>
+        <input id="stationSearch" list="stationList" type="search" placeholder="Search stations…" autocomplete="off">
+        <datalist id="stationList"></datalist>
+        <button id="jumpButton" class="ghost-button">Go</button>
+      </div>
+      <div class="top-actions">
+        <button id="rideModeButton" class="ghost-button" aria-pressed="true">Ride Mode On</button>
+        <button id="ambientToggle" class="ghost-button" aria-pressed="false">Ambient Off</button>
+      </div>
+    </header>
+
+    <main id="stationViewport" class="station-viewport" tabindex="0">
+      <div id="stationBackground" class="station-background" role="img" aria-live="polite"></div>
+      <div class="station-overlay"></div>
+
+      <div id="prevStationPreview" class="station-preview station-preview--previous" aria-hidden="true"></div>
+      <div id="nextStationPreview" class="station-preview station-preview--next" aria-hidden="true"></div>
+
+      <section class="station-content">
+        <div class="station-name">
+          <span id="stationNameJp" class="station-name__jp" lang="ja"></span>
+          <span id="stationNameEn" class="station-name__en"></span>
+        </div>
+        <article class="station-info">
+          <h2 class="station-info__heading">About this station</h2>
+          <p id="stationAbout"></p>
+        </article>
+        <section class="transfer-lines" aria-label="Transfer lines">
+          <h3 class="transfer-lines__heading">Transfers</h3>
+          <div id="transferLines" class="transfer-lines__list"></div>
+        </section>
+      </section>
+
+      <div class="audio-panel" role="region" aria-label="Station announcements">
+        <div class="audio-panel__primary">
+          <button id="playPause" class="control-button" aria-pressed="false">▶</button>
+          <button id="skipStation" class="control-button" aria-label="Skip to next station">⏭</button>
+          <div class="volume-control">
+            <label for="volumeSlider">Volume</label>
+            <input id="volumeSlider" type="range" min="0" max="1" step="0.01">
+          </div>
+        </div>
+        <div class="audio-panel__secondary">
+          <span id="currentTrackLabel" class="track-label"></span>
+          <button id="muteButton" class="ghost-button" aria-pressed="false">Mute</button>
+        </div>
+      </div>
+
+      <nav class="mobile-dock" aria-label="Mobile controls">
+        <button id="mobilePlay" class="dock-button" aria-pressed="false">▶</button>
+        <button id="mobileSkip" class="dock-button" aria-label="Skip to next">⏭</button>
+        <button id="mobileMap" class="dock-button" aria-expanded="false">Map</button>
+      </nav>
+    </main>
+
+    <aside id="mapOverlay" class="map-overlay" aria-hidden="true">
+      <div class="map-overlay__inner">
+        <button id="closeMap" class="ghost-button map-overlay__close" aria-label="Close map">×</button>
+        <h2>Yamanote Loop</h2>
+        <svg id="loopMap" viewBox="0 0 1400 400" role="img" aria-label="Interactive map of the Yamanote Line"></svg>
+      </div>
+    </aside>
   </div>
 
-  <!-- Audio bar at the bottom (single horizontal row) -->
-  <div id="audioPlayer">
-    <div class="left-controls">
-      <div class="volume-control">
-        <span class="volume-label">Announcement</span>
-        <button class="volume-icon" id="announcementVolumeIcon">🔊</button>
-        <input type="range" id="announcementVolumeSlider" min="0" max="1" step="0.01" value="1">
-      </div>
-      <div class="volume-control">
-        <span class="volume-label">Station</span>
-        <button class="volume-icon" id="stationVolumeIcon">🔊</button>
-        <input type="range" id="stationVolumeSlider" min="0" max="1" step="0.01" value="1">
-      </div>
-    </div>
-    <div class="center-controls">
-      <span id="currentStation">No station selected</span>
-      <button id="playPauseBtn" class="control-button">▶</button>
-    </div>
-    <div class="right-controls">
-      <div class="switch-control">
-        <span id="skipText">Skip Announcements</span>
-        <label class="switch">
-          <input type="checkbox" id="skipAnnouncement">
-          <span class="slider round"></span>
-        </label>
-      </div>
-      <div class="switch-control">
-        <span id="directionText">Clockwise</span>
-        <label class="switch">
-          <input type="checkbox" id="directionToggle" checked>
-          <span class="slider round"></span>
-        </label>
-      </div>
-      <div class="switch-control">
-        <span id="darkModeText">Light Mode</span>
-        <label class="switch">
-          <input type="checkbox" id="darkModeToggle">
-          <span class="slider round"></span>
-        </label>
-      </div>
-      <button id="layoutToggle" class="layout-button">Switch Layout</button>
-    </div>
-  </div>
+  <audio id="announcementAudio" preload="auto" crossorigin="anonymous"></audio>
+  <audio id="ambientAudio" preload="auto" loop crossorigin="anonymous" src="https://cdn.pixabay.com/audio/2022/03/15/audio_54c178aeb5.mp3"></audio>
 
-  <!-- Hidden audio element for playback -->
-  <audio id="audio" preload="auto"></audio>
-
-  <script src="main.js"></script>
+  <script src="main.js" type="module"></script>
 </body>
 </html>
