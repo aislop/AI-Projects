@@ -15,6 +15,401 @@ function getJingleSrc(station) {
   return `${resolveMediaPath(station.mp3Station)}${CACHE_BUST}`;
 }
 
+const lineCatalog = {
+  'jr-chuo-rapid': {
+    name: 'JR Chuo Line (Rapid)',
+    operator: 'JR East',
+    symbol: 'JC',
+    color: '#f15a24',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'jr-keihin-tohoku': {
+    name: 'JR Keihin-Tohoku Line',
+    operator: 'JR East',
+    symbol: 'JK',
+    color: '#00a0de',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'jr-tokaido': {
+    name: 'JR Tokaido Line',
+    operator: 'JR East',
+    symbol: 'JT',
+    color: '#f39700',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'jr-utsunomiya': {
+    name: 'JR Utsunomiya Line',
+    operator: 'JR East',
+    symbol: 'JU',
+    color: '#f58220',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'jr-takasaki': {
+    name: 'JR Takasaki Line',
+    operator: 'JR East',
+    symbol: 'JU',
+    color: '#f58220',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'jr-joban-rapid': {
+    name: 'JR Joban Line (Rapid)',
+    operator: 'JR East',
+    symbol: 'JJ',
+    color: '#00796b',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'jr-keiyo': {
+    name: 'JR Keiyo Line',
+    operator: 'JR East',
+    symbol: 'JE',
+    color: '#d81b60',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'jr-yokosuka-sobu': {
+    name: 'JR Yokosuka Line / Sobu Rapid Line',
+    operator: 'JR East',
+    symbol: 'JO',
+    color: '#1e3a8a',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'jr-chuo-sobu': {
+    name: 'JR Chuo-Sobu Line (Local)',
+    operator: 'JR East',
+    symbol: 'JB',
+    color: '#f6b221',
+    textColor: '#1f1f1f',
+    iconType: 'circle'
+  },
+  'jr-saikyo': {
+    name: 'JR Saikyo Line',
+    operator: 'JR East',
+    symbol: 'JA',
+    color: '#009944',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'jr-shonan-shinjuku': {
+    name: 'JR Shonan-Shinjuku Line',
+    operator: 'JR East',
+    symbol: 'JS',
+    color: '#ef5350',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'tokyo-metro-marunouchi': {
+    name: 'Tokyo Metro Marunouchi Line',
+    operator: 'Tokyo Metro',
+    symbol: 'M',
+    color: '#e60012',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'tokyo-metro-ginza': {
+    name: 'Tokyo Metro Ginza Line',
+    operator: 'Tokyo Metro',
+    symbol: 'G',
+    color: '#f9a825',
+    textColor: '#1f1f1f',
+    iconType: 'circle'
+  },
+  'tokyo-metro-hibiya': {
+    name: 'Tokyo Metro Hibiya Line',
+    operator: 'Tokyo Metro',
+    symbol: 'H',
+    color: '#b0b7b6',
+    textColor: '#1f1f1f',
+    iconType: 'circle'
+  },
+  'tokyo-metro-tozai': {
+    name: 'Tokyo Metro Tozai Line',
+    operator: 'Tokyo Metro',
+    symbol: 'T',
+    color: '#00a7db',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'tokyo-metro-yurakucho': {
+    name: 'Tokyo Metro Yurakucho Line',
+    operator: 'Tokyo Metro',
+    symbol: 'Y',
+    color: '#c3922d',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'tokyo-metro-chiyoda': {
+    name: 'Tokyo Metro Chiyoda Line',
+    operator: 'Tokyo Metro',
+    symbol: 'C',
+    color: '#00a65f',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'tokyo-metro-namboku': {
+    name: 'Tokyo Metro Namboku Line',
+    operator: 'Tokyo Metro',
+    symbol: 'N',
+    color: '#00ada9',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'tokyo-metro-fukutoshin': {
+    name: 'Tokyo Metro Fukutoshin Line',
+    operator: 'Tokyo Metro',
+    symbol: 'F',
+    color: '#6d4c41',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'tokyo-metro-hanzomon': {
+    name: 'Tokyo Metro Hanzomon Line',
+    operator: 'Tokyo Metro',
+    symbol: 'Z',
+    color: '#7b1fa2',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'toei-asakusa': {
+    name: 'Toei Asakusa Line',
+    operator: 'Toei',
+    symbol: 'A',
+    color: '#e4007f',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'toei-mita': {
+    name: 'Toei Mita Line',
+    operator: 'Toei',
+    symbol: 'I',
+    color: '#0064a4',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'toei-oedo': {
+    name: 'Toei Oedo Line',
+    operator: 'Toei',
+    symbol: 'E',
+    color: '#b6007a',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'toei-shinjuku': {
+    name: 'Toei Shinjuku Line',
+    operator: 'Toei',
+    symbol: 'S',
+    color: '#6cbb5a',
+    textColor: '#1f1f1f',
+    iconType: 'circle'
+  },
+  'keio-line': {
+    name: 'Keio Line',
+    operator: 'Keio Corporation',
+    symbol: 'KO',
+    color: '#d5007f',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'keio-inokashira': {
+    name: 'Keio Inokashira Line',
+    operator: 'Keio Corporation',
+    symbol: 'IN',
+    color: '#f06292',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'odakyu-odawara': {
+    name: 'Odakyu Odawara Line',
+    operator: 'Odakyu Electric Railway',
+    symbol: 'OH',
+    color: '#009fe8',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'seibu-ikebukuro': {
+    name: 'Seibu Ikebukuro Line',
+    operator: 'Seibu Railway',
+    symbol: 'SI',
+    color: '#005bac',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'seibu-shinjuku': {
+    name: 'Seibu Shinjuku Line',
+    operator: 'Seibu Railway',
+    symbol: 'SS',
+    color: '#8e24aa',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'tobu-tojo': {
+    name: 'Tobu Tojo Line',
+    operator: 'Tobu Railway',
+    symbol: 'TJ',
+    color: '#0064c8',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'tokyu-den-en-toshi': {
+    name: 'Tokyu Den-en-toshi Line',
+    operator: 'Tokyu Corporation',
+    symbol: 'DT',
+    color: '#009688',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'tokyu-toyoko': {
+    name: 'Tokyu Toyoko Line',
+    operator: 'Tokyu Corporation',
+    symbol: 'TY',
+    color: '#e53935',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'tokyu-ikegami': {
+    name: 'Tokyu Ikegami Line',
+    operator: 'Tokyu Corporation',
+    symbol: 'IK',
+    color: '#ff7043',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'tokyu-meguro': {
+    name: 'Tokyu Meguro Line',
+    operator: 'Tokyu Corporation',
+    symbol: 'MG',
+    color: '#795548',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'tokyo-sakura-tram': {
+    name: 'Tokyo Sakura Tram (Toden Arakawa Line)',
+    operator: 'Toei',
+    symbol: 'SA',
+    color: '#ec407a',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'nippori-toneri': {
+    name: 'Nippori-Toneri Liner',
+    operator: 'Toei',
+    symbol: 'NT',
+    color: '#43a047',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'tsukuba-express': {
+    name: 'Tsukuba Express',
+    operator: 'Metropolitan Intercity Railway',
+    symbol: 'TX',
+    color: '#1f2f96',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'keisei-main': {
+    name: 'Keisei Main Line',
+    operator: 'Keisei Electric Railway',
+    symbol: 'KS',
+    color: '#1a73e8',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'keisei-skyliner': {
+    name: 'Keisei Skyliner',
+    operator: 'Keisei Electric Railway',
+    symbol: 'SK',
+    color: '#0d47a1',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'tokyo-monorail': {
+    name: 'Tokyo Monorail',
+    operator: 'Tokyo Monorail',
+    symbol: 'MO',
+    color: '#0f70b7',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'yurikamome': {
+    name: 'Yurikamome Line',
+    operator: 'Yurikamome Inc.',
+    symbol: 'U',
+    color: '#26c6da',
+    textColor: '#1f1f1f',
+    iconType: 'circle'
+  },
+  'rinkai-line': {
+    name: 'Rinkai Line',
+    operator: 'Tokyo Waterfront Area Rapid Transit',
+    symbol: 'R',
+    color: '#3949ab',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'keikyu-main': {
+    name: 'Keikyu Main Line',
+    operator: 'Keikyu Corporation',
+    symbol: 'KK',
+    color: '#d32f2f',
+    textColor: '#ffffff',
+    iconType: 'circle'
+  },
+  'shinkansen-tokaido': {
+    name: 'Tokaido Shinkansen',
+    operator: 'JR Central',
+    color: '#0d47a1',
+    accentColor: '#4fc3f7',
+    textColor: '#ffffff',
+    iconType: 'shinkansen'
+  },
+  'shinkansen-tohoku-hokkaido': {
+    name: 'Tohoku / Hokkaido Shinkansen',
+    operator: 'JR East',
+    color: '#00796b',
+    accentColor: '#80cbc4',
+    textColor: '#ffffff',
+    iconType: 'shinkansen'
+  },
+  'shinkansen-joetsu': {
+    name: 'Joetsu Shinkansen',
+    operator: 'JR East',
+    color: '#ff8f00',
+    accentColor: '#ffe082',
+    textColor: '#ffffff',
+    iconType: 'shinkansen'
+  },
+  'shinkansen-hokuriku': {
+    name: 'Hokuriku Shinkansen',
+    operator: 'JR East / JR West',
+    color: '#b8860b',
+    accentColor: '#f9e0a3',
+    textColor: '#ffffff',
+    iconType: 'shinkansen'
+  },
+  'shinkansen-yamagata': {
+    name: 'Yamagata Shinkansen',
+    operator: 'JR East',
+    color: '#689f38',
+    accentColor: '#c5e1a5',
+    textColor: '#ffffff',
+    iconType: 'shinkansen'
+  },
+  'shinkansen-akita': {
+    name: 'Akita Shinkansen',
+    operator: 'JR East',
+    color: '#c62828',
+    accentColor: '#ef9a9a',
+    textColor: '#ffffff',
+    iconType: 'shinkansen'
+  }
+};
+
 const stations = [
   {
     id: 'tokyo',
@@ -25,10 +420,21 @@ const stations = [
     background:
       'https://images.unsplash.com/photo-1549692520-acc6669e2f0c?auto=format&fit=crop&w=1600&q=80',
     transfers: [
-      { name: 'JR Chuo Line (Rapid)', code: 'JC', color: '#f15a24', operator: 'JR East' },
-      { name: 'JR Keihin-Tohoku Line', code: 'JK', color: '#00bcd4', operator: 'JR East' },
-      { name: 'Tokaido Shinkansen', code: '🚄', color: '#1b5e20', operator: 'JR Central' },
-      { name: 'Tokyo Metro Marunouchi Line', code: 'M', color: '#c62828', operator: 'Tokyo Metro' }
+      'jr-chuo-rapid',
+      'jr-keihin-tohoku',
+      'jr-tokaido',
+      'jr-utsunomiya',
+      'jr-takasaki',
+      'jr-joban-rapid',
+      'jr-keiyo',
+      'jr-yokosuka-sobu',
+      'shinkansen-tokaido',
+      'shinkansen-tohoku-hokkaido',
+      'shinkansen-joetsu',
+      'shinkansen-hokuriku',
+      'shinkansen-yamagata',
+      'shinkansen-akita',
+      'tokyo-metro-marunouchi'
     ],
     mp3Announcement: "Sites/yamanoteline/announcements/tokyo-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Tokyo.mp3"
@@ -41,10 +447,7 @@ const stations = [
       'Kanda blends old-world wholesalers with a growing tech crowd, filling the side streets with retro coffee shops and lively izakaya. Students from nearby universities keep the district energetic well into the night.',
     background:
       'https://images.unsplash.com/photo-1512455102795-3d1d229e2b6f?auto=format&fit=crop&w=1600&q=80',
-    transfers: [
-      { name: 'JR Chuo Line (Rapid)', code: 'JC', color: '#f15a24', operator: 'JR East' },
-      { name: 'Tokyo Metro Ginza Line', code: 'G', color: '#f9a825', operator: 'Tokyo Metro' }
-    ],
+    transfers: ['jr-chuo-rapid', 'jr-keihin-tohoku', 'tokyo-metro-ginza'],
     mp3Announcement: "Sites/yamanoteline/announcements/kanda-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Kanda.mp3"
   },
@@ -56,11 +459,7 @@ const stations = [
       'Electric Town dazzles with towering anime billboards, electronics megastores, and specialty game shops. From maid cafés to retro arcades, Akihabara celebrates subculture and tech innovation on every block.',
     background:
       'https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1600&q=80',
-    transfers: [
-      { name: 'JR Sobu Line', code: 'JB', color: '#f6b27b', operator: 'JR East' },
-      { name: 'Tokyo Metro Hibiya Line', code: 'H', color: '#9e9d24', operator: 'Tokyo Metro' },
-      { name: 'Tsukuba Express', code: 'TX', color: '#5c6bc0', operator: 'Metropolitan Intercity Railway' }
-    ],
+    transfers: ['jr-keihin-tohoku', 'jr-chuo-sobu', 'tokyo-metro-hibiya', 'tsukuba-express'],
     mp3Announcement: "Sites/yamanoteline/announcements/akihabara-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Akihabara.mp3"
   },
@@ -72,9 +471,7 @@ const stations = [
       'Okachimachi connects the open-air stalls of Ameya-Yokocho with polished jewelry boutiques under the tracks. The neighborhood\'s mix of street eats and craft workshops makes it a favorite for treasure hunters.',
     background:
       'https://images.unsplash.com/photo-1542051841857-5f90071e7989?auto=format&fit=crop&w=1600&q=80',
-    transfers: [
-      { name: 'JR Keihin-Tohoku Line', code: 'JK', color: '#00bcd4', operator: 'JR East' }
-    ],
+    transfers: ['jr-keihin-tohoku', 'tokyo-metro-ginza', 'tokyo-metro-hibiya', 'toei-oedo'],
     mp3Announcement: "Sites/yamanoteline/announcements/okachimachi-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Okachimachi.mp3"
   },
@@ -87,11 +484,19 @@ const stations = [
     background:
       'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1600&q=80',
     transfers: [
-      { name: 'JR Utsunomiya Line', code: 'JU', color: '#f57c00', operator: 'JR East' },
-      { name: 'JR Joban Line', code: 'JJ', color: '#00796b', operator: 'JR East' },
-      { name: 'Tokyo Metro Ginza Line', code: 'G', color: '#f9a825', operator: 'Tokyo Metro' },
-      { name: 'Tokyo Metro Hibiya Line', code: 'H', color: '#9e9d24', operator: 'Tokyo Metro' },
-      { name: 'Keisei Main Line', code: 'KS', color: '#1a73e8', operator: 'Keisei Electric Railway' }
+      'jr-keihin-tohoku',
+      'jr-utsunomiya',
+      'jr-takasaki',
+      'jr-joban-rapid',
+      'tokyo-metro-ginza',
+      'tokyo-metro-hibiya',
+      'keisei-main',
+      'keisei-skyliner',
+      'shinkansen-tohoku-hokkaido',
+      'shinkansen-yamagata',
+      'shinkansen-akita',
+      'shinkansen-joetsu',
+      'shinkansen-hokuriku'
     ],
     mp3Announcement: "Sites/yamanoteline/announcements/ueno-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Ueno.mp3"
@@ -104,9 +509,7 @@ const stations = [
       'Named for the warbling nightingales once heard here, Uguisudani now offers quiet residential lanes beside small museums and Showa-era cafés. The gentle hillside views contrast with the bustle of nearby Ueno.',
     background:
       'https://images.unsplash.com/photo-1542038791-0d9df90f6a5a?auto=format&fit=crop&w=1600&q=80',
-    transfers: [
-      { name: 'JR Keihin-Tohoku Line', code: 'JK', color: '#00bcd4', operator: 'JR East' }
-    ],
+    transfers: ['jr-keihin-tohoku'],
     mp3Announcement: "Sites/yamanoteline/announcements/uguisudani-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Uguisudani.mp3"
   },
@@ -118,11 +521,7 @@ const stations = [
       'Nippori bridges tradition and creativity, with Yanaka\'s old temples on one side and the fabric district\'s rainbow bolts on the other. Travelers connect here to reach Narita via the Keisei Skyliner.',
     background:
       'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=1600&q=80',
-    transfers: [
-      { name: 'JR Keihin-Tohoku Line', code: 'JK', color: '#00bcd4', operator: 'JR East' },
-      { name: 'JR Joban Line', code: 'JJ', color: '#00796b', operator: 'JR East' },
-      { name: 'Keisei Skyliner', code: 'KS', color: '#1a73e8', operator: 'Keisei Electric Railway' }
-    ],
+    transfers: ['jr-keihin-tohoku', 'jr-joban-rapid', 'keisei-main', 'keisei-skyliner', 'nippori-toneri'],
     mp3Announcement: "Sites/yamanoteline/announcements/nippori-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Nippori.mp3"
   },
@@ -134,10 +533,7 @@ const stations = [
       'Residential towers and neighborhood ramen counters define Nishi-Nippori. It is a convenient interchange linking the Chiyoda Line and the Nippori-Toneri Liner to Tokyo\'s northeastern suburbs.',
     background:
       'https://images.unsplash.com/photo-1517638851339-4aa32003c11a?auto=format&fit=crop&w=1600&q=80',
-    transfers: [
-      { name: 'Tokyo Metro Chiyoda Line', code: 'C', color: '#009688', operator: 'Tokyo Metro' },
-      { name: 'Nippori-Toneri Liner', code: 'NT', color: '#43a047', operator: 'Toei' }
-    ],
+    transfers: ['jr-keihin-tohoku', 'tokyo-metro-chiyoda', 'nippori-toneri'],
     mp3Announcement: "Sites/yamanoteline/announcements/nishinippori-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Nishinippori.mp3"
   },
@@ -149,9 +545,7 @@ const stations = [
       'Tabata sits atop a ridge with long-established residential streets and views over the Sumida River rail yards. It is a practical stop for commuters heading toward Saitama and northern Tokyo.',
     background:
       'https://images.unsplash.com/photo-1566977744263-0bb0048e9b25?auto=format&fit=crop&w=1600&q=80',
-    transfers: [
-      { name: 'JR Keihin-Tohoku Line', code: 'JK', color: '#00bcd4', operator: 'JR East' }
-    ],
+    transfers: ['jr-keihin-tohoku', 'jr-utsunomiya', 'jr-takasaki'],
     mp3Announcement: "Sites/yamanoteline/announcements/tabata-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Tabata.mp3"
   },
@@ -163,9 +557,7 @@ const stations = [
       'Komagome is famed for Rikugien Garden, a classical landscaped retreat glowing with autumn maples and spring azaleas. Shopping arcades by the station serve fresh wagashi and tea to strolling visitors.',
     background:
       'https://images.unsplash.com/photo-1526481280695-3d1d229e2b6f?auto=format&fit=crop&w=1600&q=80',
-    transfers: [
-      { name: 'Tokyo Metro Namboku Line', code: 'N', color: '#26a69a', operator: 'Tokyo Metro' }
-    ],
+    transfers: ['tokyo-metro-namboku'],
     mp3Announcement: "Sites/yamanoteline/announcements/komagome-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Komagome.mp3"
   },
@@ -177,9 +569,7 @@ const stations = [
       'Nicknamed the “Harajuku for grandmas,” Sugamo\'s Jizo-dori shopping street bustles with red underwear shops, sweets stalls, and pilgrims to Koganji Temple. Seasonal festivals keep the retro atmosphere lively.',
     background:
       'https://images.unsplash.com/photo-1529921879218-f9956cc87d77?auto=format&fit=crop&w=1600&q=80',
-    transfers: [
-      { name: 'Toei Mita Line', code: 'I', color: '#1565c0', operator: 'Toei' }
-    ],
+    transfers: ['toei-mita'],
     mp3Announcement: "Sites/yamanoteline/announcements/sugamo-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Sugamo.mp3"
   },
@@ -191,9 +581,7 @@ const stations = [
       'Otsuka mixes vintage tram charm with a wave of new cafés and craft beer bars. The Tokyo Sakura Tram still trundles past the station, connecting quiet residential pockets in northern Tokyo.',
     background:
       'https://images.unsplash.com/photo-1518378188025-22bd89516ee2?auto=format&fit=crop&w=1600&q=80',
-    transfers: [
-      { name: 'Tokyo Sakura Tram (Toden Arakawa Line)', code: 'SA', color: '#ec407a', operator: 'Toei' }
-    ],
+    transfers: ['tokyo-sakura-tram'],
     mp3Announcement: "Sites/yamanoteline/announcements/otsuka-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Otsuka.mp3"
   },
@@ -206,11 +594,13 @@ const stations = [
     background:
       'https://images.unsplash.com/photo-1528164344705-47542687000d?auto=format&fit=crop&w=1600&q=80',
     transfers: [
-      { name: 'JR Saikyo Line', code: 'JA', color: '#4caf50', operator: 'JR East' },
-      { name: 'Tokyo Metro Marunouchi Line', code: 'M', color: '#c62828', operator: 'Tokyo Metro' },
-      { name: 'Tokyo Metro Fukutoshin Line', code: 'F', color: '#6d4c41', operator: 'Tokyo Metro' },
-      { name: 'Seibu Ikebukuro Line', code: 'SI', color: '#2196f3', operator: 'Seibu Railway' },
-      { name: 'Tobu Tojo Line', code: 'TJ', color: '#ff7043', operator: 'Tobu Railway' }
+      'jr-saikyo',
+      'jr-shonan-shinjuku',
+      'tokyo-metro-marunouchi',
+      'tokyo-metro-yurakucho',
+      'tokyo-metro-fukutoshin',
+      'seibu-ikebukuro',
+      'tobu-tojo'
     ],
     mp3Announcement: "Sites/yamanoteline/announcements/ikebukuro-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Ikebukuro.mp3"
@@ -235,10 +625,7 @@ const stations = [
       'Takadanobaba pulses with student energy thanks to Waseda University. Retro game centers, budget eats, and jazz bars line the streets, while the Astro Boy theme plays as the station melody.',
     background:
       'https://images.unsplash.com/photo-1526481280695-3d1d229e2b6f?auto=format&fit=crop&w=1600&q=80',
-    transfers: [
-      { name: 'Tokyo Metro Tozai Line', code: 'T', color: '#0288d1', operator: 'Tokyo Metro' },
-      { name: 'Seibu Shinjuku Line', code: 'SS', color: '#388e3c', operator: 'Seibu Railway' }
-    ],
+    transfers: ['tokyo-metro-tozai', 'seibu-shinjuku'],
     mp3Announcement: "Sites/yamanoteline/announcements/takadanobaba-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Takadanobaba.mp3"
   },
@@ -263,10 +650,15 @@ const stations = [
     background:
       'https://images.unsplash.com/photo-1478432780021-b8d273730d8c?auto=format&fit=crop&w=1600&q=80',
     transfers: [
-      { name: 'JR Chuo Line (Rapid)', code: 'JC', color: '#f15a24', operator: 'JR East' },
-      { name: 'JR Saikyo Line', code: 'JA', color: '#4caf50', operator: 'JR East' },
-      { name: 'Tokyo Metro Marunouchi Line', code: 'M', color: '#c62828', operator: 'Tokyo Metro' },
-      { name: 'Toei Oedo Line', code: 'E', color: '#7b1fa2', operator: 'Toei' }
+      'jr-chuo-rapid',
+      'jr-chuo-sobu',
+      'jr-saikyo',
+      'jr-shonan-shinjuku',
+      'tokyo-metro-marunouchi',
+      'toei-shinjuku',
+      'toei-oedo',
+      'odakyu-odawara',
+      'keio-line'
     ],
     mp3Announcement: "Sites/yamanoteline/announcements/shinjuku-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Shinjuku.mp3"
@@ -279,10 +671,7 @@ const stations = [
       'Yoyogi balances quiet offices with access to Yoyogi Park and the towering National Gymnasium. Art schools and climbing gyms keep the youthful spirit alive around the station.',
     background:
       'https://images.unsplash.com/photo-1545569341-9eb8b30979d8?auto=format&fit=crop&w=1600&q=80',
-    transfers: [
-      { name: 'JR Chuo-Sobu Line', code: 'JB', color: '#f6b27b', operator: 'JR East' },
-      { name: 'Toei Oedo Line', code: 'E', color: '#7b1fa2', operator: 'Toei' }
-    ],
+    transfers: ['jr-chuo-sobu', 'toei-oedo'],
     mp3Announcement: "Sites/yamanoteline/announcements/yoyogi-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Yoyogi.mp3"
   },
@@ -294,10 +683,7 @@ const stations = [
       'Harajuku is a playground for street fashion, from Takeshita Street\'s pop culture boutiques to Omotesando\'s flagship architecture. The leafy Meiji Shrine grounds offer a quiet counterpoint nearby.',
     background:
       'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1600&q=80',
-    transfers: [
-      { name: 'Tokyo Metro Chiyoda Line (Meiji-jingumae)', code: 'C', color: '#009688', operator: 'Tokyo Metro' },
-      { name: 'Tokyo Metro Fukutoshin Line', code: 'F', color: '#6d4c41', operator: 'Tokyo Metro' }
-    ],
+    transfers: ['tokyo-metro-chiyoda', 'tokyo-metro-fukutoshin'],
     mp3Announcement: "Sites/yamanoteline/announcements/harajuku-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Harajuku.mp3"
   },
@@ -310,12 +696,14 @@ const stations = [
     background:
       'https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1600&q=80',
     transfers: [
-      { name: 'JR Saikyo Line', code: 'JA', color: '#4caf50', operator: 'JR East' },
-      { name: 'JR Shonan-Shinjuku Line', code: 'JS', color: '#ef5350', operator: 'JR East' },
-      { name: 'Tokyo Metro Ginza Line', code: 'G', color: '#f9a825', operator: 'Tokyo Metro' },
-      { name: 'Tokyo Metro Hanzomon Line', code: 'Z', color: '#7b1fa2', operator: 'Tokyo Metro' },
-      { name: 'Tokyo Metro Fukutoshin Line', code: 'F', color: '#6d4c41', operator: 'Tokyo Metro' },
-      { name: 'Tokyu Den-en-toshi Line', code: 'DT', color: '#00897b', operator: 'Tokyu Corporation' }
+      'jr-saikyo',
+      'jr-shonan-shinjuku',
+      'tokyo-metro-ginza',
+      'tokyo-metro-hanzomon',
+      'tokyo-metro-fukutoshin',
+      'tokyu-den-en-toshi',
+      'tokyu-toyoko',
+      'keio-inokashira'
     ],
     mp3Announcement: "Sites/yamanoteline/announcements/shibuya-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Shibuya.mp3"
@@ -328,10 +716,7 @@ const stations = [
       'Ebisu offers refined dining, craft beer bars, and the Yebisu Garden Place promenade. Brick arcades, photography museums, and relaxed terraces give the area an elegant urban village feel.',
     background:
       'https://images.unsplash.com/photo-1478432780021-b8d273730d8c?auto=format&fit=crop&w=1600&q=80',
-    transfers: [
-      { name: 'JR Saikyo Line', code: 'JA', color: '#4caf50', operator: 'JR East' },
-      { name: 'Tokyo Metro Hibiya Line', code: 'H', color: '#9e9d24', operator: 'Tokyo Metro' }
-    ],
+    transfers: ['jr-saikyo', 'tokyo-metro-hibiya'],
     mp3Announcement: "Sites/yamanoteline/announcements/ebisu-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Ebisu.mp3"
   },
@@ -343,11 +728,7 @@ const stations = [
       'Meguro\'s tree-lined avenues lead to specialty coffee shops, design studios, and the serene Meguro River. Spring cherry blossoms transform the riverside into a soft pink tunnel.',
     background:
       'https://images.unsplash.com/photo-1526481280695-3d1d229e2b6f?auto=format&fit=crop&w=1600&q=80',
-    transfers: [
-      { name: 'Tokyo Metro Namboku Line', code: 'N', color: '#26a69a', operator: 'Tokyo Metro' },
-      { name: 'Toei Mita Line', code: 'I', color: '#1565c0', operator: 'Toei' },
-      { name: 'Tokyu Meguro Line', code: 'MG', color: '#795548', operator: 'Tokyu Corporation' }
-    ],
+    transfers: ['tokyo-metro-namboku', 'toei-mita', 'tokyu-meguro'],
     mp3Announcement: "Sites/yamanoteline/announcements/meguro-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Meguro.mp3"
   },
@@ -359,10 +740,7 @@ const stations = [
       'Gotanda mixes riverside offices with late-night eateries and karaoke lounges. Local izakaya clusters under the elevated tracks while megabanks loom overhead.',
     background:
       'https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1600&q=80',
-    transfers: [
-      { name: 'Toei Asakusa Line', code: 'A', color: '#e53935', operator: 'Toei' },
-      { name: 'Tokyu Ikegami Line', code: 'IK', color: '#ff7043', operator: 'Tokyu Corporation' }
-    ],
+    transfers: ['toei-asakusa', 'tokyu-ikegami'],
     mp3Announcement: "Sites/yamanoteline/announcements/gotanda-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Gotanda.mp3"
   },
@@ -374,10 +752,7 @@ const stations = [
       'Redeveloped Osaki is home to tech offices, open plazas, and elevated walkways that connect Shinagawa\'s business zone. Art installations dot the corporate campuses.',
     background:
       'https://images.unsplash.com/photo-1526481280695-3d1d229e2b6f?auto=format&fit=crop&w=1600&q=80',
-    transfers: [
-      { name: 'JR Saikyo Line', code: 'JA', color: '#4caf50', operator: 'JR East' },
-      { name: 'Rinkai Line', code: 'R', color: '#3949ab', operator: 'Tokyo Waterfront Area Rapid Transit' }
-    ],
+    transfers: ['jr-saikyo', 'jr-shonan-shinjuku', 'rinkai-line'],
     mp3Announcement: "Sites/yamanoteline/announcements/osaki-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Osaki.mp3"
   },
@@ -389,12 +764,7 @@ const stations = [
       'Shinagawa links Tokyo to the south with Shinkansen platforms, waterfront hotels, and the historic Tokaido road. High-rise offices and aquarium attractions make it a major gateway.',
     background:
       'https://images.unsplash.com/photo-1478432780021-b8d273730d8c?auto=format&fit=crop&w=1600&q=80',
-    transfers: [
-      { name: 'JR Keihin-Tohoku Line', code: 'JK', color: '#00bcd4', operator: 'JR East' },
-      { name: 'JR Tokaido Line', code: 'JT', color: '#f57c00', operator: 'JR East' },
-      { name: 'Tokaido Shinkansen', code: '🚄', color: '#1b5e20', operator: 'JR Central' },
-      { name: 'Keikyu Main Line', code: 'KK', color: '#d32f2f', operator: 'Keikyu Corporation' }
-    ],
+    transfers: ['jr-keihin-tohoku', 'jr-tokaido', 'jr-yokosuka-sobu', 'shinkansen-tokaido', 'keikyu-main'],
     mp3Announcement: "Sites/yamanoteline/announcements/shinagawa-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Shinagawa.mp3"
   },
@@ -406,9 +776,7 @@ const stations = [
       'Takanawa Gateway is the newest Yamanote station, with a light-filled design by architect Kengo Kuma. Emerging smart-city developments surround the spacious concourse.',
     background:
       'https://images.unsplash.com/photo-1554797589-7241bb691973?auto=format&fit=crop&w=1600&q=80',
-    transfers: [
-      { name: 'JR Keihin-Tohoku Line', code: 'JK', color: '#00bcd4', operator: 'JR East' }
-    ],
+    transfers: ['jr-keihin-tohoku'],
     mp3Announcement: "Sites/yamanoteline/announcements/takanawagateway-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/TakanawaGateway.mp3"
   },
@@ -420,9 +788,7 @@ const stations = [
       'Tamachi links office towers with the canalside campus of Keio University. Elevated promenades lead toward the redeveloped Shibaura waterfront and tiny yakitori bars under the tracks.',
     background:
       'https://images.unsplash.com/photo-1549692520-acc6669e2f0c?auto=format&fit=crop&w=1600&q=80',
-    transfers: [
-      { name: 'JR Keihin-Tohoku Line', code: 'JK', color: '#00bcd4', operator: 'JR East' }
-    ],
+    transfers: ['jr-keihin-tohoku', 'toei-asakusa', 'toei-mita'],
     mp3Announcement: "Sites/yamanoteline/announcements/tamachi-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Tamachi.mp3"
   },
@@ -434,10 +800,7 @@ const stations = [
       'Hamamatsucho connects to Haneda Airport via the Tokyo Monorail and sits beside the iconic Tokyo Tower. Zojoji Temple and waterfront gardens offer moments of calm in the business district.',
     background:
       'https://images.unsplash.com/photo-1512455102795-3d1d229e2b6f?auto=format&fit=crop&w=1600&q=80',
-    transfers: [
-      { name: 'JR Keihin-Tohoku Line', code: 'JK', color: '#00bcd4', operator: 'JR East' },
-      { name: 'Tokyo Monorail', code: 'MO', color: '#0288d1', operator: 'Tokyo Monorail' }
-    ],
+    transfers: ['jr-keihin-tohoku', 'tokyo-monorail', 'toei-asakusa', 'toei-oedo'],
     mp3Announcement: "Sites/yamanoteline/announcements/hamamatsucho-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Hamamatsucho.mp3"
   },
@@ -450,10 +813,12 @@ const stations = [
     background:
       'https://images.unsplash.com/photo-1554797589-7241bb691973?auto=format&fit=crop&w=1600&q=80',
     transfers: [
-      { name: 'JR Keihin-Tohoku Line', code: 'JK', color: '#00bcd4', operator: 'JR East' },
-      { name: 'Toei Asakusa Line', code: 'A', color: '#e53935', operator: 'Toei' },
-      { name: 'Toei Oedo Line', code: 'E', color: '#7b1fa2', operator: 'Toei' },
-      { name: 'Yurikamome Line', code: 'U', color: '#26c6da', operator: 'Yurikamome Inc.' }
+      'jr-keihin-tohoku',
+      'jr-tokaido',
+      'jr-yokosuka-sobu',
+      'tokyo-metro-ginza',
+      'toei-asakusa',
+      'yurikamome'
     ],
     mp3Announcement: "Sites/yamanoteline/announcements/shimbashi-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Shimbashi.mp3"
@@ -466,10 +831,7 @@ const stations = [
       'Yurakucho combines upscale Ginza shopping with Showa-era yakitori alleys tucked under the viaducts. The Tokyo International Forum\'s glass canopy hosts design fairs and concerts year-round.',
     background:
       'https://images.unsplash.com/photo-1526481280695-3d1d229e2b6f?auto=format&fit=crop&w=1600&q=80',
-    transfers: [
-      { name: 'Tokyo Metro Yurakucho Line', code: 'Y', color: '#fdd835', operator: 'Tokyo Metro' },
-      { name: 'Tokyo Metro Hibiya Line', code: 'H', color: '#9e9d24', operator: 'Tokyo Metro' }
-    ],
+    transfers: ['jr-keihin-tohoku', 'tokyo-metro-yurakucho', 'tokyo-metro-hibiya', 'tokyo-metro-chiyoda', 'toei-mita'],
     mp3Announcement: "Sites/yamanoteline/announcements/yurakucho-announcement.mp3",
     mp3Station: "Sites/yamanoteline/sounds/Yurakucho.mp3"
   }
@@ -487,7 +849,7 @@ const nextPreviewEl = document.getElementById('nextStationPreview');
 const prevBtn = document.getElementById('prevStation');
 const playPauseBtn = document.getElementById('playPause');
 const skipBtn = document.getElementById('skipStation');
-const jingleOnlyToggle = document.getElementById('jingleOnlyToggle');
+const announcementsToggle = document.getElementById('announcementsToggle');
 const trackLabel = document.getElementById('currentTrackLabel');
 const rideModeButton = document.getElementById('rideModeButton');
 const ambientToggle = document.getElementById('ambientToggle');
@@ -538,25 +900,144 @@ function setBackground(url) {
   });
 }
 
-function createTransferChip(transfer) {
+function renderLineIcon(line) {
+  const svgNS = 'http://www.w3.org/2000/svg';
+  if (line.iconType === 'shinkansen') {
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('viewBox', '0 0 96 64');
+    svg.setAttribute('focusable', 'false');
+    svg.setAttribute('aria-hidden', 'true');
+
+    const body = document.createElementNS(svgNS, 'rect');
+    body.setAttribute('x', '10');
+    body.setAttribute('y', '24');
+    body.setAttribute('width', '60');
+    body.setAttribute('height', '24');
+    body.setAttribute('rx', '12');
+    body.setAttribute('fill', line.color);
+
+    const nose = document.createElementNS(svgNS, 'path');
+    nose.setAttribute('d', 'M70 24h10c7 0 14 6 14 12s-7 12-14 12H70z');
+    nose.setAttribute('fill', line.color);
+
+    const windows = document.createElementNS(svgNS, 'rect');
+    windows.setAttribute('x', '22');
+    windows.setAttribute('y', '28');
+    windows.setAttribute('width', '28');
+    windows.setAttribute('height', '8');
+    windows.setAttribute('rx', '4');
+    windows.setAttribute('fill', '#ffffff');
+    windows.setAttribute('opacity', '0.88');
+
+    const cockpit = document.createElementNS(svgNS, 'circle');
+    cockpit.setAttribute('cx', '80');
+    cockpit.setAttribute('cy', '35');
+    cockpit.setAttribute('r', '5');
+    cockpit.setAttribute('fill', '#ffffff');
+    cockpit.setAttribute('opacity', '0.85');
+
+    const light = document.createElementNS(svgNS, 'circle');
+    light.setAttribute('cx', '80');
+    light.setAttribute('cy', '44');
+    light.setAttribute('r', '3.5');
+    light.setAttribute('fill', line.accentColor || '#ffffff');
+    light.setAttribute('opacity', '0.85');
+
+    const accent = document.createElementNS(svgNS, 'path');
+    accent.setAttribute('d', 'M16 40h58c10 0 18 4 24 9');
+    accent.setAttribute('stroke', line.accentColor || '#ffffff');
+    accent.setAttribute('stroke-width', '4');
+    accent.setAttribute('stroke-linecap', 'round');
+    accent.setAttribute('fill', 'none');
+    accent.setAttribute('opacity', '0.85');
+
+    svg.append(body, nose, accent, windows, cockpit, light);
+    return svg;
+  }
+
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('viewBox', '0 0 64 64');
+  svg.setAttribute('focusable', 'false');
+  svg.setAttribute('aria-hidden', 'true');
+
+  const base = document.createElementNS(svgNS, 'circle');
+  base.setAttribute('cx', '32');
+  base.setAttribute('cy', '32');
+  base.setAttribute('r', '30');
+  base.setAttribute('fill', line.color);
+  base.setAttribute('stroke', '#ffffff');
+  base.setAttribute('stroke-width', '3');
+  base.setAttribute('stroke-opacity', '0.85');
+
+  const overlay = document.createElementNS(svgNS, 'circle');
+  overlay.setAttribute('cx', '32');
+  overlay.setAttribute('cy', '32');
+  overlay.setAttribute('r', '22');
+  overlay.setAttribute('fill', 'rgba(255,255,255,0.18)');
+  overlay.setAttribute('opacity', '0.35');
+
+  const text = document.createElementNS(svgNS, 'text');
+  text.setAttribute('x', '32');
+  text.setAttribute('y', line.symbol && line.symbol.length > 1 ? '39' : '41');
+  text.setAttribute('text-anchor', 'middle');
+  text.setAttribute('font-family', "'Inter', 'Noto Sans JP', sans-serif");
+  text.setAttribute('font-weight', '700');
+  text.setAttribute('fill', line.textColor || '#0a1a15');
+  const symbol = line.symbol || '';
+  const fontSize = symbol.length > 2 ? 18 : symbol.length === 2 ? 22 : 28;
+  text.setAttribute('font-size', String(fontSize));
+  text.textContent = symbol;
+
+  svg.append(base, overlay, text);
+  return svg;
+}
+
+function createTransferChip(lineId) {
+  const line = lineCatalog[lineId];
+  if (!line) return null;
+
   const chip = document.createElement('button');
   chip.type = 'button';
   chip.className = 'transfer-chip';
-  chip.dataset.tooltip = `${transfer.name} • ${transfer.operator}`;
+  chip.dataset.tooltipPosition = 'above';
+  chip.setAttribute('aria-label', `${line.name} (${line.operator})`);
 
   const icon = document.createElement('span');
   icon.className = 'transfer-chip__icon';
-  icon.textContent = transfer.code;
-  icon.style.background = transfer.color;
+  icon.appendChild(renderLineIcon(line));
   chip.appendChild(icon);
 
-  const label = document.createElement('span');
-  label.className = 'transfer-chip__name';
-  label.textContent = transfer.name;
-  chip.appendChild(label);
+  const tooltip = document.createElement('span');
+  tooltip.className = 'transfer-chip__tooltip';
+  tooltip.textContent = `${line.name} • ${line.operator}`;
+  chip.appendChild(tooltip);
 
-  chip.addEventListener('focus', () => chip.classList.add('is-focused'));
-  chip.addEventListener('blur', () => chip.classList.remove('is-focused'));
+  const updateTooltipPosition = () => {
+    const rect = chip.getBoundingClientRect();
+    const tooltipHeight = tooltip.offsetHeight || 0;
+    const spaceAbove = rect.top;
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const margin = 24;
+    let position = 'above';
+    if (spaceAbove < tooltipHeight + margin && spaceBelow > spaceAbove) {
+      position = 'below';
+    }
+    chip.dataset.tooltipPosition = position;
+  };
+
+  const showTooltip = () => {
+    updateTooltipPosition();
+    chip.classList.add('is-tooltip-visible');
+  };
+
+  const hideTooltip = () => {
+    chip.classList.remove('is-tooltip-visible');
+  };
+
+  chip.addEventListener('pointerenter', showTooltip);
+  chip.addEventListener('pointerleave', hideTooltip);
+  chip.addEventListener('focus', showTooltip);
+  chip.addEventListener('blur', hideTooltip);
 
   return chip;
 }
@@ -571,9 +1052,11 @@ function updateTransferLines(station) {
     return;
   }
 
-  station.transfers.forEach((transfer) => {
-    const chip = createTransferChip(transfer);
-    transferListEl.appendChild(chip);
+  station.transfers.forEach((lineId) => {
+    const chip = createTransferChip(lineId);
+    if (chip) {
+      transferListEl.appendChild(chip);
+    }
   });
 }
 
@@ -658,10 +1141,13 @@ function setAnnouncementsEnabled(enabled, options = {}) {
   const wasAnnouncementActive = !announcementAudio.paused && !announcementAudio.ended;
   const wasJinglePlaying = isJingleActive() || isJinglePaused();
   announcementsEnabled = enabled;
-  if (jingleOnlyToggle) {
-    const jinglesOnly = !enabled;
-    jingleOnlyToggle.setAttribute('aria-pressed', String(jinglesOnly));
-    jingleOnlyToggle.textContent = jinglesOnly ? '🎵 Jingles Only' : '🔈 Announcements';
+  if (announcementsToggle) {
+    announcementsToggle.setAttribute('aria-pressed', String(enabled));
+    announcementsToggle.textContent = enabled ? 'Announcements On' : 'Announcements Off';
+    announcementsToggle.setAttribute(
+      'title',
+      enabled ? 'Switch to jingles only' : 'Switch to full announcements'
+    );
   }
   localStorage.setItem(announcementsKey, enabled ? '1' : '0');
   const shouldResume = autoPlay && (rideMode || wasAnnouncementActive || wasJinglePlaying);
@@ -1089,7 +1575,7 @@ function bindEvents() {
   skipBtn.addEventListener('click', () => navigate(1));
   rideModeButton.addEventListener('click', () => setRideMode(!rideMode));
   ambientToggle.addEventListener('click', () => setAmbient(!ambientOn));
-  jingleOnlyToggle?.addEventListener('click', () => setAnnouncementsEnabled(!announcementsEnabled));
+  announcementsToggle?.addEventListener('click', () => setAnnouncementsEnabled(!announcementsEnabled));
   mapToggle.addEventListener('click', () => {
     if (mapOverlay.classList.contains('is-visible')) {
       closeMapOverlay();
