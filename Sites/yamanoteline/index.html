@@ -17,7 +17,7 @@
   <div id="app" class="app">
     <header class="top-bar">
       <div class="top-bar__group">
-        <button id="mapToggle" class="ghost-button" aria-expanded="false">Map</button>
+        <button id="mapToggle" class="ghost-button" aria-expanded="false">Station List</button>
         <div class="search-wrapper">
           <label class="sr-only" for="stationSearch">Search stations</label>
           <input id="stationSearch" list="stationList" type="search" placeholder="Search stations…" autocomplete="off">
@@ -93,14 +93,14 @@
           <button id="prevStation" class="pill-button" aria-label="Skip to previous station">⏮</button>
           <button id="playPause" class="pill-button" aria-pressed="false" aria-label="Play or pause announcement">▶</button>
           <button id="skipStation" class="pill-button" aria-label="Skip to next station">⏭</button>
-          <button id="audioMapButton" class="pill-button pill-button--map" aria-expanded="false" aria-label="Open line map">
+          <button id="audioMapButton" class="pill-button pill-button--map" aria-expanded="false" aria-label="Open station list">
             <span class="pill-button__icon" aria-hidden="true">
               <svg viewBox="0 0 32 32" focusable="false" role="presentation">
                 <circle cx="16" cy="16" r="14" stroke-width="2"></circle>
                 <circle cx="16" cy="16" r="4" stroke-width="2"></circle>
               </svg>
             </span>
-            <span class="pill-button__label">Map</span>
+            <span class="pill-button__label">Station List</span>
           </button>
         </div>
         <div class="audio-pill__meta">
@@ -114,7 +114,7 @@
       <div class="map-overlay__panel" role="dialog" aria-labelledby="mapHeading">
         <header class="map-overlay__header">
           <h2 id="mapHeading">Yamanote Loop</h2>
-          <button id="closeMap" class="ghost-button map-overlay__close" aria-label="Close map">×</button>
+          <button id="closeMap" class="ghost-button map-overlay__close" aria-label="Close station list">×</button>
         </header>
         <div class="map-overlay__line" id="mapLine" role="list"></div>
       </div>

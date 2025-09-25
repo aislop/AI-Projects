@@ -426,7 +426,6 @@ body.theme-dark .station-background {
     rgba(255, 255, 255, 0) 100%
   );
   background-size: 100% 200%;
-  animation: directionFlow 1.4s linear infinite;
 }
 
 .station-direction__line::after {
@@ -444,7 +443,7 @@ body.theme-dark .station-background {
   left: 50%;
   width: 1.4rem;
   height: 1.4rem;
-  transform: translate(-50%, 0);
+  transform: translate(-50%, var(--shuttle-offset, 0));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -460,24 +459,11 @@ body.theme-dark .station-background {
   transition: transform var(--transition-fast);
 }
 
-@keyframes directionFlow {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(100%);
-  }
-}
-
-.app[data-motion='forward'] .station-direction__shuttle::before {
+.app[data-direction='forward'] .station-direction__shuttle::before {
   transform: rotate(0deg);
 }
 
-.app[data-motion='backward'] .station-direction__line::before {
-  animation-direction: reverse;
-}
-
-.app[data-motion='backward'] .station-direction__shuttle::before {
+.app[data-direction='backward'] .station-direction__shuttle::before {
   transform: rotate(180deg);
 }
 
