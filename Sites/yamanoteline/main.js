@@ -11,6 +11,10 @@ function getAnnouncementSrc(station) {
   return `${resolveMediaPath(station.mp3Announcement)}${CACHE_BUST}`;
 }
 
+function getJingleSrc(station) {
+  return `${resolveMediaPath(station.mp3Station)}${CACHE_BUST}`;
+}
+
 const stations = [
   {
     id: 'tokyo',
@@ -480,6 +484,7 @@ const aboutEl = document.getElementById('stationAbout');
 const transferListEl = document.getElementById('transferLines');
 const prevPreviewEl = document.getElementById('prevStationPreview');
 const nextPreviewEl = document.getElementById('nextStationPreview');
+const prevBtn = document.getElementById('prevStation');
 const playPauseBtn = document.getElementById('playPause');
 const skipBtn = document.getElementById('skipStation');
 const volumeSlider = document.getElementById('volumeSlider');
@@ -488,6 +493,7 @@ const audioVolumeContainer = document.querySelector('.audio-pill__volume');
 const trackLabel = document.getElementById('currentTrackLabel');
 const rideModeButton = document.getElementById('rideModeButton');
 const ambientToggle = document.getElementById('ambientToggle');
+const darkModeToggle = document.getElementById('darkModeToggle');
 const mapToggle = document.getElementById('mapToggle');
 const audioMapButton = document.getElementById('audioMapButton');
 const mapOverlay = document.getElementById('mapOverlay');
@@ -499,18 +505,22 @@ const searchGoButton = document.getElementById('jumpButton');
 const datalist = document.getElementById('stationList');
 
 const announcementAudio = document.getElementById('announcementAudio');
+const jingleAudio = document.getElementById('jingleAudio');
 const ambientAudio = document.getElementById('ambientAudio');
 
 let currentStationIndex = 0;
 let scrollLock = false;
 let rideMode = true;
 let ambientOn = false;
+let darkMode = false;
+let jingleEngaged = false;
 let rideTimeout = null;
 let motionTimeoutHandle = null;
 
 const volumeKey = 'yamanote-volume';
 const rideModeKey = 'yamanote-ride-mode';
 const ambientKey = 'yamanote-ambient';
+const darkModeKey = 'yamanote-dark-mode';
 
 function clampIndex(index) {
   const total = stations.length;
@@ -603,7 +613,7 @@ function setRideMode(enabled) {
   rideModeButton.textContent = enabled ? 'Ride Mode On' : 'Ride Mode';
   localStorage.setItem(rideModeKey, enabled ? '1' : '0');
   if (enabled) {
-    if (announcementAudio.paused) {
+    if (!isJingleActive() && !isJinglePaused() && announcementAudio.paused) {
       playAnnouncement();
     }
   } else {
@@ -624,9 +634,22 @@ function setAmbient(enabled) {
   }
 }
 
+function setDarkMode(enabled) {
+  darkMode = enabled;
+  document.body.classList.toggle('theme-dark', enabled);
+  if (darkModeToggle) {
+    darkModeToggle.setAttribute('aria-pressed', String(enabled));
+    darkModeToggle.textContent = enabled ? '☀️ Light Mode' : '🌙 Dark Mode';
+  }
+  localStorage.setItem(darkModeKey, enabled ? '1' : '0');
+}
+
 function applyVolume() {
   const volume = parseFloat(volumeSlider.value);
   announcementAudio.volume = volume;
+  if (jingleAudio) {
+    jingleAudio.volume = volume;
+  }
   ambientAudio.volume = ambientOn ? Math.min(0.5, volume * 0.5) : 0;
 }
 
@@ -634,6 +657,52 @@ function setVolume(value) {
   volumeSlider.value = value;
   localStorage.setItem(volumeKey, value);
   applyVolume();
+}
+
+function stopJinglePlayback(clearSrc = true) {
+  if (!jingleAudio) return;
+  jingleAudio.pause();
+  try {
+    jingleAudio.currentTime = 0;
+  } catch (error) {
+    /* ignore reset errors */
+  }
+  if (clearSrc) {
+    jingleAudio.removeAttribute('src');
+    jingleAudio.load();
+  }
+  jingleEngaged = false;
+}
+
+function isJingleActive() {
+  return Boolean(jingleAudio && jingleEngaged && !jingleAudio.paused && !jingleAudio.ended);
+}
+
+function isJinglePaused() {
+  return Boolean(jingleAudio && jingleEngaged && jingleAudio.paused && !jingleAudio.ended && jingleAudio.currentTime > 0);
+}
+
+function playStationJingle() {
+  if (!jingleAudio) return false;
+  const station = stations[currentStationIndex];
+  if (!station?.mp3Station) return false;
+  jingleEngaged = true;
+  jingleAudio.src = getJingleSrc(station);
+  applyVolume();
+  jingleAudio
+    .play()
+    .catch((error) => {
+      console.error('Unable to play station jingle', error);
+      stopJinglePlayback();
+      finalizeTrack();
+    });
+  return true;
+}
+
+function finalizeTrack(status = 'Finished') {
+  updateTrackLabel(status);
+  updatePlayButtons(false);
+  scheduleRideAdvance();
 }
 
 function triggerMotion(direction) {
@@ -660,6 +729,7 @@ function goToStation(index, options = {}) {
   const direction = Math.sign(index - previousIndex);
   triggerMotion(direction);
   stopRideTimer();
+  stopJinglePlayback();
   const station = stations[currentStationIndex];
 
   setBackground(station.background);
@@ -683,6 +753,7 @@ function goToStation(index, options = {}) {
 
 function playAnnouncement() {
   const station = stations[currentStationIndex];
+  stopJinglePlayback();
   announcementAudio.src = getAnnouncementSrc(station);
   applyVolume();
   announcementAudio
@@ -699,6 +770,20 @@ function playAnnouncement() {
 }
 
 function togglePlayPause() {
+  if (isJingleActive()) {
+    jingleAudio.pause();
+    return;
+  }
+  if (isJinglePaused()) {
+    jingleAudio
+      .play()
+      .catch((error) => {
+        console.error('Unable to resume station jingle', error);
+        stopJinglePlayback();
+        finalizeTrack();
+      });
+    return;
+  }
   if (announcementAudio.paused) {
     playAnnouncement();
   } else {
@@ -707,10 +792,8 @@ function togglePlayPause() {
 }
 
 function handleAudioEnd() {
-  updatePlayButtons(false);
-  updateTrackLabel('Finished');
-  if (rideMode) {
-    scheduleRideAdvance();
+  if (!playStationJingle()) {
+    finalizeTrack();
   }
 }
 
@@ -724,6 +807,29 @@ function handleAudioPause() {
   if (!announcementAudio.ended) {
     updateTrackLabel('Paused');
   }
+}
+
+function handleJinglePlay() {
+  jingleEngaged = true;
+  updatePlayButtons(true);
+  updateTrackLabel('Station Jingle');
+}
+
+function handleJinglePause() {
+  if (!jingleEngaged || !jingleAudio || jingleAudio.ended) return;
+  updatePlayButtons(false);
+  updateTrackLabel('Jingle Paused');
+}
+
+function handleJingleEnd() {
+  stopJinglePlayback();
+  finalizeTrack();
+}
+
+function handleJingleError() {
+  console.error('Station jingle error', jingleAudio?.error);
+  stopJinglePlayback();
+  finalizeTrack();
 }
 
 function openMap() {
@@ -901,7 +1007,18 @@ function hydrateSettings() {
   const storedVolume = localStorage.getItem(volumeKey);
   setVolume(storedVolume ?? '0.8');
 
-  setRideMode(true);
+  const storedDark = localStorage.getItem(darkModeKey);
+  if (storedDark === null) {
+    const prefersDark = typeof window !== 'undefined' && window.matchMedia
+      ? window.matchMedia('(prefers-color-scheme: dark)').matches
+      : false;
+    setDarkMode(prefersDark);
+  } else {
+    setDarkMode(storedDark === '1');
+  }
+
+  const storedRideMode = localStorage.getItem(rideModeKey);
+  setRideMode(storedRideMode !== '0');
 
   const storedAmbient = localStorage.getItem(ambientKey) === '1';
   setAmbient(storedAmbient);
@@ -909,6 +1026,7 @@ function hydrateSettings() {
 
 function bindEvents() {
   playPauseBtn.addEventListener('click', togglePlayPause);
+  prevBtn?.addEventListener('click', () => navigate(-1));
   skipBtn.addEventListener('click', () => navigate(1));
   volumeSlider.addEventListener('input', (event) => setVolume(event.target.value));
   volumeSlider.addEventListener('change', () => {
@@ -953,12 +1071,19 @@ function bindEvents() {
     }
   });
   searchGoButton.addEventListener('click', jumpToSearch);
+  darkModeToggle?.addEventListener('click', () => setDarkMode(!darkMode));
   if (volumeToggle && audioVolumeContainer) {
     volumeToggle.addEventListener('click', () => {
       const open = audioVolumeContainer.dataset.open === 'true';
       audioVolumeContainer.dataset.open = open ? 'false' : 'true';
       volumeToggle.setAttribute('aria-expanded', open ? 'false' : 'true');
     });
+  }
+  if (jingleAudio) {
+    jingleAudio.addEventListener('ended', handleJingleEnd);
+    jingleAudio.addEventListener('pause', handleJinglePause);
+    jingleAudio.addEventListener('play', handleJinglePlay);
+    jingleAudio.addEventListener('error', handleJingleError);
   }
 }
 
