@@ -451,12 +451,12 @@ body.theme-dark .station-background {
 
 .station-direction__shuttle::before {
   content: '';
-  width: 0.7rem;
-  height: 0.95rem;
-  background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.65) 100%);
-  clip-path: polygon(50% 100%, 0 44%, 30% 44%, 30% 0, 70% 0, 70% 44%, 100% 44%);
-  filter: drop-shadow(0 4px 6px rgba(31, 59, 55, 0.3));
-  transition: transform var(--transition-fast);
+  width: 0.85rem;
+  height: 1.15rem;
+  background: linear-gradient(180deg, #c6ff95 0%, #2f9e44 55%, #0f5f2a 100%);
+  clip-path: polygon(50% 100%, 0 42%, 30% 42%, 30% 0, 70% 0, 70% 42%, 100% 42%);
+  filter: drop-shadow(0 4px 8px rgba(15, 56, 36, 0.35));
+  transition: transform var(--transition-fast), filter var(--transition-fast);
 }
 
 .app[data-direction='forward'] .station-direction__shuttle::before {
