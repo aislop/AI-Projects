@@ -945,6 +945,13 @@ let motionTimeoutHandle = null;
 let masterVolume = 0.8;
 let announcementsEnabled = true;
 let directionTravel = 0;
+let directionProgress = 0;
+let directionTicker = null;
+let lastDirection = 1;
+
+if (appEl) {
+  appEl.dataset.direction = 'forward';
+}
 
 const volumeKey = 'yamanote-volume';
 const rideModeKey = 'yamanote-ride-mode';
@@ -1152,6 +1159,7 @@ function updatePreviews(index) {
 function calculateDirectionTravel() {
   if (!directionPrevItem || !directionNextItem) {
     directionTravel = 0;
+    applyDirectionProgress();
     return;
   }
   const prevRect = directionPrevItem.getBoundingClientRect();
@@ -1160,46 +1168,74 @@ function calculateDirectionTravel() {
   if (Number.isFinite(distance) && distance !== 0) {
     directionTravel = distance;
     if (directionRailEl) {
-      directionRailEl.style.setProperty('--direction-travel', `${distance}px`);
+      directionRailEl.style.setProperty('--direction-travel', `${Math.abs(distance)}px`);
     }
   } else {
     directionTravel = 0;
+    if (directionRailEl) {
+      directionRailEl.style.setProperty('--direction-travel', '0px');
+    }
   }
+  applyDirectionProgress();
 }
 
-function animateDirectionShuttle(direction) {
-  if (!directionShuttle || direction === 0) {
+function applyDirectionProgress() {
+  if (!directionShuttle) {
     return;
   }
   if (!directionTravel) {
-    calculateDirectionTravel();
-  }
-  if (!directionTravel) {
+    directionShuttle.style.setProperty('--shuttle-offset', '0px');
     return;
   }
   const travel = Math.abs(directionTravel);
-  const start = direction > 0 ? 0 : travel;
-  const end = direction > 0 ? travel : 0;
-  directionShuttle.getAnimations().forEach((animation) => animation.cancel());
-  directionShuttle.style.transform = `translateY(${start}px)`;
-  requestAnimationFrame(() => {
-    const animation = directionShuttle.animate(
-      [
-        { transform: `translateY(${start}px)` },
-        { transform: `translateY(${end}px)` }
-      ],
-      {
-        duration: 700,
-        easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
-        fill: 'forwards'
-      }
-    );
-    const reset = () => {
-      directionShuttle.style.transform = 'translateY(0)';
-    };
-    animation.addEventListener('finish', reset, { once: true });
-    animation.addEventListener('cancel', reset, { once: true });
-  });
+  const clampedProgress = Math.max(0, Math.min(1, directionProgress));
+  const offset = lastDirection >= 0 ? clampedProgress * travel : (1 - clampedProgress) * travel;
+  directionShuttle.style.setProperty('--shuttle-offset', `${offset}px`);
+}
+
+function setDirectionProgress(progress) {
+  if (Number.isFinite(progress)) {
+    directionProgress = Math.max(0, Math.min(1, progress));
+  } else {
+    directionProgress = 0;
+  }
+  applyDirectionProgress();
+}
+
+function syncDirectionProgress() {
+  if (!announcementAudio) return;
+  const duration = announcementAudio.duration;
+  if (!Number.isFinite(duration) || duration <= 0) {
+    return;
+  }
+  const progress = announcementAudio.currentTime / duration;
+  if (!Number.isFinite(progress)) {
+    return;
+  }
+  setDirectionProgress(progress);
+}
+
+function startDirectionTicker() {
+  if (directionTicker || !announcementAudio) {
+    return;
+  }
+  syncDirectionProgress();
+  const tick = () => {
+    directionTicker = null;
+    if (!announcementAudio || announcementAudio.paused) {
+      return;
+    }
+    syncDirectionProgress();
+    directionTicker = requestAnimationFrame(tick);
+  };
+  directionTicker = requestAnimationFrame(tick);
+}
+
+function stopDirectionTicker() {
+  if (directionTicker) {
+    cancelAnimationFrame(directionTicker);
+    directionTicker = null;
+  }
 }
 
 function updateTrackLabel(mode = 'Stopped') {
@@ -1282,6 +1318,7 @@ function setAnnouncementsEnabled(enabled, options = {}) {
   const shouldResume = autoPlay && (rideMode || wasAnnouncementActive || wasJinglePlaying);
   if (!enabled) {
     announcementAudio.pause();
+    stopDirectionTicker();
     if (shouldResume) {
       startPlayback();
     } else {
@@ -1378,6 +1415,7 @@ function triggerMotion(direction) {
   if (direction === 0) {
     return;
   }
+  appEl.dataset.direction = direction > 0 ? 'forward' : 'backward';
   if (motionTimeoutHandle) {
     clearTimeout(motionTimeoutHandle);
     motionTimeoutHandle = null;
@@ -1396,9 +1434,14 @@ function goToStation(index, options = {}) {
   const previousIndex = currentStationIndex;
   currentStationIndex = clampIndex(index);
   const direction = Math.sign(index - previousIndex);
+  if (direction !== 0) {
+    lastDirection = direction;
+  }
   triggerMotion(direction);
   stopRideTimer();
   stopJinglePlayback();
+  stopDirectionTicker();
+  setDirectionProgress(0);
   const station = stations[currentStationIndex];
 
   setBackground(station.background);
@@ -1410,7 +1453,6 @@ function goToStation(index, options = {}) {
   updateTrackLabel('Ready');
   requestAnimationFrame(() => {
     calculateDirectionTravel();
-    animateDirectionShuttle(direction);
   });
   centerMapOnIndex(currentStationIndex);
 
@@ -1480,6 +1522,8 @@ function togglePlayPause() {
 }
 
 function handleAudioEnd() {
+  stopDirectionTicker();
+  setDirectionProgress(1);
   if (!playStationJingle()) {
     finalizeTrack();
   }
@@ -1488,6 +1532,7 @@ function handleAudioEnd() {
 function handleAudioPlay() {
   updatePlayButtons(true);
   updateTrackLabel('Announcement');
+  startDirectionTicker();
 }
 
 function handleAudioPause() {
@@ -1495,6 +1540,8 @@ function handleAudioPause() {
   if (!announcementAudio.ended) {
     updateTrackLabel('Paused');
   }
+  stopDirectionTicker();
+  syncDirectionProgress();
 }
 
 function handleJinglePlay() {
@@ -1754,6 +1801,10 @@ function bindEvents() {
   announcementAudio.addEventListener('ended', handleAudioEnd);
   announcementAudio.addEventListener('pause', handleAudioPause);
   announcementAudio.addEventListener('play', handleAudioPlay);
+  announcementAudio.addEventListener('timeupdate', syncDirectionProgress);
+  announcementAudio.addEventListener('loadedmetadata', syncDirectionProgress);
+  announcementAudio.addEventListener('seeking', syncDirectionProgress);
+  announcementAudio.addEventListener('seeked', syncDirectionProgress);
   searchInput.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
       event.preventDefault();
