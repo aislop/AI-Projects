@@ -1,0 +1,92 @@
+[
+  {
+    "id": "tokyo",
+    "name": "Tokyo",
+    "lines": ["Yamanote Line", "Chuo Line", "Keihin-Tohoku Line"],
+    "platforms": "1-10",
+    "melody": "../yamanoteline/sounds/Tokyo.mp3",
+    "latitude": 35.681236,
+    "longitude": 139.767125
+  },
+  {
+    "id": "kanda",
+    "name": "Kanda",
+    "lines": ["Yamanote Line", "Keihin-Tohoku Line"],
+    "platforms": "1-4",
+    "melody": "../yamanoteline/sounds/Kanda.mp3",
+    "latitude": 35.69169,
+    "longitude": 139.770883
+  },
+  {
+    "id": "akihabara",
+    "name": "Akihabara",
+    "lines": ["Yamanote Line", "Keihin-Tohoku Line", "Chuo-Sobu Line"],
+    "platforms": "1-6",
+    "melody": "../yamanoteline/sounds/Akihabara.mp3",
+    "latitude": 35.698683,
+    "longitude": 139.773243
+  },
+  {
+    "id": "ueno",
+    "name": "Ueno",
+    "lines": ["Yamanote Line", "Keihin-Tohoku Line", "Joban Line"],
+    "platforms": "1-11",
+    "melody": "../yamanoteline/sounds/Ueno.mp3",
+    "latitude": 35.713768,
+    "longitude": 139.777254
+  },
+  {
+    "id": "ikebukuro",
+    "name": "Ikebukuro",
+    "lines": ["Yamanote Line", "Seibu Ikebukuro Line", "Tobu Tojo Line"],
+    "platforms": "1-8",
+    "melody": "../yamanoteline/sounds/Ikebukuro.mp3",
+    "latitude": 35.728926,
+    "longitude": 139.71038
+  },
+  {
+    "id": "shinjuku",
+    "name": "Shinjuku",
+    "lines": ["Yamanote Line", "Chuo Line", "Saikyo Line"],
+    "platforms": "1-16",
+    "melody": "../yamanoteline/sounds/Shinjuku.mp3",
+    "latitude": 35.690921,
+    "longitude": 139.700258
+  },
+  {
+    "id": "shibuya",
+    "name": "Shibuya",
+    "lines": ["Yamanote Line", "Saikyo Line", "Ginza Line"],
+    "platforms": "1-6",
+    "melody": "../yamanoteline/sounds/Shibuya.mp3",
+    "latitude": 35.658034,
+    "longitude": 139.701636
+  },
+  {
+    "id": "shinagawa",
+    "name": "Shinagawa",
+    "lines": ["Yamanote Line", "Keihin-Tohoku Line", "Tokaido Shinkansen"],
+    "platforms": "1-13",
+    "melody": "../yamanoteline/sounds/Shinagawa.mp3",
+    "latitude": 35.628471,
+    "longitude": 139.73876
+  },
+  {
+    "id": "osaki",
+    "name": "Osaki",
+    "lines": ["Yamanote Line", "Saikyo Line", "Shonan-Shinjuku Line"],
+    "platforms": "1-4",
+    "melody": "../yamanoteline/sounds/Osaki.mp3",
+    "latitude": 35.619772,
+    "longitude": 139.728011
+  },
+  {
+    "id": "hamamatsucho",
+    "name": "Hamamatsucho",
+    "lines": ["Yamanote Line", "Keihin-Tohoku Line", "Tokyo Monorail"],
+    "platforms": "1-6",
+    "melody": "../yamanoteline/sounds/Hamamatsucho.mp3",
+    "latitude": 35.654321,
+    "longitude": 139.757654
+  }
+]
