@@ -3,8 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Japan Station Explorer</title>
-    <!-- Leaflet and MarkerCluster styles from public CDN -->
+    <title>JP Train Station</title>
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -22,49 +21,58 @@
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <a class="skip-link" href="#stationSidebar">Skip to station details</a>
-    <header class="site-header" role="banner">
-      <h1>Japan Station Explorer</h1>
-      <p class="tagline">Browse major JR stations, melodies, and lines on an interactive map.</p>
-    </header>
-    <main class="app" role="main">
-      <button class="sidebar-toggle" aria-expanded="true" aria-controls="stationSidebar">
-        <span class="open-label">Hide details</span>
-        <span class="close-label">Show details</span>
-      </button>
-      <section id="map" class="map" role="region" aria-label="Station map"></section>
-      <aside id="stationSidebar" class="sidebar" aria-live="polite">
-        <div class="sidebar-inner">
-          <header class="sidebar-header">
-            <h2 id="stationName">Choose a station</h2>
-            <p id="stationLines" class="station-lines">Select a marker to view lines and platforms.</p>
-          </header>
-          <dl class="station-meta">
-            <div>
-              <dt>Platforms</dt>
-              <dd id="stationPlatforms">—</dd>
-            </div>
-            <div>
-              <dt>Served lines</dt>
-              <dd id="stationLinesList">—</dd>
-            </div>
-          </dl>
-          <section class="audio-controls" aria-label="Station melody">
-            <h3>Departure melody</h3>
-            <p id="audioStatus" class="audio-status">No track selected.</p>
-            <div class="button-row">
-              <button id="playPause" class="btn" type="button" disabled>
-                <span class="play-label">Play melody</span>
-                <span class="pause-label">Pause</span>
-              </button>
-              <button id="stop" class="btn" type="button" disabled>Stop</button>
-            </div>
-            <audio id="melodyPlayer" preload="auto" tabindex="-1"></audio>
-          </section>
+    <a class="skip-link" href="#stationPanel">Skip to station details</a>
+    <div id="map" class="map" role="application" aria-label="Interactive map of Japan"></div>
+    <div class="map-overlay top" role="search">
+      <div class="brand">JP Train Station</div>
+      <form id="stationSearch" class="search" autocomplete="off">
+        <label class="sr-only" for="stationQuery">Search for a station</label>
+        <input
+          id="stationQuery"
+          name="stationQuery"
+          type="search"
+          placeholder="Search for a station"
+          inputmode="search"
+          list="stationSuggestions"
+          aria-describedby="searchHint"
+        >
+        <datalist id="stationSuggestions"></datalist>
+        <button class="btn" type="submit" aria-label="Search stations">Search</button>
+      </form>
+      <p id="searchHint" class="search-hint">Zoom and tap markers or search by name to explore stations.</p>
+    </div>
+    <section id="stationPanel" class="station-panel" aria-live="polite">
+      <header class="panel-header">
+        <h1 id="stationName">Explore Japan's railways</h1>
+        <p id="stationSummary">Use the map or search above to find a station and listen to its melodies.</p>
+      </header>
+      <dl class="station-meta">
+        <div>
+          <dt>Platforms</dt>
+          <dd id="stationPlatforms">—</dd>
         </div>
-      </aside>
-    </main>
-    <!-- Leaflet scripts from public CDN -->
+        <div>
+          <dt>Served lines</dt>
+          <dd id="stationLines">—</dd>
+        </div>
+      </dl>
+      <section class="audio" aria-label="Station melodies">
+        <h2>Station melodies</h2>
+        <p id="audioStatus" class="audio-status">Select a station to unlock its arrival and departure tunes.</p>
+        <div class="audio-controls">
+          <button id="playArrival" class="btn audio-btn" type="button" disabled>
+            <span class="play">Play arrival</span>
+            <span class="pause">Pause</span>
+          </button>
+          <button id="playDeparture" class="btn audio-btn" type="button" disabled>
+            <span class="play">Play departure</span>
+            <span class="pause">Pause</span>
+          </button>
+          <button id="stop" class="btn" type="button" disabled>Stop</button>
+        </div>
+        <audio id="melodyPlayer" preload="auto" tabindex="-1"></audio>
+      </section>
+    </section>
     <script
       src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
       integrity="sha512-pIqFQJQGsi9h9uKXuX4nHCqB6Sm+GO6zkRgZNpmj12E7YQDdyCjTiMQuu2cEGoVYLRNvKcJsteUmsA2xZr3G3g=="

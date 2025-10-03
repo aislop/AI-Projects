@@ -2,22 +2,36 @@ const mapCenter = [36.204824, 138.252924];
 const defaultZoom = 5;
 
 const stationNameEl = document.getElementById('stationName');
-const stationLinesIntroEl = document.getElementById('stationLines');
+const stationSummaryEl = document.getElementById('stationSummary');
 const stationPlatformsEl = document.getElementById('stationPlatforms');
-const stationLinesListEl = document.getElementById('stationLinesList');
+const stationLinesEl = document.getElementById('stationLines');
 const audioStatusEl = document.getElementById('audioStatus');
-const playPauseBtn = document.getElementById('playPause');
 const stopBtn = document.getElementById('stop');
 const audioEl = document.getElementById('melodyPlayer');
-const sidebar = document.getElementById('stationSidebar');
-const sidebarToggleBtn = document.querySelector('.sidebar-toggle');
+const searchForm = document.getElementById('stationSearch');
+const searchInput = document.getElementById('stationQuery');
+const searchDatalist = document.getElementById('stationSuggestions');
+
+const trackButtons = {
+  arrival: document.getElementById('playArrival'),
+  departure: document.getElementById('playDeparture'),
+};
+
+const trackLabels = {
+  arrival: 'Arrival',
+  departure: 'Departure',
+};
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const mobileBreakpoint = window.matchMedia('(max-width: 960px)');
 
 const audioCache = new Map();
+const markersById = new Map();
+const stationsIndex = [];
+
 let activeStation = null;
 let suppressPauseMessage = false;
+let currentTrack = null;
+let clusterGroup;
 
 function initMap() {
   const map = L.map('map', {
@@ -26,26 +40,42 @@ function initMap() {
     zoomControl: true,
     scrollWheelZoom: true,
     keyboard: true,
+    attributionControl: false,
   });
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
     maxZoom: 19,
-    attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   }).addTo(map);
+
+  L.control
+    .attribution({ position: 'bottomright' })
+    .addAttribution('&copy; OpenStreetMap contributors');
 
   return map;
 }
 
-function preloadAudio(station) {
-  if (audioCache.has(station.id)) {
+function normalise(text) {
+  return text
+    .toLowerCase()
+    .replace(/[\u3000\s]+/g, ' ')
+    .trim();
+}
+
+function preloadAudio(station, track) {
+  const source = station.melodies?.[track];
+  if (!source) {
     return;
   }
 
-  const audio = new Audio(station.melody);
+  const cacheKey = `${station.id}:${track}`;
+  if (audioCache.has(cacheKey)) {
+    return;
+  }
+
+  const audio = new Audio(source);
   audio.preload = 'auto';
   audio.load();
-  audioCache.set(station.id, audio);
+  audioCache.set(cacheKey, audio);
 }
 
 function resetAudioState(message) {
@@ -54,114 +84,145 @@ function resetAudioState(message) {
     audioEl.pause();
   }
   audioEl.currentTime = 0;
-  playPauseBtn.classList.remove('is-playing');
-  playPauseBtn.setAttribute('aria-pressed', 'false');
+  if (currentTrack) {
+    const button = trackButtons[currentTrack];
+    button?.classList.remove('is-playing');
+    button?.setAttribute('aria-pressed', 'false');
+  }
+  currentTrack = null;
+  stopBtn.disabled = true;
   audioStatusEl.textContent = message;
   queueMicrotask(() => {
     suppressPauseMessage = false;
   });
 }
 
-function enableAudioControls(enabled) {
-  playPauseBtn.disabled = !enabled;
-  stopBtn.disabled = !enabled;
+function setTrackButtonState(track, { disabled, active }) {
+  const button = trackButtons[track];
+  if (!button) return;
+
+  button.disabled = disabled;
+  if (active) {
+    button.classList.add('is-playing');
+    button.setAttribute('aria-pressed', 'true');
+  } else {
+    button.classList.remove('is-playing');
+    button.setAttribute('aria-pressed', 'false');
+  }
 }
 
 function updateStationDetails(station) {
   stationNameEl.textContent = station.name;
-  stationLinesIntroEl.textContent = `Serving ${station.lines.length} line${
-    station.lines.length === 1 ? '' : 's'
-  } across Tokyo.`;
+  const lineSummary = station.lines.length === 1 ? 'line' : 'lines';
+  const region = station.region ? ` • ${station.region}` : '';
+  stationSummaryEl.textContent = `Serving ${station.lines.length} ${lineSummary}${region}.`;
   stationPlatformsEl.textContent = station.platforms ?? '—';
-  stationLinesListEl.textContent = station.lines.join(', ');
+  stationLinesEl.textContent = station.lines.join(', ');
 }
 
-function setActiveStation(station) {
+function setActiveStation(station, { fromSearch = false } = {}) {
   activeStation = station;
-  enableAudioControls(true);
-  preloadAudio(station);
-  audioEl.src = station.melody;
-  audioEl.load();
-  resetAudioState(`Ready to play ${station.name}'s melody.`);
+  Object.keys(trackButtons).forEach((track) => {
+    const hasTrack = Boolean(station.melodies?.[track]);
+    setTrackButtonState(track, { disabled: !hasTrack, active: false });
+    preloadAudio(station, track);
+  });
+  resetAudioState(`Arrival and departure melodies ready for ${station.name}. Choose a track to play.`);
   updateStationDetails(station);
-  if (mobileBreakpoint.matches) {
-    setSidebarVisibility(true);
+
+  const marker = markersById.get(station.id);
+  if (marker && fromSearch && clusterGroup) {
+    clusterGroup.zoomToShowLayer(marker, () => {
+      marker.openPopup();
+    });
   }
 }
 
-function setSidebarVisibility(shouldShow) {
-  if (shouldShow) {
-    delete sidebar.dataset.hidden;
-    sidebarToggleBtn.setAttribute('aria-expanded', 'true');
-  } else {
-    sidebar.dataset.hidden = 'true';
-    sidebarToggleBtn.setAttribute('aria-expanded', 'false');
-  }
+function findStation(query) {
+  const normalized = normalise(query);
+  if (!normalized) return null;
+
+  let exact = stationsIndex.find((entry) => entry.normalized === normalized);
+  if (exact) return exact.station;
+
+  exact = stationsIndex.find((entry) => entry.normalized.includes(normalized));
+  return exact ? exact.station : null;
 }
 
-function toggleSidebar() {
-  const isHidden = sidebar.dataset.hidden === 'true';
-  setSidebarVisibility(isHidden);
+function populateSearchDatalist(stations) {
+  const fragment = document.createDocumentFragment();
+  stations
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .forEach((station) => {
+      const option = document.createElement('option');
+      option.value = station.name;
+      fragment.append(option);
+    });
+  searchDatalist.append(fragment);
 }
 
-sidebarToggleBtn?.addEventListener('click', () => {
-  toggleSidebar();
-});
-
-mobileBreakpoint.addEventListener('change', (event) => {
-  if (!event.matches) {
-    setSidebarVisibility(true);
-  }
-});
-
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape' && mobileBreakpoint.matches && sidebar.dataset.hidden !== 'true') {
-    setSidebarVisibility(false);
-  }
-});
-
-playPauseBtn.addEventListener('click', async () => {
+async function toggleTrack(track) {
   if (!activeStation) return;
+  const source = activeStation.melodies?.[track];
+  if (!source) return;
 
-  if (audioEl.paused) {
-    try {
-      await audioEl.play();
-    } catch (error) {
-      console.error('Unable to play audio', error);
-      audioStatusEl.textContent = 'Playback failed. Check your browser settings.';
-      return;
-    }
-  } else {
+  if (currentTrack === track && !audioEl.paused) {
     audioEl.pause();
+    return;
   }
+
+  if (currentTrack !== track) {
+    if (currentTrack) {
+      setTrackButtonState(currentTrack, { disabled: false, active: false });
+    }
+    audioEl.src = source;
+    audioEl.load();
+    currentTrack = track;
+    audioStatusEl.textContent = `Ready to play the ${trackLabels[track].toLowerCase()} melody for ${activeStation.name}.`;
+  }
+
+  try {
+    await audioEl.play();
+  } catch (error) {
+    console.error('Unable to play audio', error);
+    audioStatusEl.textContent = 'Playback failed. Check your browser settings.';
+  }
+}
+
+Object.entries(trackButtons).forEach(([track, button]) => {
+  button?.addEventListener('click', () => toggleTrack(track));
 });
 
 stopBtn.addEventListener('click', () => {
   if (!activeStation) return;
-  resetAudioState(`Stopped ${activeStation.name}'s melody.`);
+  const stationName = activeStation.name;
+  resetAudioState(`Stopped playback for ${stationName}.`);
 });
 
 audioEl.addEventListener('play', () => {
-  playPauseBtn.classList.add('is-playing');
-  playPauseBtn.setAttribute('aria-pressed', 'true');
-  audioStatusEl.textContent = `Playing ${activeStation?.name ?? 'station'} melody.`;
+  if (!currentTrack) return;
+  setTrackButtonState(currentTrack, { disabled: false, active: true });
+  stopBtn.disabled = false;
+  const stationName = activeStation?.name ?? 'station';
+  audioStatusEl.textContent = `Playing ${trackLabels[currentTrack].toLowerCase()} melody for ${stationName}.`;
 });
 
 audioEl.addEventListener('pause', () => {
-  if (audioEl.currentTime === 0 || audioEl.ended) {
-    playPauseBtn.classList.remove('is-playing');
-    playPauseBtn.setAttribute('aria-pressed', 'false');
-  }
+  if (!currentTrack) return;
+  setTrackButtonState(currentTrack, { disabled: false, active: false });
   if (!audioEl.ended && !suppressPauseMessage) {
-    audioStatusEl.textContent = `Paused ${activeStation?.name ?? 'station'} melody.`;
+    const stationName = activeStation?.name ?? 'station';
+    audioStatusEl.textContent = `Paused ${trackLabels[currentTrack].toLowerCase()} melody for ${stationName}.`;
   }
 });
 
 audioEl.addEventListener('ended', () => {
-  resetAudioState(`${activeStation?.name ?? 'Station'} melody finished.`);
+  const finishedTrack = currentTrack;
+  const stationName = activeStation?.name ?? 'Station';
+  resetAudioState(`${trackLabels[finishedTrack ?? 'departure'] ?? 'Station'} melody finished for ${stationName}.`);
 });
 
-// Station dataset is generated in the data prep task and stored as stations.json alongside this script.
 async function loadStations(map) {
   try {
     const response = await fetch('stations.json');
@@ -173,7 +234,7 @@ async function loadStations(map) {
       throw new Error('Station dataset is not an array.');
     }
 
-    const clusterGroup = L.markerClusterGroup({
+    clusterGroup = L.markerClusterGroup({
       showCoverageOnHover: false,
       maxClusterRadius: 60,
       spiderfyOnMaxZoom: !prefersReducedMotion,
@@ -186,23 +247,34 @@ async function loadStations(map) {
       });
 
       marker.bindTooltip(station.name, { direction: 'top', offset: [0, -8] });
+      marker.bindPopup(
+        `<strong>${station.name}</strong><br>${station.lines.join(', ')}`,
+      );
 
-      const onSelect = () => {
-        setActiveStation(station);
+      const onSelect = (options = {}) => {
+        setActiveStation(station, options);
       };
 
-      marker.on('click', onSelect);
+      marker.on('click', () => {
+        marker.openPopup();
+        onSelect();
+      });
       marker.on('keypress', (event) => {
         const key = event.originalEvent?.key;
         if (key === 'Enter' || key === ' ') {
+          marker.openPopup();
           onSelect();
         }
       });
 
       clusterGroup.addLayer(marker);
-      preloadAudio(station);
+      markersById.set(station.id, marker);
+      stationsIndex.push({ station, normalized: normalise(station.name) });
+      preloadAudio(station, 'arrival');
+      preloadAudio(station, 'departure');
     });
 
+    populateSearchDatalist(stations);
     map.addLayer(clusterGroup);
 
     const bounds = clusterGroup.getBounds();
@@ -210,14 +282,40 @@ async function loadStations(map) {
       map.fitBounds(bounds, { padding: [32, 32] });
     }
 
-    enableAudioControls(false);
-    audioStatusEl.textContent = 'Select a station marker to explore its melody.';
+    Object.keys(trackButtons).forEach((track) => {
+      setTrackButtonState(track, { disabled: true, active: false });
+    });
+    stopBtn.disabled = true;
+    audioStatusEl.textContent = 'Select a station marker to explore its melodies.';
   } catch (error) {
     console.error(error);
-    stationLinesIntroEl.textContent = 'Unable to load station data. Please try again later.';
-    enableAudioControls(false);
+    stationSummaryEl.textContent = 'Unable to load station data. Please try again later.';
+    Object.keys(trackButtons).forEach((track) => {
+      setTrackButtonState(track, { disabled: true, active: false });
+    });
+    stopBtn.disabled = true;
   }
 }
+
+searchForm?.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const query = searchInput?.value ?? '';
+  if (!query) return;
+
+  const station = findStation(query);
+  if (!station) {
+    stationSummaryEl.textContent = `No station found for "${query}". Try another search or select a marker.`;
+    return;
+  }
+
+  const marker = markersById.get(station.id);
+  if (marker) {
+    const targetZoom = Math.max(13, map.getZoom());
+    map.flyTo(marker.getLatLng(), targetZoom, { duration: prefersReducedMotion ? 0 : 1.2 });
+  }
+
+  setActiveStation(station, { fromSearch: true });
+});
 
 const map = initMap();
 loadStations(map);
