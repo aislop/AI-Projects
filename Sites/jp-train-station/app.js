@@ -11,6 +11,7 @@ const audioEl = document.getElementById('melodyPlayer');
 const searchForm = document.getElementById('stationSearch');
 const searchInput = document.getElementById('stationQuery');
 const searchDatalist = document.getElementById('stationSuggestions');
+const resetViewBtn = document.getElementById('resetView');
 
 const trackButtons = {
   arrival: document.getElementById('playArrival'),
@@ -32,6 +33,8 @@ let activeStation = null;
 let suppressPauseMessage = false;
 let currentTrack = null;
 let clusterGroup;
+let defaultBounds = null;
+let totalStations = 0;
 
 function initMap() {
   const map = L.map('map', {
@@ -224,6 +227,12 @@ audioEl.addEventListener('ended', () => {
 });
 
 async function loadStations(map) {
+  if (resetViewBtn) {
+    resetViewBtn.disabled = true;
+  }
+  stationSummaryEl.textContent = 'Loading station dataset…';
+  audioStatusEl.textContent = 'Fetching station melodies and markers…';
+
   try {
     const response = await fetch('stations.json');
     if (!response.ok) {
@@ -234,11 +243,21 @@ async function loadStations(map) {
       throw new Error('Station dataset is not an array.');
     }
 
+    if (clusterGroup) {
+      map.removeLayer(clusterGroup);
+    }
+
     clusterGroup = L.markerClusterGroup({
       showCoverageOnHover: false,
       maxClusterRadius: 60,
       spiderfyOnMaxZoom: !prefersReducedMotion,
     });
+
+    markersById.clear();
+    stationsIndex.length = 0;
+    if (searchDatalist) {
+      searchDatalist.innerHTML = '';
+    }
 
     stations.forEach((station) => {
       const marker = L.marker([station.latitude, station.longitude], {
@@ -279,21 +298,38 @@ async function loadStations(map) {
 
     const bounds = clusterGroup.getBounds();
     if (bounds.isValid()) {
+      defaultBounds = bounds;
       map.fitBounds(bounds, { padding: [32, 32] });
+    } else {
+      defaultBounds = null;
+    }
+
+    totalStations = stations.length;
+    if (resetViewBtn) {
+      resetViewBtn.disabled = !defaultBounds;
     }
 
     Object.keys(trackButtons).forEach((track) => {
       setTrackButtonState(track, { disabled: true, active: false });
     });
     stopBtn.disabled = true;
-    audioStatusEl.textContent = 'Select a station marker to explore its melodies.';
+    audioStatusEl.textContent = `Select a station marker to explore its melodies. ${stations.length} stations loaded across Japan.`;
+    if (!activeStation) {
+      stationSummaryEl.textContent = `Pick a station marker to explore melodies from ${stations.length} stops across Japan.`;
+    }
   } catch (error) {
     console.error(error);
     stationSummaryEl.textContent = 'Unable to load station data. Please try again later.';
+    audioStatusEl.textContent = 'Station data unavailable. Try refreshing the page once your connection stabilises.';
     Object.keys(trackButtons).forEach((track) => {
       setTrackButtonState(track, { disabled: true, active: false });
     });
     stopBtn.disabled = true;
+    defaultBounds = null;
+    totalStations = 0;
+    if (resetViewBtn) {
+      resetViewBtn.disabled = true;
+    }
   }
 }
 
@@ -318,4 +354,20 @@ searchForm?.addEventListener('submit', (event) => {
 });
 
 const map = initMap();
+
+resetViewBtn?.addEventListener('click', () => {
+  if (defaultBounds?.isValid()) {
+    map.fitBounds(defaultBounds, {
+      padding: [32, 32],
+      animate: !prefersReducedMotion,
+    });
+  } else {
+    map.setView(mapCenter, defaultZoom, { animate: !prefersReducedMotion });
+  }
+  map.closePopup();
+  if (!activeStation && totalStations > 0) {
+    stationSummaryEl.textContent = `Japan overview restored. ${totalStations} stations ready to explore.`;
+  }
+});
+
 loadStations(map);

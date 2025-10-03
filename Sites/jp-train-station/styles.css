@@ -132,6 +132,25 @@ body {
   box-shadow: 0 10px 24px rgba(59, 130, 246, 0.35);
 }
 
+.btn-secondary {
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  box-shadow: none;
+  color: var(--text-strong);
+  padding-inline: 1rem;
+}
+
+.btn-secondary:not(:disabled):hover,
+.btn-secondary:not(:disabled):focus-visible {
+  transform: none;
+  background: rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+.btn-secondary:disabled {
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
 .btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
