@@ -2,91 +2,274 @@
   {
     "id": "tokyo",
     "name": "Tokyo",
-    "lines": ["Yamanote Line", "Chuo Line", "Keihin-Tohoku Line"],
+    "region": "Tokyo Prefecture",
+    "lines": ["Yamanote Line", "Chuo Line", "Keihin-Tohoku Line", "Tokaido Shinkansen"],
     "platforms": "1-10",
-    "melody": "../yamanoteline/sounds/Tokyo.mp3",
+    "melodies": {
+      "arrival": "../yamanoteline/sounds/Yurakucho.mp3",
+      "departure": "../yamanoteline/sounds/Tokyo.mp3"
+    },
     "latitude": 35.681236,
     "longitude": 139.767125
   },
   {
     "id": "kanda",
     "name": "Kanda",
-    "lines": ["Yamanote Line", "Keihin-Tohoku Line"],
+    "region": "Tokyo Prefecture",
+    "lines": ["Yamanote Line", "Keihin-Tohoku Line", "Chuo Line"],
     "platforms": "1-4",
-    "melody": "../yamanoteline/sounds/Kanda.mp3",
+    "melodies": {
+      "arrival": "../yamanoteline/sounds/Kanda.mp3",
+      "departure": "../yamanoteline/sounds/Akihabara.mp3"
+    },
     "latitude": 35.69169,
     "longitude": 139.770883
   },
   {
     "id": "akihabara",
     "name": "Akihabara",
+    "region": "Tokyo Prefecture",
     "lines": ["Yamanote Line", "Keihin-Tohoku Line", "Chuo-Sobu Line"],
     "platforms": "1-6",
-    "melody": "../yamanoteline/sounds/Akihabara.mp3",
+    "melodies": {
+      "arrival": "../yamanoteline/sounds/Okachimachi.mp3",
+      "departure": "../yamanoteline/sounds/Akihabara.mp3"
+    },
     "latitude": 35.698683,
     "longitude": 139.773243
   },
   {
     "id": "ueno",
     "name": "Ueno",
-    "lines": ["Yamanote Line", "Keihin-Tohoku Line", "Joban Line"],
+    "region": "Tokyo Prefecture",
+    "lines": ["Yamanote Line", "Keihin-Tohoku Line", "Joban Line", "Tohoku Shinkansen"],
     "platforms": "1-11",
-    "melody": "../yamanoteline/sounds/Ueno.mp3",
+    "melodies": {
+      "arrival": "../yamanoteline/sounds/Ueno.mp3",
+      "departure": "../yamanoteline/sounds/Nippori.mp3"
+    },
     "latitude": 35.713768,
     "longitude": 139.777254
   },
   {
     "id": "ikebukuro",
     "name": "Ikebukuro",
-    "lines": ["Yamanote Line", "Seibu Ikebukuro Line", "Tobu Tojo Line"],
+    "region": "Tokyo Prefecture",
+    "lines": ["Yamanote Line", "Seibu Ikebukuro Line", "Tobu Tojo Line", "Marunouchi Line"],
     "platforms": "1-8",
-    "melody": "../yamanoteline/sounds/Ikebukuro.mp3",
+    "melodies": {
+      "arrival": "../yamanoteline/sounds/Mejiro.mp3",
+      "departure": "../yamanoteline/sounds/Ikebukuro.mp3"
+    },
     "latitude": 35.728926,
     "longitude": 139.71038
   },
   {
     "id": "shinjuku",
     "name": "Shinjuku",
-    "lines": ["Yamanote Line", "Chuo Line", "Saikyo Line"],
+    "region": "Tokyo Prefecture",
+    "lines": ["Yamanote Line", "Chuo Line", "Saikyo Line", "Shonan-Shinjuku Line"],
     "platforms": "1-16",
-    "melody": "../yamanoteline/sounds/Shinjuku.mp3",
+    "melodies": {
+      "arrival": "../yamanoteline/sounds/Takadanobaba.mp3",
+      "departure": "../yamanoteline/sounds/Shinjuku.mp3"
+    },
     "latitude": 35.690921,
     "longitude": 139.700258
   },
   {
     "id": "shibuya",
     "name": "Shibuya",
-    "lines": ["Yamanote Line", "Saikyo Line", "Ginza Line"],
+    "region": "Tokyo Prefecture",
+    "lines": ["Yamanote Line", "Saikyo Line", "Ginza Line", "Hanzomon Line"],
     "platforms": "1-6",
-    "melody": "../yamanoteline/sounds/Shibuya.mp3",
+    "melodies": {
+      "arrival": "../yamanoteline/sounds/Harajuku.mp3",
+      "departure": "../yamanoteline/sounds/Shibuya.mp3"
+    },
     "latitude": 35.658034,
     "longitude": 139.701636
   },
   {
     "id": "shinagawa",
     "name": "Shinagawa",
-    "lines": ["Yamanote Line", "Keihin-Tohoku Line", "Tokaido Shinkansen"],
+    "region": "Tokyo Prefecture",
+    "lines": ["Yamanote Line", "Keihin-Tohoku Line", "Tokaido Line", "Tokaido Shinkansen"],
     "platforms": "1-13",
-    "melody": "../yamanoteline/sounds/Shinagawa.mp3",
+    "melodies": {
+      "arrival": "../yamanoteline/sounds/TakanawaGateway.mp3",
+      "departure": "../yamanoteline/sounds/Shinagawa.mp3"
+    },
     "latitude": 35.628471,
     "longitude": 139.73876
   },
   {
     "id": "osaki",
     "name": "Osaki",
+    "region": "Tokyo Prefecture",
     "lines": ["Yamanote Line", "Saikyo Line", "Shonan-Shinjuku Line"],
     "platforms": "1-4",
-    "melody": "../yamanoteline/sounds/Osaki.mp3",
+    "melodies": {
+      "arrival": "../yamanoteline/sounds/Osaki.mp3",
+      "departure": "../yamanoteline/sounds/Gotanda.mp3"
+    },
     "latitude": 35.619772,
     "longitude": 139.728011
   },
   {
     "id": "hamamatsucho",
     "name": "Hamamatsucho",
+    "region": "Tokyo Prefecture",
     "lines": ["Yamanote Line", "Keihin-Tohoku Line", "Tokyo Monorail"],
     "platforms": "1-6",
-    "melody": "../yamanoteline/sounds/Hamamatsucho.mp3",
+    "melodies": {
+      "arrival": "../yamanoteline/sounds/Hamamatsucho.mp3",
+      "departure": "../yamanoteline/sounds/Shimbashi.mp3"
+    },
     "latitude": 35.654321,
     "longitude": 139.757654
+  },
+  {
+    "id": "yokohama",
+    "name": "Yokohama",
+    "region": "Kanagawa Prefecture",
+    "lines": ["Keihin-Tohoku Line", "Yokosuka Line", "Minatomirai Line", "Tokyu Toyoko Line"],
+    "platforms": "1-10",
+    "melodies": {
+      "arrival": "../yamanoteline/sounds/Tamachi.mp3",
+      "departure": "../yamanoteline/sounds/Osaki.mp3"
+    },
+    "latitude": 35.465833,
+    "longitude": 139.6225
+  },
+  {
+    "id": "nagoya",
+    "name": "Nagoya",
+    "region": "Aichi Prefecture",
+    "lines": ["Tokaido Line", "Chuo Main Line", "Sakura-dori Line", "Tokaido Shinkansen"],
+    "platforms": "1-16",
+    "melodies": {
+      "arrival": "../yamanoteline/sounds/Komagome.mp3",
+      "departure": "../yamanoteline/sounds/Meguro.mp3"
+    },
+    "latitude": 35.170915,
+    "longitude": 136.881537
+  },
+  {
+    "id": "kyoto",
+    "name": "Kyoto",
+    "region": "Kyoto Prefecture",
+    "lines": ["Tokaido Shinkansen", "Sanin Main Line", "Kintetsu Kyoto Line"],
+    "platforms": "0-34",
+    "melodies": {
+      "arrival": "../yamanoteline/sounds/Sugamo.mp3",
+      "departure": "../yamanoteline/sounds/Shinagawa.mp3"
+    },
+    "latitude": 34.985849,
+    "longitude": 135.758766
+  },
+  {
+    "id": "osaka",
+    "name": "Osaka",
+    "region": "Osaka Prefecture",
+    "lines": ["Osaka Loop Line", "Yamatoji Line", "Umeda Subway", "Hanwa Line"],
+    "platforms": "1-11",
+    "melodies": {
+      "arrival": "../yamanoteline/sounds/Tabata.mp3",
+      "departure": "../yamanoteline/sounds/Ebisu.mp3"
+    },
+    "latitude": 34.702485,
+    "longitude": 135.495951
+  },
+  {
+    "id": "hiroshima",
+    "name": "Hiroshima",
+    "region": "Hiroshima Prefecture",
+    "lines": ["Sanyo Shinkansen", "Sanyo Main Line", "Kabe Line", "Hiroden"],
+    "platforms": "1-9",
+    "melodies": {
+      "arrival": "../yamanoteline/sounds/Mejiro.mp3",
+      "departure": "../yamanoteline/sounds/Uguisudani.mp3"
+    },
+    "latitude": 34.397391,
+    "longitude": 132.475047
+  },
+  {
+    "id": "hakata",
+    "name": "Hakata",
+    "region": "Fukuoka Prefecture",
+    "lines": ["Sanyo Shinkansen", "Kyushu Shinkansen", "Kagoshima Main Line"],
+    "platforms": "1-16",
+    "melodies": {
+      "arrival": "../yamanoteline/sounds/Harajuku.mp3",
+      "departure": "../yamanoteline/sounds/Yoyogi.mp3"
+    },
+    "latitude": 33.5902,
+    "longitude": 130.4207
+  },
+  {
+    "id": "sapporo",
+    "name": "Sapporo",
+    "region": "Hokkaido Prefecture",
+    "lines": ["Hakodate Main Line", "Chitose Line", "Namboku Subway"],
+    "platforms": "1-10",
+    "melodies": {
+      "arrival": "../yamanoteline/sounds/Otsuka.mp3",
+      "departure": "../yamanoteline/sounds/Nishinippori.mp3"
+    },
+    "latitude": 43.068661,
+    "longitude": 141.350755
+  },
+  {
+    "id": "sendai",
+    "name": "Sendai",
+    "region": "Miyagi Prefecture",
+    "lines": ["Tohoku Shinkansen", "Senseki Line", "Sendai Subway"],
+    "platforms": "1-14",
+    "melodies": {
+      "arrival": "../yamanoteline/sounds/Tokyo.mp3",
+      "departure": "../yamanoteline/sounds/Okachimachi.mp3"
+    },
+    "latitude": 38.260833,
+    "longitude": 140.8825
+  },
+  {
+    "id": "kanazawa",
+    "name": "Kanazawa",
+    "region": "Ishikawa Prefecture",
+    "lines": ["Hokuriku Shinkansen", "IR Ishikawa Railway", "Hokuriku Main Line"],
+    "platforms": "1-7",
+    "melodies": {
+      "arrival": "../yamanoteline/sounds/Tamachi.mp3",
+      "departure": "../yamanoteline/sounds/Yurakucho.mp3"
+    },
+    "latitude": 36.578056,
+    "longitude": 136.648333
+  },
+  {
+    "id": "kagoshima-chuo",
+    "name": "Kagoshima-Chuo",
+    "region": "Kagoshima Prefecture",
+    "lines": ["Kyushu Shinkansen", "Ibusuki Makurazaki Line", "Kagoshima City Tram"],
+    "platforms": "1-13",
+    "melodies": {
+      "arrival": "../yamanoteline/sounds/Ikebukuro.mp3",
+      "departure": "../yamanoteline/sounds/Tamachi.mp3"
+    },
+    "latitude": 31.586,
+    "longitude": 130.561
+  },
+  {
+    "id": "naha",
+    "name": "Naha",
+    "region": "Okinawa Prefecture",
+    "lines": ["Yui Rail"],
+    "platforms": "1-2",
+    "melodies": {
+      "arrival": "../yamanoteline/sounds/Meguro.mp3",
+      "departure": "../yamanoteline/sounds/Osaki.mp3"
+    },
+    "latitude": 26.2163,
+    "longitude": 127.679
   }
 ]
