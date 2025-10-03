@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Japan Station Explorer</title>
+    <!-- Leaflet and MarkerCluster styles from public CDN -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha512-sA+4Z1W96gQ87XZy4V/mQJu1nvLKYj1WFJsbgx5caX5/C/POb44IVdQydb9h9NP7VDaRaoTyIhiikmTDdSqaLQ=="
+      crossorigin=""
+    >
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"
+    >
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"
+    >
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#stationSidebar">Skip to station details</a>
+    <header class="site-header" role="banner">
+      <h1>Japan Station Explorer</h1>
+      <p class="tagline">Browse major JR stations, melodies, and lines on an interactive map.</p>
+    </header>
+    <main class="app" role="main">
+      <button class="sidebar-toggle" aria-expanded="true" aria-controls="stationSidebar">
+        <span class="open-label">Hide details</span>
+        <span class="close-label">Show details</span>
+      </button>
+      <section id="map" class="map" role="region" aria-label="Station map"></section>
+      <aside id="stationSidebar" class="sidebar" aria-live="polite">
+        <div class="sidebar-inner">
+          <header class="sidebar-header">
+            <h2 id="stationName">Choose a station</h2>
+            <p id="stationLines" class="station-lines">Select a marker to view lines and platforms.</p>
+          </header>
+          <dl class="station-meta">
+            <div>
+              <dt>Platforms</dt>
+              <dd id="stationPlatforms">—</dd>
+            </div>
+            <div>
+              <dt>Served lines</dt>
+              <dd id="stationLinesList">—</dd>
+            </div>
+          </dl>
+          <section class="audio-controls" aria-label="Station melody">
+            <h3>Departure melody</h3>
+            <p id="audioStatus" class="audio-status">No track selected.</p>
+            <div class="button-row">
+              <button id="playPause" class="btn" type="button" disabled>
+                <span class="play-label">Play melody</span>
+                <span class="pause-label">Pause</span>
+              </button>
+              <button id="stop" class="btn" type="button" disabled>Stop</button>
+            </div>
+            <audio id="melodyPlayer" preload="auto" tabindex="-1"></audio>
+          </section>
+        </div>
+      </aside>
+    </main>
+    <!-- Leaflet scripts from public CDN -->
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha512-pIqFQJQGsi9h9uKXuX4nHCqB6Sm+GO6zkRgZNpmj12E7YQDdyCjTiMQuu2cEGoVYLRNvKcJsteUmsA2xZr3G3g=="
+      crossorigin=""
+      defer
+    ></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" defer></script>
+    <script src="app.js" type="module" defer></script>
+  </body>
+</html>
