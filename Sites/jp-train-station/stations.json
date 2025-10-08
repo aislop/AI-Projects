@@ -15,7 +15,11 @@
       "departure": "./sounds/departure/Tokyo.mp3"
     },
     "latitude": 35.681236,
-    "longitude": 139.767125
+    "longitude": 139.767125,
+    "operators": [
+      "JR East",
+      "JR Central"
+    ]
   },
   {
     "id": "kanda",
@@ -32,7 +36,10 @@
       "departure": "./sounds/departure/Akihabara.mp3"
     },
     "latitude": 35.69169,
-    "longitude": 139.770883
+    "longitude": 139.770883,
+    "operators": [
+      "JR East"
+    ]
   },
   {
     "id": "akihabara",
@@ -49,7 +56,10 @@
       "departure": "./sounds/departure/Akihabara.mp3"
     },
     "latitude": 35.698683,
-    "longitude": 139.773243
+    "longitude": 139.773243,
+    "operators": [
+      "JR East"
+    ]
   },
   {
     "id": "ueno",
@@ -67,7 +77,10 @@
       "departure": "./sounds/departure/Nippori.mp3"
     },
     "latitude": 35.713768,
-    "longitude": 139.777254
+    "longitude": 139.777254,
+    "operators": [
+      "JR East"
+    ]
   },
   {
     "id": "ikebukuro",
@@ -85,7 +98,13 @@
       "departure": "./sounds/departure/Ikebukuro.mp3"
     },
     "latitude": 35.728926,
-    "longitude": 139.71038
+    "longitude": 139.71038,
+    "operators": [
+      "JR East",
+      "Seibu Railway",
+      "Tobu Railway",
+      "Tokyo Metro"
+    ]
   },
   {
     "id": "shinjuku",
@@ -103,7 +122,10 @@
       "departure": "./sounds/departure/Shinjuku.mp3"
     },
     "latitude": 35.690921,
-    "longitude": 139.700258
+    "longitude": 139.700258,
+    "operators": [
+      "JR East"
+    ]
   },
   {
     "id": "shibuya",
@@ -121,7 +143,12 @@
       "departure": "./sounds/departure/Shibuya.mp3"
     },
     "latitude": 35.658034,
-    "longitude": 139.701636
+    "longitude": 139.701636,
+    "operators": [
+      "JR East",
+      "Tokyo Metro",
+      "Tokyu Corporation"
+    ]
   },
   {
     "id": "shinagawa",
@@ -139,7 +166,11 @@
       "departure": "./sounds/departure/Shinagawa.mp3"
     },
     "latitude": 35.628471,
-    "longitude": 139.73876
+    "longitude": 139.73876,
+    "operators": [
+      "JR East",
+      "JR Central"
+    ]
   },
   {
     "id": "osaki",
@@ -156,7 +187,10 @@
       "departure": "./sounds/departure/Gotanda.mp3"
     },
     "latitude": 35.619772,
-    "longitude": 139.728011
+    "longitude": 139.728011,
+    "operators": [
+      "JR East"
+    ]
   },
   {
     "id": "hamamatsucho",
@@ -173,7 +207,11 @@
       "departure": "./sounds/departure/Shimbashi.mp3"
     },
     "latitude": 35.654321,
-    "longitude": 139.757654
+    "longitude": 139.757654,
+    "operators": [
+      "JR East",
+      "Tokyo Monorail"
+    ]
   },
   {
     "id": "yokohama",
@@ -191,7 +229,12 @@
       "departure": "./sounds/departure/Osaki.mp3"
     },
     "latitude": 35.465833,
-    "longitude": 139.6225
+    "longitude": 139.6225,
+    "operators": [
+      "JR East",
+      "Tokyu Corporation",
+      "Minatomirai Railway"
+    ]
   },
   {
     "id": "nagoya",
@@ -209,7 +252,11 @@
       "departure": "./sounds/departure/Meguro.mp3"
     },
     "latitude": 35.170915,
-    "longitude": 136.881537
+    "longitude": 136.881537,
+    "operators": [
+      "JR Central",
+      "Nagoya Municipal Subway"
+    ]
   },
   {
     "id": "kyoto",
@@ -226,7 +273,11 @@
       "departure": "./sounds/departure/Shinagawa.mp3"
     },
     "latitude": 34.985849,
-    "longitude": 135.758766
+    "longitude": 135.758766,
+    "operators": [
+      "JR West",
+      "Kintetsu Railway"
+    ]
   },
   {
     "id": "osaka",
@@ -244,7 +295,11 @@
       "departure": "./sounds/departure/Ebisu.mp3"
     },
     "latitude": 34.702485,
-    "longitude": 135.495951
+    "longitude": 135.495951,
+    "operators": [
+      "JR West",
+      "Osaka Metro"
+    ]
   },
   {
     "id": "hiroshima",
@@ -262,7 +317,11 @@
       "departure": "./sounds/departure/Uguisudani.mp3"
     },
     "latitude": 34.397391,
-    "longitude": 132.475047
+    "longitude": 132.475047,
+    "operators": [
+      "JR West",
+      "Hiroshima Electric Railway"
+    ]
   },
   {
     "id": "hakata",
@@ -279,7 +338,11 @@
       "departure": "./sounds/departure/Yoyogi.mp3"
     },
     "latitude": 33.5902,
-    "longitude": 130.4207
+    "longitude": 130.4207,
+    "operators": [
+      "JR West",
+      "JR Kyushu"
+    ]
   },
   {
     "id": "sapporo",
@@ -296,7 +359,11 @@
       "departure": "./sounds/departure/Nishinippori.mp3"
     },
     "latitude": 43.068661,
-    "longitude": 141.350755
+    "longitude": 141.350755,
+    "operators": [
+      "JR Hokkaido",
+      "Sapporo Municipal Subway"
+    ]
   },
   {
     "id": "sendai",
@@ -313,7 +380,11 @@
       "departure": "./sounds/departure/Okachimachi.mp3"
     },
     "latitude": 38.260833,
-    "longitude": 140.8825
+    "longitude": 140.8825,
+    "operators": [
+      "JR East",
+      "Sendai City Transportation Bureau"
+    ]
   },
   {
     "id": "kanazawa",
@@ -330,7 +401,11 @@
       "departure": "./sounds/departure/Yurakucho.mp3"
     },
     "latitude": 36.578056,
-    "longitude": 136.648333
+    "longitude": 136.648333,
+    "operators": [
+      "JR West",
+      "IR Ishikawa Railway"
+    ]
   },
   {
     "id": "kagoshima-chuo",
@@ -347,7 +422,11 @@
       "departure": "./sounds/departure/Tamachi.mp3"
     },
     "latitude": 31.586,
-    "longitude": 130.561
+    "longitude": 130.561,
+    "operators": [
+      "JR Kyushu",
+      "Kagoshima City Transportation Bureau"
+    ]
   },
   {
     "id": "naha",
@@ -362,6 +441,9 @@
       "departure": "./sounds/departure/Osaki.mp3"
     },
     "latitude": 26.2163,
-    "longitude": 127.679
+    "longitude": 127.679,
+    "operators": [
+      "Okinawa Urban Monorail"
+    ]
   }
 ]
