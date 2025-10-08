@@ -12,6 +12,19 @@ const searchForm = document.getElementById('stationSearch');
 const searchInput = document.getElementById('stationQuery');
 const searchDatalist = document.getElementById('stationSuggestions');
 const resetViewBtn = document.getElementById('resetView');
+const operatorFilterEl = document.getElementById('operatorFilter');
+const operatorSearchEl = document.getElementById('operatorSearch');
+const lineFilterEl = document.getElementById('lineFilter');
+const lineSearchEl = document.getElementById('lineSearch');
+const clearFiltersBtn = document.getElementById('clearFilters');
+const filterSummaryEl = document.getElementById('filterSummary');
+const searchHintEl = document.getElementById('searchHint');
+const stationOperatorsEl = document.getElementById('stationOperators');
+const panelHelperEl = document.getElementById('panelHelper');
+
+const defaultStationTitle = stationNameEl?.textContent ?? '';
+const defaultStationSummary = stationSummaryEl?.textContent ?? '';
+const defaultPanelHelperText = panelHelperEl?.textContent ?? '';
 
 const trackButtons = {
   arrival: document.getElementById('playArrival'),
@@ -28,6 +41,15 @@ const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)
 const audioCache = new Map();
 const markersById = new Map();
 const stationsIndex = [];
+const operatorOptions = new Set();
+const lineOptions = new Set();
+
+let allStations = [];
+let filteredStations = [];
+let activeOperatorFilters = new Set();
+let activeLineFilters = new Set();
+let filteredBounds = null;
+let mapInstance = null;
 
 let activeStation = null;
 let suppressPauseMessage = false;
@@ -62,6 +84,229 @@ function normalise(text) {
     .toLowerCase()
     .replace(/[\u3000\s]+/g, ' ')
     .trim();
+}
+
+function renderMetaPills(container, values = [], highlightSet = new Set()) {
+  if (!container) return;
+  container.innerHTML = '';
+  if (!Array.isArray(values) || values.length === 0) {
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+  values.forEach((value) => {
+    if (!value) return;
+    const pill = document.createElement('span');
+    pill.className = 'meta-pill';
+    pill.textContent = value;
+    if (highlightSet.has(value)) {
+      pill.classList.add('is-highlighted');
+      pill.setAttribute('aria-label', `${value} (filtered)`);
+    }
+    fragment.append(pill);
+  });
+  container.append(fragment);
+}
+
+function populateSelectOptions(selectEl, values) {
+  if (!selectEl) return;
+  const fragment = document.createDocumentFragment();
+  values
+    .slice()
+    .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
+    .forEach((value) => {
+      const option = document.createElement('option');
+      option.value = value;
+      option.textContent = value;
+      option.dataset.searchValue = normalise(value);
+      fragment.append(option);
+    });
+  selectEl.innerHTML = '';
+  selectEl.append(fragment);
+}
+
+function filterSelectOptions(selectEl, query) {
+  if (!selectEl) return;
+  const normalized = normalise(query ?? '');
+  Array.from(selectEl.options).forEach((option) => {
+    const value = option.dataset.searchValue ?? normalise(option.textContent ?? '');
+    option.hidden = Boolean(normalized) && !value.includes(normalized);
+  });
+}
+
+function getSelectedValues(selectEl) {
+  if (!selectEl) return [];
+  return Array.from(selectEl.selectedOptions ?? []).map((option) => option.value);
+}
+
+function refreshVisibleMarkers(stations) {
+  if (!clusterGroup) return;
+  clusterGroup.clearLayers();
+  stations.forEach((station) => {
+    const marker = markersById.get(station.id);
+    if (marker) {
+      clusterGroup.addLayer(marker);
+    }
+  });
+}
+
+function getBoundsForStations(stations) {
+  if (!Array.isArray(stations) || stations.length === 0) {
+    return null;
+  }
+  const points = stations
+    .map((station) => [Number(station.latitude), Number(station.longitude)])
+    .filter(([lat, lng]) => Number.isFinite(lat) && Number.isFinite(lng));
+  if (points.length === 0) {
+    return null;
+  }
+  return L.latLngBounds(points);
+}
+
+function updatePanelHelperText() {
+  if (!panelHelperEl) return;
+  if (activeOperatorFilters.size > 0 || activeLineFilters.size > 0) {
+    panelHelperEl.textContent = 'Active filters glow below so you can confirm the operators and lines in focus.';
+  } else {
+    panelHelperEl.textContent = defaultPanelHelperText;
+  }
+}
+
+function updateFilterSummary(visibleCount, totalCount, { filtersActive } = {}) {
+  if (filterSummaryEl) {
+    if (!totalCount) {
+      filterSummaryEl.textContent = 'Station data unavailable.';
+    } else if (!visibleCount) {
+      filterSummaryEl.textContent = 'No stations match the current filters.';
+    } else if (filtersActive) {
+      filterSummaryEl.textContent = `Showing ${visibleCount} of ${totalCount} stations with the current filters.`;
+    } else {
+      filterSummaryEl.textContent = `Showing all ${totalCount} stations.`;
+    }
+  }
+
+  if (searchHintEl) {
+    if (!totalCount) {
+      searchHintEl.textContent = 'Station data unavailable. Try refreshing the page once your connection stabilises.';
+    } else if (!visibleCount) {
+      searchHintEl.textContent = 'No stations match the current filters. Clear or adjust them to keep exploring.';
+    } else if (filtersActive) {
+      searchHintEl.textContent = `Filters active: showing ${visibleCount} of ${totalCount} stations. Use the search box to jump directly to a matching stop.`;
+    } else {
+      searchHintEl.textContent = `Search by station name or combine operator and line filters to explore melodies with precision. ${totalCount} stations available.`;
+    }
+  }
+
+  if (clearFiltersBtn) {
+    clearFiltersBtn.disabled = !filtersActive;
+  }
+}
+
+function clearStationDetails(message) {
+  activeStation = null;
+  stationNameEl.textContent = defaultStationTitle;
+  stationSummaryEl.textContent = message ?? defaultStationSummary;
+  stationPlatformsEl.textContent = '—';
+  renderMetaPills(stationLinesEl, []);
+  renderMetaPills(stationOperatorsEl, []);
+  Object.keys(trackButtons).forEach((track) => {
+    setTrackButtonState(track, { disabled: true, active: false });
+  });
+  stopBtn.disabled = true;
+  updatePanelHelperText();
+}
+
+function populateFilterControls() {
+  populateSelectOptions(operatorFilterEl, Array.from(operatorOptions));
+  populateSelectOptions(lineFilterEl, Array.from(lineOptions));
+  if (operatorSearchEl) {
+    filterSelectOptions(operatorFilterEl, operatorSearchEl.value);
+  }
+  if (lineSearchEl) {
+    filterSelectOptions(lineFilterEl, lineSearchEl.value);
+  }
+}
+
+function applyFilters({ shouldFitBounds = false } = {}) {
+  activeOperatorFilters = new Set(getSelectedValues(operatorFilterEl));
+  activeLineFilters = new Set(getSelectedValues(lineFilterEl));
+
+  filteredStations = allStations.filter((station) => {
+    const operatorMatch =
+      activeOperatorFilters.size === 0 || station.operators.some((operator) => activeOperatorFilters.has(operator));
+    const lineMatch =
+      activeLineFilters.size === 0 || station.lines.some((line) => activeLineFilters.has(line));
+    return operatorMatch && lineMatch;
+  });
+
+  stationsIndex.length = 0;
+  filteredStations.forEach((station) => {
+    stationsIndex.push({ station, normalized: normalise(station.name) });
+  });
+
+  populateSearchDatalist(filteredStations);
+  refreshVisibleMarkers(filteredStations);
+
+  filteredBounds = getBoundsForStations(filteredStations);
+  const filtersActive = activeOperatorFilters.size > 0 || activeLineFilters.size > 0;
+  updateFilterSummary(filteredStations.length, totalStations, { filtersActive });
+  updatePanelHelperText();
+
+  if (filteredStations.length === 0) {
+    const audioMessage = activeStation
+      ? `${activeStation.name} is hidden by the current filters. Adjust your selections to keep listening to melodies.`
+      : 'No stations match the current filters. Adjust your selections to continue exploring melodies.';
+    resetAudioState(audioMessage);
+    mapInstance?.closePopup();
+    clearStationDetails('No stations match your filters. Clear or adjust them to keep exploring.');
+  } else if (activeStation && !filteredStations.some((station) => station.id === activeStation.id)) {
+    resetAudioState(
+      `${activeStation.name} is not available with the current filters. Choose another station to play its melodies.`,
+    );
+    mapInstance?.closePopup();
+    clearStationDetails('Filters applied. Select another station from the map or search results.');
+  }
+
+  if (resetViewBtn) {
+    resetViewBtn.disabled = !filteredBounds;
+  }
+
+  if (filteredBounds && shouldFitBounds && mapInstance) {
+    mapInstance.fitBounds(filteredBounds, {
+      padding: [32, 32],
+      animate: !prefersReducedMotion,
+    });
+  } else if (!filteredBounds && shouldFitBounds && defaultBounds && mapInstance) {
+    mapInstance.fitBounds(defaultBounds, {
+      padding: [32, 32],
+      animate: !prefersReducedMotion,
+    });
+  }
+}
+
+function clearAllSelections(selectEl) {
+  if (!selectEl) return;
+  Array.from(selectEl.options).forEach((option) => {
+    option.selected = false;
+  });
+  selectEl.scrollTop = 0;
+}
+
+function clearFilters({ shouldFitBounds = true } = {}) {
+  const hadFilters = activeOperatorFilters.size > 0 || activeLineFilters.size > 0;
+  clearAllSelections(operatorFilterEl);
+  clearAllSelections(lineFilterEl);
+  if (operatorSearchEl) {
+    operatorSearchEl.value = '';
+    filterSelectOptions(operatorFilterEl, '');
+  }
+  if (lineSearchEl) {
+    lineSearchEl.value = '';
+    filterSelectOptions(lineFilterEl, '');
+  }
+  if (hadFilters) {
+    applyFilters({ shouldFitBounds });
+  }
 }
 
 function preloadAudio(station, track) {
@@ -116,11 +361,15 @@ function setTrackButtonState(track, { disabled, active }) {
 
 function updateStationDetails(station) {
   stationNameEl.textContent = station.name;
-  const lineSummary = station.lines.length === 1 ? 'line' : 'lines';
+  const lines = Array.isArray(station.lines) ? station.lines : [];
+  const operators = Array.isArray(station.operators) ? station.operators : [];
+  const lineSummary = lines.length === 1 ? 'line' : 'lines';
   const region = station.region ? ` • ${station.region}` : '';
-  stationSummaryEl.textContent = `Serving ${station.lines.length} ${lineSummary}${region}.`;
+  stationSummaryEl.textContent = `Serving ${lines.length} ${lineSummary}${region}.`;
   stationPlatformsEl.textContent = station.platforms ?? '—';
-  stationLinesEl.textContent = station.lines.join(', ');
+  renderMetaPills(stationLinesEl, lines, activeLineFilters);
+  renderMetaPills(stationOperatorsEl, operators, activeOperatorFilters);
+  updatePanelHelperText();
 }
 
 function setActiveStation(station, { fromSearch = false } = {}) {
@@ -153,6 +402,11 @@ function findStation(query) {
 }
 
 function populateSearchDatalist(stations) {
+  if (!searchDatalist) return;
+  searchDatalist.innerHTML = '';
+  if (!Array.isArray(stations) || stations.length === 0) {
+    return;
+  }
   const fragment = document.createDocumentFragment();
   stations
     .slice()
@@ -226,7 +480,7 @@ audioEl.addEventListener('ended', () => {
   resetAudioState(`${trackLabels[finishedTrack ?? 'departure'] ?? 'Station'} melody finished for ${stationName}.`);
 });
 
-async function loadStations(map) {
+async function loadStations() {
   if (resetViewBtn) {
     resetViewBtn.disabled = true;
   }
@@ -243,8 +497,8 @@ async function loadStations(map) {
       throw new Error('Station dataset is not an array.');
     }
 
-    if (clusterGroup) {
-      map.removeLayer(clusterGroup);
+    if (clusterGroup && mapInstance) {
+      mapInstance.removeLayer(clusterGroup);
     }
 
     clusterGroup = L.markerClusterGroup({
@@ -253,21 +507,57 @@ async function loadStations(map) {
       spiderfyOnMaxZoom: !prefersReducedMotion,
     });
 
+    if (mapInstance) {
+      mapInstance.addLayer(clusterGroup);
+    }
+
     markersById.clear();
     stationsIndex.length = 0;
+    operatorOptions.clear();
+    lineOptions.clear();
+    allStations = [];
+    filteredStations = [];
+    filteredBounds = null;
+    activeOperatorFilters = new Set();
+    activeLineFilters = new Set();
+
     if (searchDatalist) {
       searchDatalist.innerHTML = '';
     }
+    if (operatorFilterEl) {
+      operatorFilterEl.innerHTML = '';
+    }
+    if (lineFilterEl) {
+      lineFilterEl.innerHTML = '';
+    }
 
     stations.forEach((station) => {
+      const lines = Array.isArray(station.lines)
+        ? station.lines.map((line) => line.trim()).filter(Boolean)
+        : [];
+      station.lines = lines;
+
+      const operators = Array.isArray(station.operators)
+        ? station.operators.map((operator) => operator.trim()).filter(Boolean)
+        : [];
+      if (!operators.length) {
+        operators.push('Independent operator');
+      }
+      station.operators = Array.from(new Set(operators));
+
+      station.operators.forEach((operator) => operatorOptions.add(operator));
+      station.lines.forEach((line) => lineOptions.add(line));
+
       const marker = L.marker([station.latitude, station.longitude], {
         title: station.name,
         keyboard: true,
       });
 
       marker.bindTooltip(station.name, { direction: 'top', offset: [0, -8] });
+      const popupLines = station.lines.length ? station.lines.join(', ') : 'No lines listed';
+      const popupOperators = station.operators.length ? station.operators.join(', ') : 'Various operators';
       marker.bindPopup(
-        `<strong>${station.name}</strong><br>${station.lines.join(', ')}`,
+        `<strong>${station.name}</strong><br>${popupLines}<br><small>Operators: ${popupOperators}</small>`,
       );
 
       const onSelect = (options = {}) => {
@@ -288,48 +578,50 @@ async function loadStations(map) {
 
       clusterGroup.addLayer(marker);
       markersById.set(station.id, marker);
-      stationsIndex.push({ station, normalized: normalise(station.name) });
       preloadAudio(station, 'arrival');
       preloadAudio(station, 'departure');
+      allStations.push(station);
     });
 
-    populateSearchDatalist(stations);
-    map.addLayer(clusterGroup);
+    populateFilterControls();
+    totalStations = allStations.length;
+    defaultBounds = getBoundsForStations(allStations);
+    applyFilters({ shouldFitBounds: true });
 
-    const bounds = clusterGroup.getBounds();
-    if (bounds.isValid()) {
-      defaultBounds = bounds;
-      map.fitBounds(bounds, { padding: [32, 32] });
-    } else {
-      defaultBounds = null;
-    }
-
-    totalStations = stations.length;
-    if (resetViewBtn) {
-      resetViewBtn.disabled = !defaultBounds;
-    }
-
-    Object.keys(trackButtons).forEach((track) => {
-      setTrackButtonState(track, { disabled: true, active: false });
-    });
-    stopBtn.disabled = true;
-    audioStatusEl.textContent = `Select a station marker to explore its melodies. ${stations.length} stations loaded across Japan.`;
+    audioStatusEl.textContent = `Select a station marker to explore its melodies. ${totalStations} stations loaded across Japan. Use the filters above to refine the map.`;
     if (!activeStation) {
-      stationSummaryEl.textContent = `Pick a station marker to explore melodies from ${stations.length} stops across Japan.`;
+      stationSummaryEl.textContent = `Pick a station marker or combine the filters to explore melodies from ${totalStations} stops across Japan.`;
     }
   } catch (error) {
     console.error(error);
+    resetAudioState('Station data unavailable. Try refreshing the page once your connection stabilises.');
+    clearStationDetails('Station information unavailable until the dataset loads.');
     stationSummaryEl.textContent = 'Unable to load station data. Please try again later.';
-    audioStatusEl.textContent = 'Station data unavailable. Try refreshing the page once your connection stabilises.';
-    Object.keys(trackButtons).forEach((track) => {
-      setTrackButtonState(track, { disabled: true, active: false });
-    });
-    stopBtn.disabled = true;
     defaultBounds = null;
     totalStations = 0;
+    filteredStations = [];
+    allStations = [];
+    markersById.clear();
+    if (clusterGroup) {
+      clusterGroup.clearLayers();
+    }
+    filteredBounds = null;
+    activeOperatorFilters = new Set();
+    activeLineFilters = new Set();
+    updateFilterSummary(0, 0, { filtersActive: false });
+    if (operatorFilterEl) {
+      operatorFilterEl.innerHTML = '';
+    }
+    if (lineFilterEl) {
+      lineFilterEl.innerHTML = '';
+    }
+    if (searchDatalist) {
+      searchDatalist.innerHTML = '';
+    }
     if (resetViewBtn) {
       resetViewBtn.disabled = true;
     }
+    updatePanelHelperText();
   }
 }
 
@@ -340,34 +632,58 @@ searchForm?.addEventListener('submit', (event) => {
 
   const station = findStation(query);
   if (!station) {
-    stationSummaryEl.textContent = `No station found for "${query}". Try another search or select a marker.`;
+    const filtersActive = activeOperatorFilters.size > 0 || activeLineFilters.size > 0;
+    const message = filtersActive
+      ? `No station found for "${query}" within the current filters. Try clearing filters or adjusting your search.`
+      : `No station found for "${query}". Try another search or select a marker.`;
+    stationSummaryEl.textContent = message;
     return;
   }
 
   const marker = markersById.get(station.id);
-  if (marker) {
-    const targetZoom = Math.max(13, map.getZoom());
-    map.flyTo(marker.getLatLng(), targetZoom, { duration: prefersReducedMotion ? 0 : 1.2 });
+  if (marker && mapInstance) {
+    const targetZoom = Math.max(13, mapInstance.getZoom());
+    mapInstance.flyTo(marker.getLatLng(), targetZoom, { duration: prefersReducedMotion ? 0 : 1.2 });
   }
 
   setActiveStation(station, { fromSearch: true });
 });
 
-const map = initMap();
+operatorFilterEl?.addEventListener('change', () => applyFilters({ shouldFitBounds: true }));
+lineFilterEl?.addEventListener('change', () => applyFilters({ shouldFitBounds: true }));
+operatorSearchEl?.addEventListener('input', (event) => {
+  filterSelectOptions(operatorFilterEl, event.target.value);
+});
+lineSearchEl?.addEventListener('input', (event) => {
+  filterSelectOptions(lineFilterEl, event.target.value);
+});
+clearFiltersBtn?.addEventListener('click', () => clearFilters({ shouldFitBounds: true }));
+
+mapInstance = initMap();
 
 resetViewBtn?.addEventListener('click', () => {
-  if (defaultBounds?.isValid()) {
-    map.fitBounds(defaultBounds, {
+  if (!mapInstance) return;
+  const bounds = filteredBounds ?? defaultBounds;
+  if (bounds?.isValid?.()) {
+    mapInstance.fitBounds(bounds, {
       padding: [32, 32],
       animate: !prefersReducedMotion,
     });
   } else {
-    map.setView(mapCenter, defaultZoom, { animate: !prefersReducedMotion });
+    mapInstance.setView(mapCenter, defaultZoom, { animate: !prefersReducedMotion });
   }
-  map.closePopup();
-  if (!activeStation && totalStations > 0) {
-    stationSummaryEl.textContent = `Japan overview restored. ${totalStations} stations ready to explore.`;
+  mapInstance.closePopup();
+  if (!activeStation) {
+    if (filteredStations.length === 0) {
+      stationSummaryEl.textContent = 'No stations match your filters. Clear or adjust them to keep exploring.';
+    } else {
+      const visible = filteredStations.length;
+      const filtersActive = activeOperatorFilters.size > 0 || activeLineFilters.size > 0;
+      stationSummaryEl.textContent = filtersActive
+        ? `View reset. Showing ${visible} station${visible === 1 ? '' : 's'} that match your filters.`
+        : `Japan overview restored. ${totalStations} stations ready to explore.`;
+    }
   }
 });
 
-loadStations(map);
+loadStations();

@@ -24,7 +24,21 @@
     <a class="skip-link" href="#stationPanel">Skip to station details</a>
     <div id="map" class="map" role="application" aria-label="Interactive map of Japan"></div>
     <div class="map-overlay top" role="search">
-      <div class="brand">JP Train Station</div>
+      <div class="overlay-header">
+        <div>
+          <div class="brand">JP Train Station</div>
+          <p class="overlay-subtitle">Melodies, operators, and lines across Japan</p>
+        </div>
+        <button
+          id="resetView"
+          class="btn btn-secondary"
+          type="button"
+          disabled
+          aria-label="Reset the map view to the current selection"
+        >
+          Reset view
+        </button>
+      </div>
       <form id="stationSearch" class="search" autocomplete="off">
         <label class="sr-only" for="stationQuery">Search for a station</label>
         <input
@@ -34,35 +48,99 @@
           placeholder="Search for a station"
           inputmode="search"
           list="stationSuggestions"
-          aria-describedby="searchHint"
+          aria-describedby="searchHint filterSummary"
         >
         <datalist id="stationSuggestions"></datalist>
         <button class="btn" type="submit" aria-label="Search stations">Search</button>
       </form>
-      <p id="searchHint" class="search-hint">Zoom and tap markers or search by name to explore stations.</p>
-      <button
-        id="resetView"
-        class="btn btn-secondary"
-        type="button"
-        disabled
-        aria-label="Reset the map view to show all stations"
-      >
-        Reset view
-      </button>
+      <section class="filter-panel" aria-label="Station filters">
+        <header class="filter-header">
+          <h2>Filter by operator and line</h2>
+          <p id="filtersHelp" class="filter-helper">
+            Combine the filters below with the station search to focus on specific rail operators or train lines.
+          </p>
+        </header>
+        <div class="filter-groups">
+          <div class="filter-group">
+            <label for="operatorSearch">Operators</label>
+            <input
+              id="operatorSearch"
+              class="filter-search"
+              type="search"
+              placeholder="Search operators"
+              aria-describedby="operatorHelper"
+              inputmode="search"
+            >
+            <p id="operatorHelper" class="filter-helper-text">
+              Tap or hold Ctrl/Cmd while selecting to choose multiple operators.
+            </p>
+            <select
+              id="operatorFilter"
+              class="filter-select"
+              name="operatorFilter"
+              multiple
+              size="6"
+              aria-describedby="operatorHelper filtersHelp filterSummary"
+            ></select>
+          </div>
+          <div class="filter-group">
+            <label for="lineSearch">Lines</label>
+            <input
+              id="lineSearch"
+              class="filter-search"
+              type="search"
+              placeholder="Search lines"
+              aria-describedby="lineHelper"
+              inputmode="search"
+            >
+            <p id="lineHelper" class="filter-helper-text">
+              Select one or more lines to instantly update the map markers.
+            </p>
+            <select
+              id="lineFilter"
+              class="filter-select"
+              name="lineFilter"
+              multiple
+              size="6"
+              aria-describedby="lineHelper filtersHelp filterSummary"
+            ></select>
+          </div>
+        </div>
+        <div class="filter-actions">
+          <p id="filterSummary" class="filter-summary" aria-live="polite"></p>
+          <div class="filter-buttons">
+            <button id="clearFilters" class="btn btn-secondary" type="button">Clear filters</button>
+          </div>
+        </div>
+      </section>
+      <p id="searchHint" class="search-hint">
+        Search by station name or combine operator and line filters to explore melodies with precision.
+      </p>
     </div>
     <section id="stationPanel" class="station-panel" aria-live="polite">
       <header class="panel-header">
         <h1 id="stationName">Explore Japan's railways</h1>
         <p id="stationSummary">Use the map or search above to find a station and listen to its melodies.</p>
       </header>
+      <p id="panelHelper" class="panel-helper">
+        Tip: Selected operators and lines will glow below so you can confirm how your filters affect each station.
+      </p>
       <dl class="station-meta">
+        <div>
+          <dt>Served lines</dt>
+          <dd>
+            <div id="stationLines" class="meta-pill-group" role="list">—</div>
+          </dd>
+        </div>
+        <div>
+          <dt>Operators</dt>
+          <dd>
+            <div id="stationOperators" class="meta-pill-group" role="list">—</div>
+          </dd>
+        </div>
         <div>
           <dt>Platforms</dt>
           <dd id="stationPlatforms">—</dd>
-        </div>
-        <div>
-          <dt>Served lines</dt>
-          <dd id="stationLines">—</dd>
         </div>
       </dl>
       <section class="audio" aria-label="Station melodies">
