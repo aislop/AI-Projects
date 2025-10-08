@@ -1,0 +1,13 @@
+{
+  "name": "jp-train-station-scripts",
+  "version": "1.0.0",
+  "description": "Utility scripts for refreshing JP Train Station datasets.",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "refresh": "node refresh-stations.js"
+  },
+  "dependencies": {
+    "kuromoji": "^0.1.2"
+  }
+}
