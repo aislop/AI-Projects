@@ -1,3 +1,7 @@
+/*
+ * Supported layout modes: only the current immersive/default layout is maintained.
+ * Legacy alternate layout toggles were removed along with unused `layout-modern.css`.
+ */
 :root {
   color-scheme: light;
   --jr-green: #2f9e44;
