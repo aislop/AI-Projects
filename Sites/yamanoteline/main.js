@@ -910,6 +910,8 @@ const mapOverlay = document.getElementById('mapOverlay');
 const closeMap = document.getElementById('closeMap');
 const mapLine = document.getElementById('mapLine');
 const mapScrim = mapOverlay.querySelector('[data-close="true"]');
+const mapPanel = mapOverlay.querySelector('.map-overlay__panel');
+const mapHeading = document.getElementById('mapHeading');
 const searchInput = document.getElementById('stationSearch');
 const searchGoButton = document.getElementById('jumpButton');
 const datalist = document.getElementById('stationList');
@@ -950,6 +952,17 @@ let directionTicker = null;
 let lastDirection = 1;
 let directionAnnouncementDuration = 0;
 let directionJingleDuration = 0;
+let previousFocusedElement = null;
+let mapFocusReturnElement = null;
+
+const mapFocusableSelector = [
+  'button:not([disabled])',
+  '[href]',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])'
+].join(', ');
 
 if (appEl) {
   appEl.dataset.direction = 'forward';
@@ -1697,11 +1710,30 @@ function handleJingleError() {
 }
 
 function openMap() {
+  if (document.activeElement instanceof HTMLElement) {
+    previousFocusedElement = document.activeElement;
+  }
+  if (previousFocusedElement !== mapToggle && previousFocusedElement !== audioMapButton) {
+    previousFocusedElement = mapFocusReturnElement || mapToggle;
+  }
+
   mapOverlay.classList.add('is-visible');
   mapOverlay.setAttribute('aria-hidden', 'false');
   mapToggle.setAttribute('aria-expanded', 'true');
   audioMapButton?.setAttribute('aria-expanded', 'true');
+  document.querySelector('.top-bar')?.setAttribute('inert', '');
+  document.querySelector('.top-bar')?.setAttribute('aria-hidden', 'true');
+  viewport?.setAttribute('inert', '');
+  viewport?.setAttribute('aria-hidden', 'true');
   centerMapOnIndex(currentStationIndex);
+
+  const initialFocusTarget = closeMap || mapHeading || mapPanel;
+  if (mapPanel && !mapPanel.hasAttribute('tabindex')) {
+    mapPanel.setAttribute('tabindex', '-1');
+  }
+  requestAnimationFrame(() => {
+    initialFocusTarget?.focus();
+  });
 }
 
 function closeMapOverlay() {
@@ -1709,6 +1741,24 @@ function closeMapOverlay() {
   mapOverlay.setAttribute('aria-hidden', 'true');
   mapToggle.setAttribute('aria-expanded', 'false');
   audioMapButton?.setAttribute('aria-expanded', 'false');
+  document.querySelector('.top-bar')?.removeAttribute('inert');
+  document.querySelector('.top-bar')?.removeAttribute('aria-hidden');
+  viewport?.removeAttribute('inert');
+  viewport?.removeAttribute('aria-hidden');
+
+  const focusTarget = mapFocusReturnElement || previousFocusedElement || mapToggle;
+  if (focusTarget instanceof HTMLElement) {
+    focusTarget.focus();
+  }
+  previousFocusedElement = null;
+  mapFocusReturnElement = null;
+}
+
+function getMapFocusableElements() {
+  if (!mapPanel) return [];
+  return Array.from(mapPanel.querySelectorAll(mapFocusableSelector)).filter((element) => {
+    return element instanceof HTMLElement && element.offsetParent !== null;
+  });
 }
 
 function buildMap() {
@@ -1810,6 +1860,23 @@ function handleKeydown(event) {
   if (mapOverlay.classList.contains('is-visible')) {
     if (event.key === 'Escape') {
       closeMapOverlay();
+    } else if (event.key === 'Tab') {
+      const focusableElements = getMapFocusableElements();
+      const first = focusableElements[0] || mapPanel;
+      const last = focusableElements[focusableElements.length - 1] || mapPanel;
+      const active = document.activeElement;
+
+      if (!(first instanceof HTMLElement) || !(last instanceof HTMLElement)) {
+        return;
+      }
+
+      if (event.shiftKey && (active === first || !mapOverlay.contains(active))) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (active === last || !mapOverlay.contains(active))) {
+        event.preventDefault();
+        first.focus();
+      }
     }
     return;
   }
@@ -1911,6 +1978,7 @@ function bindEvents() {
     if (mapOverlay.classList.contains('is-visible')) {
       closeMapOverlay();
     } else {
+      mapFocusReturnElement = mapToggle;
       openMap();
     }
   });
@@ -1918,6 +1986,7 @@ function bindEvents() {
     if (mapOverlay.classList.contains('is-visible')) {
       closeMapOverlay();
     } else {
+      mapFocusReturnElement = audioMapButton;
       openMap();
     }
   });
