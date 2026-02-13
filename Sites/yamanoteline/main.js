@@ -979,7 +979,10 @@ function clampIndex(index) {
   return (index % total + total) % total;
 }
 
-function setBackground(url) {
+function setBackground(url, stationName = '') {
+  if (stationName) {
+    backgroundEl.setAttribute('aria-label', `Background image of ${stationName}`);
+  }
   backgroundEl.classList.remove('is-active');
   requestAnimationFrame(() => {
     backgroundEl.style.backgroundImage = `url(${url})`;
@@ -1564,7 +1567,7 @@ function goToStation(index, options = {}) {
   resetDirectionTimeline();
   const station = stations[currentStationIndex];
 
-  setBackground(station.background);
+  setBackground(station.background, station.name);
   nameJpEl.textContent = station.japaneseName;
   nameEnEl.textContent = station.name;
   aboutEl.textContent = station.about;
